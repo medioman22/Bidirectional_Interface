@@ -2,7 +2,7 @@
   <img src=https://github.com/AntoineWeber/Bidirectional_Interface/blob/master/readme_images/epfl_logo.png>
 </p>
 
-# Bidirectional_Interface I & II
+# Bidirectional Interface I & II
 Repository containing the work performed for the semester project entitle "Bidirectional wearable interface for mobile robot teleoperation" performed at the LIS (EPFL).
 
 
