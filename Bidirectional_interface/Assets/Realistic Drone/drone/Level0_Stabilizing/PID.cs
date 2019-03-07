@@ -50,7 +50,6 @@ public class PID
     /// <returns>The output of the PID, multiplied for the constant U</returns>
     public float getU(float Err, float deltaTime) { return getU(Err, deltaTime, trashBuffer); }
 
-    float SampleTime = 0.05f;
     float accDTime = 0;
     float lastU = 0;
     /// <summary>
@@ -63,9 +62,9 @@ public class PID
     public float getU(float Err, float deltaTime, float[] values)
     {
         // if not enough time is passed since the last call it returns the old result 
-        if (deltaTime + accDTime > SampleTime)
+        if (deltaTime + accDTime > Time.fixedDeltaTime)
         {
-            accDTime = deltaTime + accDTime - SampleTime;
+            accDTime = deltaTime + accDTime - Time.fixedDeltaTime;
 
             //calculating P factor
             float pFactor = Err;
@@ -78,7 +77,7 @@ public class PID
             absError += Mathf.Abs(Err);
 
             // calculating the output of the PID
-            float u = (kP * pFactor + kD / SampleTime * dFactor + kI * SampleTime * iFactor) * kU;
+            float u = (kP * pFactor + kD / Time.fixedDeltaTime * dFactor + kI * Time.fixedDeltaTime * iFactor) * kU;
             
             //storing the results in the array passed as parameter
             values[0] = kP * pFactor;
