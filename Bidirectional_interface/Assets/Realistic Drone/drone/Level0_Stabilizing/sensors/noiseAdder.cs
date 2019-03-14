@@ -43,6 +43,7 @@ public class noiseAdder {
         sigma = droneSettings.keepOnRange(sigma, 0, 2f);
 
         return val + sigma * gaussianFloatBetween1_1() * 0.1f;
+        //return val;
     }
 
     /// <summary>
