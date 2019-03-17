@@ -3438,6 +3438,11 @@ PrefabInstance:
       propertyPath: desired_height
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 8407380883974053955, guid: 34fd334bc9a28994dabb708f0486ce7a,
+        type: 3}
+      propertyPath: speedScale
+      value: 1000
+      objectReference: {fileID: 0}
     - target: {fileID: 8407914240515367455, guid: 34fd334bc9a28994dabb708f0486ce7a,
         type: 3}
       propertyPath: agentParameters.agentCameras.Array.data[0]
@@ -3471,7 +3476,7 @@ PrefabInstance:
     - target: {fileID: 8500980329146899795, guid: 34fd334bc9a28994dabb708f0486ce7a,
         type: 3}
       propertyPath: m_Mass
-      value: 1
+      value: 0.027
       objectReference: {fileID: 0}
     - target: {fileID: 8500980329146899795, guid: 34fd334bc9a28994dabb708f0486ce7a,
         type: 3}
