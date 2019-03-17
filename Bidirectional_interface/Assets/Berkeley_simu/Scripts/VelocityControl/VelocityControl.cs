@@ -21,22 +21,24 @@ public class VelocityControl : MonoBehaviour {
     private float max_pitch = 0.175f; // 10 Degrees in radians, otherwise small-angle approximation dies 
     private float max_roll = 0.175f; // 10 Degrees in radians, otherwise small-angle approximation dies
     private float max_alpha = 10.0f;
+
     //must set this
-    public float desired_height = 4.0f;
+    public float desired_height = 0.0f;
     public float desired_vx = 0.0f;
     public float desired_vy = 0.0f;
     public float desired_yaw = 0.0f;
-    //must set this
-    public float initial_height = 4.0f;
 
     private bool wait = false;
     private bool flag = true;
 
     private float speedScale = 500.0f;
 
+
+
     // Use this for initialization
     void Start () {
         state.GetState ();
+        desired_height = state.Altitude;
         Rigidbody rb = GetComponent<Rigidbody> ();
         Vector3 desiredForce = new Vector3 (0.0f, gravity * state.Mass, 0.0f);
         rb.AddForce (desiredForce, ForceMode.Acceleration);
@@ -118,7 +120,7 @@ public class VelocityControl : MonoBehaviour {
         desired_vx = 0.0f;
         desired_vy = 0.0f;
         desired_yaw = 0.0f;
-        desired_height = initial_height;
+        desired_height = 0.0f;
 
         state.Reset ();
     

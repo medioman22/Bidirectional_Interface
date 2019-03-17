@@ -86,16 +86,16 @@ public class DroneAgent: Agent {
 		minZ = rend.bounds.min.z;
 
 
-        initialPos = new Vector3(transform.position.x, velocityControl.initial_height, transform.position.z);
+        initialPos = new Vector3(transform.position.x, transform.position.y, transform.position.z);
         initialRot = new Quaternion(transform.rotation.x, transform.rotation.y, transform.rotation.z, transform.rotation.w);
 
         endBounds = currEndRegion.GetComponent<Renderer> ().bounds;
 
 		// randomness
-		float startX = ((float) rand.NextDouble()) * (maxX - minX) + minX;
-		float startZ = ((float) rand.NextDouble()) * (maxZ - minZ) + minZ;
+		// float startX = ((float) rand.NextDouble()) * (maxX - minX) + minX;
+		// float startZ = ((float) rand.NextDouble()) * (maxZ - minZ) + minZ;
 
-		transform.position = new Vector3 (startX, initialPos.y, startZ);
+		transform.position = new Vector3 (initialPos.x, initialPos.y, initialPos.z);
 
 		wait = false;
 

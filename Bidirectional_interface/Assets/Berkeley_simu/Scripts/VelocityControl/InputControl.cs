@@ -2,6 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Thomas je pense que le contrôle en position tu pourras directement l'implémenter ici.
+/// </summary>
+
 public class InputControl : MonoBehaviour {
 
 	public VelocityControl vc;
@@ -14,6 +18,7 @@ public class InputControl : MonoBehaviour {
 	}
 	
 	// Update is called once per frame
+
 	void FixedUpdate () {
 //		vc.desired_vx = Input.GetAxisRaw ("Pitch")*4.0f;
 //		vc.desired_vy = Input.GetAxisRaw ("Roll")*4.0f;
