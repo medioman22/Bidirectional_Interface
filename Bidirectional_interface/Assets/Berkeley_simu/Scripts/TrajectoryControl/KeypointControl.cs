@@ -6,10 +6,10 @@ using UnityEngine;
 public class KeypointControl : MonoBehaviour
 {
     public Transform[] keypoints;
+    public float positionTolerance = 0.1f;
 
     private PositionControl posController;
     private int targetIndex;
-    private float epsilon = 0.05f;
 
     // Start is called before the first frame update
     void Start()
@@ -43,7 +43,7 @@ public class KeypointControl : MonoBehaviour
         posController.target = keypoints[targetIndex];
 
         // Move to the next keypoint
-        if (Vector3.Magnitude(keypoints[targetIndex].position - transform.position) < epsilon)
+        if (Vector3.Magnitude(keypoints[targetIndex].position - transform.position) < positionTolerance)
         {
             targetIndex++;
         }
