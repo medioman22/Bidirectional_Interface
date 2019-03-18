@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(VelocityControl))]
-public class InputControl : MonoBehaviour
+public class PositionControl : MonoBehaviour
 {
     public Transform target;
 
