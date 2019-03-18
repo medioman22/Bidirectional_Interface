@@ -2,30 +2,29 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>
-/// Thomas je pense que le contrôle en position tu pourras directement l'implémenter ici.
-/// </summary>
-
 [RequireComponent(typeof(VelocityControl))]
-public class InputControl : MonoBehaviour {
+public class InputControl : MonoBehaviour
+{
+    public Transform target;
 
-	private VelocityControl vc;
+    private VelocityControl vc;
+    private Rigidbody rb;
 
-	private float abs_height = 1;
+    private float positionTimeConstant = 1.0f;
 
 	// Use this for initialization
-	void Start () {
+	void Start ()
+    {
         vc = GetComponent<VelocityControl>();
+        rb = GetComponent<Rigidbody>();
 	}
 	
-	// Update is called once per frame
+	void FixedUpdate ()
+    {
+        Vector3 positionError = target.position - transform.position;
 
-	void FixedUpdate () {
-//		vc.desiredVx = Input.GetAxisRaw ("Pitch")*4.0f;
-//		vc.desired_vy = Input.GetAxisRaw ("Roll")*4.0f;
-//		vc.desired_yaw = Input.GetAxisRaw ("Yaw")*0.5f;
-//		abs_height += Input.GetAxisRaw("Throttle") * 0.1f;
-//
-//		vc.desired_height = abs_height;
-	}
+        vc.desiredVx = positionError.x / positionTimeConstant;
+        vc.desiredVz = positionError.z / positionTimeConstant;
+        vc.desiredHeight = target.position.y;
+    }
 }

@@ -23,7 +23,7 @@ public class VelocityControl : MonoBehaviour {
     private float max_roll = 0.175f; // 10 Degrees in radians, otherwise small-angle approximation dies
     private float max_alpha = 10.0f;
 
-    private float max_thrust = 1.55f * Physics.gravity.magnitude;
+    private float max_thrust = 2.0f * Physics.gravity.magnitude;
 
     //must set this
     public float desiredHeight = 0.0f;
@@ -36,17 +36,15 @@ public class VelocityControl : MonoBehaviour {
     private Rigidbody rb;
 
     // Use this for initialization
-    void Start () {
+    void Start ()
+    {
         state = GetComponent<StateFinder>();
-        state.GetState ();
-        //desiredHeight = state.Altitude;
         rb = GetComponent<Rigidbody> ();
-        //Vector3 desiredForce = new Vector3 (0.0f, gravity * state.Mass, 0.0f);
-        //rb.AddForce (Physics.gravity, ForceMode.Acceleration);
     }
 
     // Update is called once per frame
-    void FixedUpdate () {
+    void FixedUpdate ()
+    {
         state.GetState ();
         
         // NOTE: I'm using stupid vector order (sideways, up, forward) at the end
@@ -87,8 +85,8 @@ public class VelocityControl : MonoBehaviour {
         Vector3 desiredTorque = Vector3.Scale (desiredAlpha, state.Inertia);
         Vector3 desiredForce = new Vector3 (0.0f, desiredThrust, 0.0f);
 
-        rb.AddRelativeTorque (desiredTorque, ForceMode.Acceleration);
-        rb.AddRelativeForce (desiredForce , ForceMode.Acceleration);
+        rb.AddRelativeTorque (desiredTorque, ForceMode.Force);
+        rb.AddRelativeForce (desiredForce , ForceMode.Force);
 
         //prop transforms
         propFL.transform.Rotate(Vector3.forward * Time.deltaTime * desiredThrust * speedScale);
