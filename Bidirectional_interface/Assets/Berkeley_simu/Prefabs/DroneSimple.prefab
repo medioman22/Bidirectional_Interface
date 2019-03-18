@@ -164,8 +164,6 @@ GameObject:
   - component: {fileID: 8446437306460155651}
   - component: {fileID: 8500980329146899795}
   - component: {fileID: 8407380883974053955}
-  - component: {fileID: 8407914240515367455}
-  - component: {fileID: 8407438055680534179}
   - component: {fileID: 8492998017276560807}
   - component: {fileID: 8583055546222637277}
   m_Layer: 9
@@ -182,7 +180,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8447870852426404253}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -190,7 +188,7 @@ Transform:
   - {fileID: 8446710624696133046}
   m_Father: {fileID: 8446454233379264559}
   m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!54 &8500980329146899795
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -199,9 +197,9 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8447870852426404253}
   serializedVersion: 2
-  m_Mass: 3
-  m_Drag: 0.3
-  m_AngularDrag: 5
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
@@ -224,58 +222,10 @@ MonoBehaviour:
   propFR: {fileID: 8447976002574492929}
   propRR: {fileID: 8448146622875603955}
   propRL: {fileID: 8448273446831142955}
-  desired_height: 10
+  desired_height: 3
   desired_vx: 0
   desired_vy: 0
   desired_yaw: 0
-  initial_height: 4
---- !u!114 &8407914240515367455
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8447870852426404253}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 33bb739f1138d40798114d667776a1d6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  brain: {fileID: 0}
-  agentParameters:
-    agentCameras:
-    - {fileID: 0}
-    maxStep: 0
-    resetOnDone: 1
-    onDemandDecision: 0
-    numberOfActionsBetweenDecisions: 10
-  velocityControl: {fileID: 8407380883974053955}
-  Scale: 1
-  use_new_state: 1
-  startRegionIndex: -1
-  startRegions: []
-  endRegionIndex: -1
-  endRegions: []
-  FORWARD_VELOCITY: 16
-  YAW_RATE: 1
-  DONE_DISTANCE: 15
---- !u!114 &8407438055680534179
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8447870852426404253}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b9ab48fdc62824c7fbed172be0cf823c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  numHorizontalPoints: 2000
-  numBins: 400
-  fov_degrees: 0
-  maxDist: 100
-  displayFreespace: 0
 --- !u!64 &8492998017276560807
 MeshCollider:
   m_ObjectHideFlags: 0
