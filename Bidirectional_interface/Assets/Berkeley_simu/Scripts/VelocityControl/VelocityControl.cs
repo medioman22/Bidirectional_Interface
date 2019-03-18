@@ -33,13 +33,13 @@ public class VelocityControl : MonoBehaviour {
 
     private float speedScale = 500.0f;
 
-
+    private Rigidbody rb;
 
     // Use this for initialization
     void Start () {
         state.GetState ();
         desired_height = state.Altitude;
-        Rigidbody rb = GetComponent<Rigidbody> ();
+        rb = GetComponent<Rigidbody> ();
         Vector3 desiredForce = new Vector3 (0.0f, gravity * state.Mass, 0.0f);
         rb.AddForce (desiredForce, ForceMode.Acceleration);
     }
@@ -89,8 +89,6 @@ public class VelocityControl : MonoBehaviour {
 
         Vector3 desiredTorque = Vector3.Scale (desiredAlpha, state.Inertia);
         Vector3 desiredForce = new Vector3 (0.0f, desiredThrust * state.Mass, 0.0f);
-
-        Rigidbody rb = GetComponent<Rigidbody>();
 
         rb.AddRelativeTorque (desiredTorque, ForceMode.Acceleration);
         rb.AddRelativeForce (desiredForce , ForceMode.Acceleration);
