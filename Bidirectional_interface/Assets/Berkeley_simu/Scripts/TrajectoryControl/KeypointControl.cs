@@ -42,6 +42,15 @@ public class KeypointControl : MonoBehaviour
         // Set target keypoint
         posController.target = keypoints[targetIndex];
 
+        if (!posController.target)
+        {
+            while(!posController.target)
+            {
+                targetIndex++;
+                posController.target = keypoints[targetIndex];
+            }
+        }
+
         // Move to the next keypoint
         if (Vector3.Magnitude(keypoints[targetIndex].position - transform.position) < positionTolerance)
         {
