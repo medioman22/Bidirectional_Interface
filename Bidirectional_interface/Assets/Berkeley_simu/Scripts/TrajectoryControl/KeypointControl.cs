@@ -34,7 +34,11 @@ public class KeypointControl : MonoBehaviour
         else if (keypoints.Length > 0 && targetIndex == -1)
             targetIndex = 0;
         else if (keypoints.Length > 0 && targetIndex >= keypoints.Length)
+        {
             targetIndex = keypoints.Length - 1;
+            posController.ignoreOrientation = true;
+        }
+            
 
         if (targetIndex == -1)
             return;
