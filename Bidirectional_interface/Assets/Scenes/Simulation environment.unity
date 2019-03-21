@@ -687,6 +687,7 @@ GameObject:
   m_Component:
   - component: {fileID: 403520572}
   - component: {fileID: 403520571}
+  - component: {fileID: 403520573}
   m_Layer: 0
   m_Name: SimulatitonManager
   m_TagString: Untagged
@@ -725,6 +726,21 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &403520573
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 403520570}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7fdaf969441c3540bbd25a5cfea7d74, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  data: {fileID: 4900000, guid: 6bf21e7a824346547acb081bc1814537, type: 3}
+  droneKeypointControl: {fileID: 1172046588}
+  simplifyTrajectoryTolerance: 0.1
 --- !u!1 &407066790
 GameObject:
   m_ObjectHideFlags: 0
@@ -2229,6 +2245,18 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1162274212}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &1172046588 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3523659991405902243, guid: 34fd334bc9a28994dabb708f0486ce7a,
+    type: 3}
+  m_PrefabInstance: {fileID: 8896745373315853484}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c5503bd6327343f4a9bcfd0bf87a7ddd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1274356685
 GameObject:
   m_ObjectHideFlags: 0
