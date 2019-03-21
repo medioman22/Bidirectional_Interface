@@ -28,7 +28,7 @@ public class PositionControl : MonoBehaviour
         // Define the target orientation to face the next keypoint
         Quaternion targetOrientation = Quaternion.LookRotation(positionError);
 
-        float yawError = targetOrientation.eulerAngles.y - transform.eulerAngles.y;
+        float yawError = Mathf.DeltaAngle(transform.eulerAngles.y,targetOrientation.eulerAngles.y);
 
         // condition to avoid unstability when should be static on a single keypoint
         if (ignoreOrientation)
