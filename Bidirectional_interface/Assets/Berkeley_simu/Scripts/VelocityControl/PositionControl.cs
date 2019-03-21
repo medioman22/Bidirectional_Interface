@@ -14,8 +14,6 @@ public class PositionControl : MonoBehaviour
     private float positionTimeConstant = 1.0f;
     private float yawTimeConstant = 30.0f;
 
-    private float toleratedAnglesError = 5.0f; // 5 degrees error tolerated
-
     // Use this for initialization
     void Start ()
     {
