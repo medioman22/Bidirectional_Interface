@@ -559,6 +559,18 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 8896745373315853484}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &226336955 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3523659991405902242, guid: 34fd334bc9a28994dabb708f0486ce7a,
+    type: 3}
+  m_PrefabInstance: {fileID: 8896745373315853484}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 226336954}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec3b2d78ab3414b538a10156593fb2e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &226336961
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -572,7 +584,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Camera: {fileID: 884458423}
-  FPS: 1
+  FPS: 0
 --- !u!1 &376866880
 GameObject:
   m_ObjectHideFlags: 0
@@ -643,7 +655,7 @@ GameObject:
   m_Component:
   - component: {fileID: 403520572}
   - component: {fileID: 403520571}
-  - component: {fileID: 403520573}
+  - component: {fileID: 403520574}
   m_Layer: 0
   m_Name: SimulatitonManager
   m_TagString: Untagged
@@ -682,20 +694,23 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &403520573
+--- !u!114 &403520574
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 403520570}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d7fdaf969441c3540bbd25a5cfea7d74, type: 3}
+  m_Script: {fileID: 11500000, guid: 95cd11fb8c578a64e82b1cb084a6decc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   data: {fileID: 4900000, guid: 6bf21e7a824346547acb081bc1814537, type: 3}
   droneKeypointControl: {fileID: 1172046588}
+  dronePositionControl: {fileID: 226336955}
+  targetMaterial: {fileID: 2100000, guid: faf2425b122ce604d8c6efb6e66944e8, type: 2}
+  online: 1
   simplifyTrajectoryTolerance: 0.1
 --- !u!1 &407066790
 GameObject:
@@ -3913,6 +3928,11 @@ PrefabInstance:
       propertyPath: keypoints.Array.data[20]
       value: 
       objectReference: {fileID: 1407680649}
+    - target: {fileID: 3523659991405902243, guid: 34fd334bc9a28994dabb708f0486ce7a,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3525639170694022974, guid: 34fd334bc9a28994dabb708f0486ce7a,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -3921,12 +3941,12 @@ PrefabInstance:
     - target: {fileID: 3525639170694022974, guid: 34fd334bc9a28994dabb708f0486ce7a,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.38
+      value: 1.32
       objectReference: {fileID: 0}
     - target: {fileID: 3525639170694022974, guid: 34fd334bc9a28994dabb708f0486ce7a,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -2.65
+      value: 3.03
       objectReference: {fileID: 0}
     - target: {fileID: 3525639170694022974, guid: 34fd334bc9a28994dabb708f0486ce7a,
         type: 3}
