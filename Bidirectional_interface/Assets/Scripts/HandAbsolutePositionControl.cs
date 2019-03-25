@@ -5,10 +5,12 @@ using UnityEngine;
 [RequireComponent(typeof(PositionControl))]
 public class HandAbsolutePositionControl : MonoBehaviour
 {
-    public bool drawHand = true;
+    public VirtualHand hand;
+    public bool drawHandTarget = true;
 
     private PositionControl dronePositionControl;
     private GameObject handTarget;
+    private Vector3 handRoomScaling;
 
     void Start()
     {
@@ -18,15 +20,20 @@ public class HandAbsolutePositionControl : MonoBehaviour
         Destroy(handTarget.GetComponent<Collider>());
         handTarget.name = "Hand Target";
         handTarget.transform.localScale = 0.5f * SimulationData.DroneSize * Vector3.one;
+
+        handRoomScaling.x = SimulationData.RoomDimensions.x / hand.handReachCube.x;
+        handRoomScaling.y = SimulationData.RoomDimensions.y / hand.handReachCube.y;
+        handRoomScaling.z = SimulationData.RoomDimensions.z / hand.handReachCube.z;
     }
     
     void Update()
     {
-        handTarget.transform.position = Vector3.zero; // Get position from mocap
+        Vector3 targetPosition = Vector3.Scale(hand.GetHandPosition(), handRoomScaling);
+        handTarget.transform.position = targetPosition; // Get position from mocap
 
         dronePositionControl.target = handTarget.transform;
 
-        if (drawHand)
+        if (drawHandTarget)
             handTarget.SetActive(true);
         else
             handTarget.SetActive(false);
