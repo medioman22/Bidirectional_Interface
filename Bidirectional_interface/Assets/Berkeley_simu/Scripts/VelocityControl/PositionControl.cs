@@ -12,7 +12,10 @@ public class PositionControl : MonoBehaviour
     private Rigidbody rb;
 
     private float positionTimeConstant = 1.0f;
+    private float dFactor = 0.1f;
     private float yawTimeConstant = 30.0f;
+
+    private Vector3 lastPositionError = Vector3.zero;
 
     // Use this for initialization
     void Start ()
@@ -45,9 +48,10 @@ public class PositionControl : MonoBehaviour
         // as the drone may not be aligned with the referential of the world, transform.
         positionError = transform.InverseTransformDirection(positionError);
 
-        vc.desiredVx = positionError.x / positionTimeConstant;
-        vc.desiredVz = positionError.z / positionTimeConstant;
+        vc.desiredVx = positionError.x / positionTimeConstant + dFactor * (positionError.x - lastPositionError.x) / Time.fixedDeltaTime;
+        vc.desiredVz = positionError.z / positionTimeConstant + dFactor * (positionError.z - lastPositionError.z) / Time.fixedDeltaTime; ;
         vc.desiredHeight = target.position.y;
-        
+
+        lastPositionError = positionError;
     }
 }
