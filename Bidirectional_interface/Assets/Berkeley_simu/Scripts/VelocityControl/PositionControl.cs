@@ -25,8 +25,14 @@ public class PositionControl : MonoBehaviour
     {
         // Define the error in position (x,y,z)
         Vector3 positionError = target.position - transform.position;
-        // Define the target orientation to face the next keypoint
-        Quaternion targetOrientation = Quaternion.LookRotation(positionError);
+        Quaternion targetOrientation = transform.rotation;
+
+        // Avoid exception thrown if positionError = 0;
+        if (positionError.magnitude > 0.01f)
+        {
+            // Define the target orientation to face the next keypoint
+            targetOrientation = Quaternion.LookRotation(positionError);
+        }
 
         float yawError = Mathf.DeltaAngle(transform.eulerAngles.y,targetOrientation.eulerAngles.y);
 
