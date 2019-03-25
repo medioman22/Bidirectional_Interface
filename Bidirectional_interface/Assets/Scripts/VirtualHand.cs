@@ -31,8 +31,12 @@ public class VirtualHand : MonoBehaviour
     // Draw hand reach and hand position in Scene view
     void OnDrawGizmos()
     {
+        if (!isActiveAndEnabled)
+            return;
+
+        Gizmos.color = Color.black;
         Gizmos.DrawWireCube(transform.position, handReachCube);
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position + handDisplacement, 0.1f);
+        Gizmos.DrawWireSphere(transform.position + handDisplacement, 0.05f);
     }
 }
