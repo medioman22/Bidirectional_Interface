@@ -18,7 +18,7 @@ public class UDPCommandManager : MonoBehaviour
     //UDP
     static private string localIP = "127.0.0.1"; // local IP
 
-    private int localPort_python = 5001; //localport for receiving control commands
+    private int localPort_python = 26000; //localport for receiving control commands
 
     private string remoteIPPy = localIP; // IP of the PC containing the Py app
     private IPEndPoint remoteEndPointPy;
@@ -28,8 +28,6 @@ public class UDPCommandManager : MonoBehaviour
     Socket socket;
 
     EndPoint ipEndPoint = new IPEndPoint(IPAddress.Any, 0);
-
-    bool done=false;
 
     void Start()
     {
@@ -60,13 +58,10 @@ public class UDPCommandManager : MonoBehaviour
             byte[] data = new byte[1024];
             int received = socket.ReceiveFrom(data, ref ipEndPoint);
 
-            Debug.Log(Encoding.ASCII.GetString(data, 0, received));
-
-            if (done == true)
-                return;
-
-            GameObject.CreatePrimitive(PrimitiveType.Capsule).transform.localScale = 3 * Vector3.one;
-            done = true;
+            for (int i = 0; i < nbCommands; i++)
+            {
+                controlCommands[i] = System.BitConverter.ToSingle(data, i * 4);
+            }
         }
 
         /*if (client_python.Available > 0)
