@@ -25,6 +25,9 @@ public class UDPCommandManager : MonoBehaviour
     private IPEndPoint localEndPoint_python;
     private UdpClient client_python;
 
+    public PositionControl dronePosition;
+    private GameObject target;
+
     Socket socket;
 
     EndPoint ipEndPoint = new IPEndPoint(IPAddress.Any, 0);
@@ -43,6 +46,8 @@ public class UDPCommandManager : MonoBehaviour
         socket.EnableBroadcast = true;
         //socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
         socket.Bind(new IPEndPoint(IPAddress.Parse(localIP), localPort_python));
+
+        target = new GameObject("Hand");
     }
 
     private void Update()
@@ -52,9 +57,8 @@ public class UDPCommandManager : MonoBehaviour
 
     public void receiveCommandsFromPython() //receive commands
     {
-        if (socket.Available > 0)
+        while (socket.Available > 0)
         {
-            
             byte[] data = new byte[1024];
             int received = socket.ReceiveFrom(data, ref ipEndPoint);
 
@@ -62,24 +66,9 @@ public class UDPCommandManager : MonoBehaviour
             {
                 controlCommands[i] = System.BitConverter.ToSingle(data, i * 4);
             }
+
+            target.transform.position = new Vector3(controlCommands[1], controlCommands[2], controlCommands[3]);
+            dronePosition.target = target.transform;
         }
-
-        /*if (client_python.Available > 0)
-        {
-            Debug.Log("here");
-            byte[] data = client_python.Receive(ref remoteEndPointPy);
-
-            for(int i = 0; i< 12; i++)
-            {
-            	Debug.Log("value: " + data[i] + "\n");
-            }
-
-            //Debug.Log("received:" + data + "\n");
-
-            for (int i = 0; i < nbCommands; i++)
-            {
-                controlCommands[i] = System.BitConverter.ToSingle(data, i * 4);
-            }
-        }*/
     }
 }
