@@ -6,13 +6,21 @@ using UnityEngine;
 public class PositionControl : MonoBehaviour
 {
     public Transform target;
+
+    [Tooltip("Specify if the drone rotates.")]
     public bool ignoreOrientation = false;
+
+    [Tooltip("If this value is set, the drone will try to be oriented towards this target. (ignoreOrientation must be set to false)")]
+    public Transform lookAtTarget;
 
     private VelocityControl vc;
     private Rigidbody rb;
 
     private float positionTimeConstant = 1.0f;
+    private float dFactor = 0.1f;
     private float yawTimeConstant = 30.0f;
+
+    private Vector3 lastPositionError = Vector3.zero;
 
     // Use this for initialization
     void Start ()
@@ -25,23 +33,43 @@ public class PositionControl : MonoBehaviour
     {
         // Define the error in position (x,y,z)
         Vector3 positionError = target.position - transform.position;
-        // Define the target orientation to face the next keypoint
-        Quaternion targetOrientation = Quaternion.LookRotation(positionError);
 
-        float yawError = Mathf.DeltaAngle(transform.eulerAngles.y,targetOrientation.eulerAngles.y);
-
-        // condition to avoid unstability when should be static on a single keypoint
         if (ignoreOrientation)
+        {
+            // Drone does not rotate
             vc.desired_yaw = 0f;
+        }
         else
-            vc.desired_yaw = yawError / yawTimeConstant;
+        {
+            Quaternion targetOrientation = transform.rotation;
+
+            // Follow target for orientation
+            if (lookAtTarget != null)
+            {
+                
+            }
+            // Otherwise orient the drone towards position target
+            else
+            {
+                // Avoid exception thrown if positionError = 0;
+                if (positionError.magnitude > 0.01f)
+                {
+                    // Define the target orientation to face the next keypoint
+                    targetOrientation = Quaternion.LookRotation(positionError);
+                }
+
+                float yawError = Mathf.DeltaAngle(transform.eulerAngles.y, targetOrientation.eulerAngles.y);
+                vc.desired_yaw = yawError / yawTimeConstant;
+            }
+        }
 
         // as the drone may not be aligned with the referential of the world, transform.
         positionError = transform.InverseTransformDirection(positionError);
 
-        vc.desiredVx = positionError.x / positionTimeConstant;
-        vc.desiredVz = positionError.z / positionTimeConstant;
+        vc.desiredVx = positionError.x / positionTimeConstant + dFactor * (positionError.x - lastPositionError.x) / Time.fixedDeltaTime;
+        vc.desiredVz = positionError.z / positionTimeConstant + dFactor * (positionError.z - lastPositionError.z) / Time.fixedDeltaTime; ;
         vc.desiredHeight = target.position.y;
-        
+
+        lastPositionError = positionError;
     }
 }

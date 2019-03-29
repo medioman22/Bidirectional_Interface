@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(PositionControl))]
-public class HandAbsolutePositionControl : MonoBehaviour
+public class HandClutchPositionControl : MonoBehaviour
 {
-    public VirtualHand hand;
+    public VirtualHandClutch hand;
     public bool drawHandTarget = true;
 
     private PositionControl dronePositionControl;
@@ -25,7 +25,7 @@ public class HandAbsolutePositionControl : MonoBehaviour
         handRoomScaling.y = SimulationData.RoomDimensions.y / hand.handReachCube.y;
         handRoomScaling.z = SimulationData.RoomDimensions.z / hand.handReachCube.z;
     }
-    
+
     void Update()
     {
         Vector3 targetPosition = Vector3.Scale(hand.GetHandPosition(), handRoomScaling);
