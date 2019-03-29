@@ -13,7 +13,7 @@ public class UDPCommandManager : MonoBehaviour
 
     //Input & output vectors=
     //[HideInInspector]
-    public float[] controlCommands = new float[nbCommands];
+    private float[] controlCommands = new float[nbCommands];
 
     //UDP
     static private string localIP = "127.0.0.1"; // local IP
@@ -24,9 +24,6 @@ public class UDPCommandManager : MonoBehaviour
     private IPEndPoint remoteEndPointPy;
     private IPEndPoint localEndPoint_python;
     private UdpClient client_python;
-
-    public PositionControl dronePosition;
-    private GameObject target;
 
     Socket socket;
 
@@ -46,8 +43,6 @@ public class UDPCommandManager : MonoBehaviour
         socket.EnableBroadcast = true;
         //socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
         socket.Bind(new IPEndPoint(IPAddress.Parse(localIP), localPort_python));
-
-        target = new GameObject("Hand");
     }
 
     private void Update()
@@ -55,7 +50,7 @@ public class UDPCommandManager : MonoBehaviour
         receiveCommandsFromPython();
     }
 
-    public void receiveCommandsFromPython() //receive commands
+    private void receiveCommandsFromPython() //receive commands
     {
         while (socket.Available > 0)
         {
@@ -66,9 +61,18 @@ public class UDPCommandManager : MonoBehaviour
             {
                 controlCommands[i] = System.BitConverter.ToSingle(data, i * 4);
             }
-
-            target.transform.position = new Vector3(controlCommands[1], controlCommands[2], controlCommands[3]);
-            dronePosition.target = target.transform;
         }
     }
+
+    public Vector3 getPosition()
+    {
+        // x and z are inversed in the simulator.
+        return new Vector3(controlCommands[3], controlCommands[2], controlCommands[1]);
+    }
+
+    public Quaternion getQuaternion()
+    {
+        return new Quaternion(controlCommands[4], controlCommands[5], controlCommands[6], controlCommands[7]);
+    }
+    
 }
