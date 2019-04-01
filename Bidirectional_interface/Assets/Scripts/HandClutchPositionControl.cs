@@ -23,10 +23,11 @@ public class HandClutchPositionControl : MonoBehaviour
     {
         dronePositionControl = GetComponent<PositionControl>();
 
+        // Instantiate hand target
         handTarget = GameObject.CreatePrimitive(PrimitiveType.Sphere);
         Destroy(handTarget.GetComponent<Collider>());
         handTarget.name = "Hand Target";
-        handTarget.transform.localScale = 0.5f * SimulationData.DroneSize * Vector3.one;
+        handTarget.transform.localScale = 2f * SimulationData.DroneSize * Vector3.one;
     }
 
     void Update()
@@ -46,7 +47,7 @@ public class HandClutchPositionControl : MonoBehaviour
         // Clutch activated
         if (Input.GetKeyDown(KeyCode.Mouse0))
         {
-            handClutchOffset = handBoxPosition;
+            handClutchOffset += handBoxPosition;
         }
         // Clutch deactivated
         else if (Input.GetKeyUp(KeyCode.Mouse0))
