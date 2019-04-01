@@ -7,7 +7,7 @@ public class HandAbsolutePositionControl : MonoBehaviour
 {
     public UDPCommandManager commandManager;
     public Vector3 handReachCube = 0.7f * Vector3.one;
-    
+
     [Tooltip("Rotate mocap input along y axis, for instance to align with observation angle")]
     public float inputRotation = 0.0f;
     //public VirtualHand hand;
@@ -23,10 +23,10 @@ public class HandAbsolutePositionControl : MonoBehaviour
     {
         dronePositionControl = GetComponent<PositionControl>();
 
-        handTarget = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        handTarget = GameObject.CreatePrimitive(PrimitiveType.Cube);
         Destroy(handTarget.GetComponent<Collider>());
         handTarget.name = "Hand Target";
-        handTarget.transform.localScale = 0.5f * SimulationData.DroneSize * Vector3.one;
+        handTarget.transform.localScale = 2.0f * SimulationData.DroneSize * Vector3.one;
 
         handRoomScaling.x = SimulationData.RoomDimensions.x / handReachCube.x;
         handRoomScaling.y = SimulationData.RoomDimensions.y / handReachCube.y;
@@ -38,7 +38,7 @@ public class HandAbsolutePositionControl : MonoBehaviour
         Vector3 rawHandPosition = commandManager.GetPosition();
         
         // Reset referential for hand
-        if (Input.GetKey(KeyCode.R))
+        if (Input.GetKey(KeyCode.Mouse1))
         {
             SetHandOrigin(rawHandPosition);
         }
