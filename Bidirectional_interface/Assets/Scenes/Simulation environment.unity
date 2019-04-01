@@ -3837,7 +3837,7 @@ MonoBehaviour:
   handRoomScaling: 10
   inputRotation: -90
   rotationSpeedScaling: 0.02
-  drawHandTarget: 1
+  drawHandTarget: 0
 --- !u!135 &5445160707720369431
 SphereCollider:
   m_ObjectHideFlags: 0
