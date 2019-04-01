@@ -62,13 +62,14 @@ public class UDPCommandManager : MonoBehaviour
 
     public Vector3 GetPosition()
     {
-        // x and z are inversed in the simulator.
+        // x and z are inversed in unity compared to optitrack
         return new Vector3(controlCommands[(int)MocapIndices.z], controlCommands[(int)MocapIndices.y], controlCommands[(int)MocapIndices.x]);
     }
 
     public Quaternion GetQuaternion()
     {
-        return new Quaternion(controlCommands[(int)MocapIndices.qx], controlCommands[(int)MocapIndices.qy], controlCommands[(int)MocapIndices.qz], controlCommands[(int)MocapIndices.qw]);
+        // x and z are inversed in unity compared to optitrack, thus quaternion must be modified accordingly
+        return new Quaternion(controlCommands[(int)MocapIndices.qz], controlCommands[(int)MocapIndices.qy], controlCommands[(int)MocapIndices.qx], -controlCommands[(int)MocapIndices.qw]);
     }
     
 }
