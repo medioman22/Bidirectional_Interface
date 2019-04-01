@@ -7,6 +7,8 @@ public class HandAbsolutePositionControl : MonoBehaviour
 {
     public UDPCommandManager commandManager;
     public Vector3 handReachCube = 0.7f * Vector3.one;
+    
+    [Tooltip("Rotate mocap input along y axis, for instance to align with observation angle")]
     public float inputRotation = 0.0f;
     //public VirtualHand hand;
     public bool drawHandTarget = true;
@@ -65,6 +67,10 @@ public class HandAbsolutePositionControl : MonoBehaviour
 
     private Vector3 ScaleHandPosition(Vector3 handPosition)
     {
+        handRoomScaling.x = SimulationData.RoomDimensions.x / handReachCube.x;
+        handRoomScaling.y = SimulationData.RoomDimensions.y / handReachCube.y;
+        handRoomScaling.z = SimulationData.RoomDimensions.z / handReachCube.z;
+
         Quaternion rotation = Quaternion.Euler(0, inputRotation, 0);
         handPosition = rotation * handPosition;
         return Vector3.Scale(handPosition, handRoomScaling);
