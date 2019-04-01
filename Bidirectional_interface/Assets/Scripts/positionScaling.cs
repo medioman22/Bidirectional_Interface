@@ -22,28 +22,28 @@ public class PositionScaling : MonoBehaviour
     private void Start()
     {
         UDPCommand = GetComponent<UDPCommandManager>();
-        computeScaleFactor();
+        ComputeScaleFactor();
     }
 
     // Update is called once per frame
     private void Update()
     {
-        currentHandPos = UDPCommand.getPosition();
+        currentHandPos = UDPCommand.GetPosition();
         // TODO : Implement yaw control (not yaw rate)
-        //currentHandRotation = UDPCommand.getQuaternion();
+        //currentHandRotation = UDPCommand.GetQuaternion();
 
-        scaledHandPos = scalePosition(currentHandPos);
+        scaledHandPos = ScalePosition(currentHandPos);
         target.transform.position = scaledHandPos;
         dronePosition.target = target.transform;
     }
 
-    private Vector3 scalePosition(Vector3 position)
+    private Vector3 ScalePosition(Vector3 position)
     {
         // TODO : Fix the referentials of the hand and drone to apply scaling.
         return position;
     }
 
-    private void computeScaleFactor()
+    private void ComputeScaleFactor()
     {
         Vector3 roomSize = SimulationData.RoomDimensions;
         scalingFactorXZ = roomSize[0]/boxSize[0];

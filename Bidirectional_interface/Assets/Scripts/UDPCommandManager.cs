@@ -9,40 +9,35 @@ using System.Threading;
 
 public class UDPCommandManager : MonoBehaviour
 {
-    public const int nbCommands = 8; // x, y, z position of hand
+    enum MocapIndices
+    {
+        id = 0, // id of Optitrack rigidbody
+        x = 1, // position
+        y = 2,
+        z = 3,
+        qx = 4, // quaternion
+        qy = 5,
+        qz = 6,
+        qw = 7
+    }
 
-    //Input & output vectors=
     //[HideInInspector]
-    private float[] controlCommands = new float[nbCommands];
+    private float[] controlCommands = new float[SimulationData.nbParametersMocap];
 
     //UDP
     static private string localIP = "127.0.0.1"; // local IP
 
-    private int localPort_python = 26000; //localport for receiving control commands
-
-    private string remoteIPPy = localIP; // IP of the PC containing the Py app
-    private IPEndPoint remoteEndPointPy;
-    private IPEndPoint localEndPoint_python;
-    private UdpClient client_python;
+    private int localPortPython = 26000; //localport for receiving control commands
 
     Socket socket;
-
     EndPoint ipEndPoint = new IPEndPoint(IPAddress.Any, 0);
 
     void Start()
     {
-        //Setup remote socket
-        remoteEndPointPy = new IPEndPoint(IPAddress.Any, 0);
-
-        //Setup local socket
-        //localEndPoint_python = new IPEndPoint(IPAddress.Any, localPort_python);
-        //client_python = new UdpClient(localPort_python);
-
         socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
         socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
         socket.EnableBroadcast = true;
-        //socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
-        socket.Bind(new IPEndPoint(IPAddress.Parse(localIP), localPort_python));
+        socket.Bind(new IPEndPoint(IPAddress.Parse(localIP), localPortPython));
     }
 
     private void Update()
@@ -57,22 +52,23 @@ public class UDPCommandManager : MonoBehaviour
             byte[] data = new byte[1024];
             int received = socket.ReceiveFrom(data, ref ipEndPoint);
 
-            for (int i = 0; i < nbCommands; i++)
+            for (int i = 0; i < SimulationData.nbParametersMocap; i++)
             {
+                // the data points (int, 7 floats) each take 4 bytes
                 controlCommands[i] = System.BitConverter.ToSingle(data, i * 4);
             }
         }
     }
 
-    public Vector3 getPosition()
+    public Vector3 GetPosition()
     {
         // x and z are inversed in the simulator.
-        return new Vector3(controlCommands[3], controlCommands[2], controlCommands[1]);
+        return new Vector3(controlCommands[(int)MocapIndices.z], controlCommands[(int)MocapIndices.y], controlCommands[(int)MocapIndices.x]);
     }
 
-    public Quaternion getQuaternion()
+    public Quaternion GetQuaternion()
     {
-        return new Quaternion(controlCommands[4], controlCommands[5], controlCommands[6], controlCommands[7]);
+        return new Quaternion(controlCommands[(int)MocapIndices.qx], controlCommands[(int)MocapIndices.qy], controlCommands[(int)MocapIndices.qz], controlCommands[(int)MocapIndices.qw]);
     }
     
 }
