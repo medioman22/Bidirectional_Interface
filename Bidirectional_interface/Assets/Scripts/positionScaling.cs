@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(UDPCommandManager))]
-public class positionScaling : MonoBehaviour
+public class PositionScaling : MonoBehaviour
 {
     UDPCommandManager UDPCommand;
     public Transform drone;
