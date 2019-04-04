@@ -9,13 +9,15 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4483514789422614656}
-  - component: {fileID: 4328595325445936990}
+  - component: {fileID: 5445160707720369431}
   - component: {fileID: 4537074917567806160}
   - component: {fileID: 4482133591124637215}
   - component: {fileID: 4585338791953827776}
   - component: {fileID: 4482133591124637212}
   - component: {fileID: 4482133591124637213}
   - component: {fileID: 8476517839895757779}
+  - component: {fileID: 5445160707720369424}
+  - component: {fileID: 5445160707720369425}
   m_Layer: 9
   m_Name: DroneSimple
   m_TagString: Player
@@ -38,17 +40,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!154 &4328595325445936990
-TerrainCollider:
+--- !u!135 &5445160707720369431
+SphereCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4482133591124637214}
   m_Material: {fileID: 0}
+  m_IsTrigger: 1
   m_Enabled: 1
-  m_TerrainData: {fileID: 0}
-  m_EnableTreeColliders: 1
+  serializedVersion: 2
+  m_Radius: 0.08
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!54 &4537074917567806160
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -116,7 +120,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 0}
-  ignoreOrientation: 0
+  ignoreOrientation: 1
+  lookAtTarget: {fileID: 0}
 --- !u!114 &4482133591124637213
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -124,7 +129,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4482133591124637214}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c5503bd6327343f4a9bcfd0bf87a7ddd, type: 3}
   m_Name: 
@@ -164,8 +169,47 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ff12ed3a0f17f049bda54bb790f6046, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Camera: {fileID: 0}
-  FPS: 0
+  fixedCamera: {fileID: 0}
+  firstPersonCamera: {fileID: 0}
+  FPS: 1
+--- !u!114 &5445160707720369424
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4482133591124637214}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7fdaf969441c3540bbd25a5cfea7d74, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  commandManager: {fileID: 0}
+  handReachCube: {x: 0.5, y: 0.5, z: 0.5}
+  inputRotation: -90
+  drawHandTarget: 0
+  useController: 1
+  controllerSpeed: 0.025
+--- !u!114 &5445160707720369425
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4482133591124637214}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e0c451bc08c6dd4593130d36e292316, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  commandManager: {fileID: 0}
+  handRoomScaling: 10
+  inputRotation: -90
+  rotationSpeedScaling: 0.02
+  drawHandTarget: 0
+  useController: 1
+  controllerSpeed: 0.025
+  controllerRotationSpeed: 0.5
 --- !u!1001 &4483297726663301297
 PrefabInstance:
   m_ObjectHideFlags: 0
