@@ -57,9 +57,7 @@ public class HandClutchPositionControl : MonoBehaviour
         }*/
 
         // Instantiate hand target
-        handTarget = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        Destroy(handTarget.GetComponent<Collider>());
-        handTarget.name = "Hand Target";
+        handTarget = new GameObject("Hand Target");
         handTarget.transform.localScale = 2.0f * SimulationData.DroneSize * Vector3.one;
         handTarget.transform.position = dronePositionControl.transform.position;
 

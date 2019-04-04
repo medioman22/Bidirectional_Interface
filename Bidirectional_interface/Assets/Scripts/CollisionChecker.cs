@@ -18,12 +18,13 @@ public class CollisionChecker : MonoBehaviour
         collisionCount = 0;
     }
 
-    private void OnCollisionEnter(Collision collision)
+    private void OnTriggerEnter(Collider other)
     {
+        Debug.Log("called " + other.name);
         collisionCount++;
     }
 
-    private void OnCollisionExit(Collision collision)
+    private void OnTriggerExit(Collider other)
     {
         collisionCount--;
 
