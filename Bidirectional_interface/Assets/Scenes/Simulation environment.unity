@@ -3929,12 +3929,12 @@ PrefabInstance:
     - target: {fileID: 4483514789422614656, guid: 34fd334bc9a28994dabb708f0486ce7a,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.32
+      value: 0.4
       objectReference: {fileID: 0}
     - target: {fileID: 4483514789422614656, guid: 34fd334bc9a28994dabb708f0486ce7a,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 3.03
+      value: -2.68
       objectReference: {fileID: 0}
     - target: {fileID: 4483514789422614656, guid: 34fd334bc9a28994dabb708f0486ce7a,
         type: 3}
@@ -3944,7 +3944,7 @@ PrefabInstance:
     - target: {fileID: 4483514789422614656, guid: 34fd334bc9a28994dabb708f0486ce7a,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: 0.7071068
       objectReference: {fileID: 0}
     - target: {fileID: 4483514789422614656, guid: 34fd334bc9a28994dabb708f0486ce7a,
         type: 3}
@@ -3954,7 +3954,7 @@ PrefabInstance:
     - target: {fileID: 4483514789422614656, guid: 34fd334bc9a28994dabb708f0486ce7a,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 1
+      value: 0.7071068
       objectReference: {fileID: 0}
     - target: {fileID: 4483514789422614656, guid: 34fd334bc9a28994dabb708f0486ce7a,
         type: 3}
@@ -3969,7 +3969,7 @@ PrefabInstance:
     - target: {fileID: 4483514789422614656, guid: 34fd334bc9a28994dabb708f0486ce7a,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
+      value: 90
       objectReference: {fileID: 0}
     - target: {fileID: 4483514789422614656, guid: 34fd334bc9a28994dabb708f0486ce7a,
         type: 3}
@@ -3986,11 +3986,6 @@ PrefabInstance:
       propertyPath: firstPersonCamera
       value: 
       objectReference: {fileID: 884458423}
-    - target: {fileID: 5445160707720369424, guid: 34fd334bc9a28994dabb708f0486ce7a,
-        type: 3}
-      propertyPath: commandManager
-      value: 
-      objectReference: {fileID: 403520573}
     - target: {fileID: 5445160707720369425, guid: 34fd334bc9a28994dabb708f0486ce7a,
         type: 3}
       propertyPath: commandManager

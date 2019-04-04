@@ -54,6 +54,7 @@ public class HandClutchPositionControl : MonoBehaviour
         Destroy(handTarget.GetComponent<Collider>());
         handTarget.name = "Hand Target";
         handTarget.transform.localScale = 2.0f * SimulationData.DroneSize * Vector3.one;
+        handTarget.transform.position = dronePositionControl.transform.position;
 
         oldCameraViewRotation = cameraViewRotation;
     }
@@ -68,8 +69,8 @@ public class HandClutchPositionControl : MonoBehaviour
             float r = Input.GetAxis("Rotation");
 
             handTarget.transform.position += Quaternion.Euler(0, cameraViewRotation, 0) * new Vector3(h, a, v) * controllerSpeed;
-            dronePositionControl.target = handTarget.transform;
 
+            dronePositionControl.target = handTarget.transform;
             droneVelocityControl.desired_yaw = r * controllerRotationSpeed;
 
             if (cameraPosition != null && cameraPosition.FPS)

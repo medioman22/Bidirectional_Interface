@@ -16,7 +16,6 @@ GameObject:
   - component: {fileID: 4482133591124637212}
   - component: {fileID: 4482133591124637213}
   - component: {fileID: 8476517839895757779}
-  - component: {fileID: 5445160707720369424}
   - component: {fileID: 5445160707720369425}
   - component: {fileID: 5108218982988395661}
   m_Layer: 9
@@ -49,7 +48,7 @@ BoxCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4482133591124637214}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 0.14, y: 0.03, z: 0.14}
@@ -173,24 +172,6 @@ MonoBehaviour:
   fixedCamera: {fileID: 0}
   firstPersonCamera: {fileID: 0}
   FPS: 1
---- !u!114 &5445160707720369424
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4482133591124637214}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d7fdaf969441c3540bbd25a5cfea7d74, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  commandManager: {fileID: 0}
-  handReachCube: {x: 0.5, y: 0.5, z: 0.5}
-  inputRotation: -90
-  drawHandTarget: 0
-  useController: 1
-  controllerSpeed: 0.025
 --- !u!114 &5445160707720369425
 MonoBehaviour:
   m_ObjectHideFlags: 0
