@@ -17,3 +17,4 @@ Items that are not critical but should be handled eventually:
 * Implement control angle in PositionControl script
 * Implement more general data logger based on Interface
 * Use collision layers in CollisionChecker script (useful to ignore some collision, e.g. floor, other drones, ... )
+* Rename variables in PositionControl script (e.g. desired_yaw --> desiredYawRate as it is an angular speed and not and angle)
