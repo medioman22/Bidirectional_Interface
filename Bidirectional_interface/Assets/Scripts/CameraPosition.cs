@@ -9,7 +9,7 @@ public class CameraPosition : MonoBehaviour
 
     private Vector3 cameraOffset = new Vector3(0.0f, -0.1f, 0.5f);
 
-    public void Update()
+    public void LateUpdate()
     {
         if (FPS)
         {
