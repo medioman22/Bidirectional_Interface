@@ -7,11 +7,10 @@ public class DataLogger : MonoBehaviour
 {
     // all the classes to get informations
     public UDPCommandManager mocap;
-    public HandAbsolutePositionControl handControl;
     public PositionControl positionCtrl;
     public VelocityControl velocityCtrl;
-    public CameraPosition cameraPos;
-    //public CollisionChecker collision;
+    public DroneCamera cameraPos;
+    public CollisionChecker collision;
     public Rigidbody drone;
 
     // -------------------------------------------------------------------
@@ -115,7 +114,7 @@ public class DataLogger : MonoBehaviour
         // Output
         currentLog.dronePosition = drone.position;
         currentLog.droneSpeed = drone.velocity;
-        //currentLog.collision = collision.IsColliding;
+        currentLog.collision = collision.IsColliding;
         cumulatedLogs.allLogs.Add(currentLog);
     }
 

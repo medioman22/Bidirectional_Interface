@@ -14,7 +14,6 @@ GameObject:
   - component: {fileID: 4482133591124637215}
   - component: {fileID: 4585338791953827776}
   - component: {fileID: 4482133591124637212}
-  - component: {fileID: 4482133591124637213}
   - component: {fileID: 8476517839895757779}
   - component: {fileID: 5445160707720369425}
   - component: {fileID: 5108218982988395661}
@@ -122,41 +121,6 @@ MonoBehaviour:
   target: {fileID: 0}
   ignoreOrientation: 1
   lookAtTarget: {fileID: 0}
---- !u!114 &4482133591124637213
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4482133591124637214}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c5503bd6327343f4a9bcfd0bf87a7ddd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  keypoints:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  positionTolerance: 0.1
 --- !u!114 &8476517839895757779
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -186,9 +150,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   commandManager: {fileID: 0}
   handRoomScaling: 10
-  inputRotation: -90
+  mocapInputRotation: 0
+  observationInputRotation: 0
   rotationSpeedScaling: 0.02
-  drawHandTarget: 0
+  drawHandTarget: 1
   useController: 1
   controllerSpeed: 0.025
   controllerRotationSpeed: 0.5
