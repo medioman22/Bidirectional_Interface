@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4483514789422614656}
-  - component: {fileID: 5445160707720369431}
+  - component: {fileID: 5444737748578754804}
   - component: {fileID: 4537074917567806160}
   - component: {fileID: 4482133591124637215}
   - component: {fileID: 4585338791953827776}
@@ -18,6 +18,7 @@ GameObject:
   - component: {fileID: 8476517839895757779}
   - component: {fileID: 5445160707720369424}
   - component: {fileID: 5445160707720369425}
+  - component: {fileID: 5108218982988395661}
   m_Layer: 9
   m_Name: DroneSimple
   m_TagString: Player
@@ -40,18 +41,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!135 &5445160707720369431
-SphereCollider:
+--- !u!65 &5444737748578754804
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4482133591124637214}
   m_Material: {fileID: 0}
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.08
+  m_Size: {x: 0.14, y: 0.03, z: 0.14}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!54 &4537074917567806160
 Rigidbody:
@@ -210,6 +211,18 @@ MonoBehaviour:
   useController: 1
   controllerSpeed: 0.025
   controllerRotationSpeed: 0.5
+--- !u!114 &5108218982988395661
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4482133591124637214}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35c9df880c3bc5041a321ae695085a2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &4483297726663301297
 PrefabInstance:
   m_ObjectHideFlags: 0

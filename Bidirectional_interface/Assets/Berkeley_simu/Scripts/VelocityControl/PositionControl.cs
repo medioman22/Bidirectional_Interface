@@ -27,9 +27,9 @@ public class PositionControl : MonoBehaviour
     {
         vc = GetComponent<VelocityControl>();
         rb = GetComponent<Rigidbody>();
-	}
-	
-	void FixedUpdate ()
+    }
+
+    void FixedUpdate ()
     {
         // Define the error in position (x,y,z)
         Vector3 positionError = target.position - transform.position;

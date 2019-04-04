@@ -16,3 +16,4 @@ Then the workflow splitted into two main parts : The first beeing to implement t
 Items that are not critical but should be handled eventually:
 * Implement control angle in PositionControl script
 * Implement more general data logger based on Interface
+* Use collision layers in CollisionChecker script (useful to ignore some collision, e.g. floor, other drones, ... )
