@@ -9,7 +9,7 @@ public class HandClutchPositionControl : MonoBehaviour
     public UDPCommandManager commandManager;
     private PositionControl dronePositionControl;
     private VelocityControl droneVelocityControl;
-    private CameraPosition cameraPosition;
+    private DroneCamera cameraPosition;
 
     public float handRoomScaling = 8.0f;
 
@@ -40,7 +40,7 @@ public class HandClutchPositionControl : MonoBehaviour
         dronePositionControl.ignoreOrientation = false;
 
         // This one is optional, thus cameraPosition can be null
-        cameraPosition = GetComponent<CameraPosition>();
+        cameraPosition = GetComponent<DroneCamera>();
 
         // Instantiate hand target
         handTarget = GameObject.CreatePrimitive(PrimitiveType.Cube);
