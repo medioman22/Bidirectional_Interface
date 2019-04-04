@@ -30,7 +30,8 @@ public class HandClutchPositionControl : MonoBehaviour
     private Vector3 handClutchOffset;
     private Quaternion handReferenceOrientation;
     private float referenceYaw = 0.0f;
-    private float oldInputRotation = 0.0f;
+    private float cameraViewRotation = 0.0f;
+    private float oldCameraViewRotation = 0.0f;
 
     void Start()
     {
@@ -41,6 +42,11 @@ public class HandClutchPositionControl : MonoBehaviour
 
         // This one is optional, thus cameraPosition can be null
         cameraPosition = GetComponent<DroneCamera>();
+        if (cameraPosition != null)
+        {
+            cameraViewRotation = cameraPosition.transform.eulerAngles.y;
+            oldCameraViewRotation = cameraViewRotation;
+        }
 
         // Instantiate hand target
         handTarget = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -48,7 +54,7 @@ public class HandClutchPositionControl : MonoBehaviour
         handTarget.name = "Hand Target";
         handTarget.transform.localScale = 2.0f * SimulationData.DroneSize * Vector3.one;
 
-        oldInputRotation = inputRotation;
+        oldCameraViewRotation = inputRotation;
     }
 
     void Update()
@@ -101,15 +107,16 @@ public class HandClutchPositionControl : MonoBehaviour
                 if (cameraPosition != null && cameraPosition.FPS)
                 {
                     Debug.Log(transform.eulerAngles.y);
-                    inputRotation = transform.eulerAngles.y + 180;
+                    cameraViewRotation = transform.eulerAngles.y + 180;
 
-                    handClutchOffset = Quaternion.Euler(0, oldInputRotation - inputRotation, 0) * handClutchOffset;
+                    // Recompute offset, because input rotation is changed
+                    handClutchOffset = Quaternion.Euler(0, oldCameraViewRotation - cameraViewRotation, 0) * handClutchOffset;
 
-                    oldInputRotation = inputRotation;
+                    oldCameraViewRotation = cameraViewRotation;
                 }
             }
 
-            // While clutch pressed, don't update target
+            // While clutch pressed, don't update target just rotation
             if (Input.GetKey(KeyCode.Mouse0))
             {
                 droneVelocityControl.desired_yaw = Mathf.DeltaAngle(referenceYaw, handRotation.eulerAngles.y) * rotationSpeedScaling;
@@ -143,7 +150,7 @@ public class HandClutchPositionControl : MonoBehaviour
 
     private Vector3 ScaleHandPosition(Vector3 handPosition)
     {
-        Quaternion rotation = Quaternion.Euler(0, inputRotation, 0);
+        Quaternion rotation = Quaternion.Euler(0, inputRotation + cameraViewRotation, 0);
         handPosition = rotation * handPosition;
         return handPosition * handRoomScaling;
     }
@@ -151,6 +158,6 @@ public class HandClutchPositionControl : MonoBehaviour
     private Quaternion GetHandRotation(Quaternion rawRotation)
     {
         // Order of multiplication is important !
-        return Quaternion.Euler(0, inputRotation, 0) * rawRotation * Quaternion.Inverse(handReferenceOrientation);
+        return Quaternion.Euler(0, cameraViewRotation, 0) * rawRotation * Quaternion.Inverse(handReferenceOrientation);
     }
 }
