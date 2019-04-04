@@ -67,14 +67,14 @@ public class HandClutchPositionControl : MonoBehaviour
             float a = Input.GetAxis("Altitude");
             float r = Input.GetAxis("Rotation");
 
-            handTarget.transform.position += Quaternion.Euler(0, inputRotation, 0) * new Vector3(h, a, v) * controllerSpeed;
+            handTarget.transform.position += Quaternion.Euler(0, cameraViewRotation, 0) * new Vector3(h, a, v) * controllerSpeed;
             dronePositionControl.target = handTarget.transform;
 
             droneVelocityControl.desired_yaw = r * controllerRotationSpeed;
 
             if (cameraPosition != null && cameraPosition.FPS)
             {
-                inputRotation = transform.eulerAngles.y;
+                cameraViewRotation = transform.eulerAngles.y;
             }
         }
         else // Mocap inputs
