@@ -7,6 +7,9 @@ using UnityEngine;
 public class HandClutchPositionControl : MonoBehaviour
 {
     public UDPCommandManager commandManager;
+    private PositionControl dronePositionControl;
+    private VelocityControl droneVelocityControl;
+    private CameraPosition cameraPosition;
 
     public float handRoomScaling = 8.0f;
 
@@ -16,9 +19,10 @@ public class HandClutchPositionControl : MonoBehaviour
     public float rotationSpeedScaling = 0.02f;
     public bool drawHandTarget = true;
 
-    private PositionControl dronePositionControl;
-    private VelocityControl droneVelocityControl;
-    private CameraPosition cameraPosition;
+    [Tooltip("Read inputs from a controller instead of motion capture.")]
+    public bool useController = false;
+    public float controllerSpeed = 0.025f;
+    public float controllerRotationSpeed = 0.5f;
 
     private GameObject handTarget;
 
@@ -32,6 +36,8 @@ public class HandClutchPositionControl : MonoBehaviour
     {
         dronePositionControl = GetComponent<PositionControl>();
         droneVelocityControl = GetComponent<VelocityControl>();
+
+        dronePositionControl.ignoreOrientation = false;
 
         // This one is optional, thus cameraPosition can be null
         cameraPosition = GetComponent<CameraPosition>();
@@ -47,61 +53,81 @@ public class HandClutchPositionControl : MonoBehaviour
 
     void Update()
     {
-        Vector3 rawHandPosition = commandManager.GetPosition();
-        Quaternion rawHandRotation = commandManager.GetQuaternion();
-        
-        // Reset referential for hand
-        if (Input.GetKey(KeyCode.Mouse1))
+        if (useController)
         {
-            SetHandOrigin(rawHandPosition, rawHandRotation);
-            handClutchOffset = Vector3.zero;
-        }
+            float h = Input.GetAxis("Horizontal");
+            float v = Input.GetAxis("Vertical");
+            float a = Input.GetAxis("Altitude");
+            float r = Input.GetAxis("Rotation");
 
-        // Position of the hand relative to the origin point of the "box"
-        Vector3 handBoxPosition = rawHandPosition - handOrigin;
-        Quaternion handRotation = GetHandRotation(rawHandRotation);
+            handTarget.transform.position += Quaternion.Euler(0, inputRotation, 0) * new Vector3(h, a, v) * controllerSpeed;
+            dronePositionControl.target = handTarget.transform;
 
-        // Clutch activated
-        if (Input.GetKeyDown(KeyCode.Mouse0))
-        {
-            handClutchOffset += handBoxPosition;
-            referenceYaw = handRotation.eulerAngles.y;
-        }
-        // Clutch deactivated
-        else if (Input.GetKeyUp(KeyCode.Mouse0))
-        {
-            SetHandOrigin(rawHandPosition, rawHandRotation);
-            handBoxPosition = Vector3.zero;
+            droneVelocityControl.desired_yaw = r * controllerRotationSpeed;
 
             if (cameraPosition != null && cameraPosition.FPS)
             {
-                Debug.Log(transform.eulerAngles.y);
-                inputRotation = transform.eulerAngles.y + 180;
-
-                handClutchOffset = Quaternion.Euler(0, oldInputRotation - inputRotation, 0) * handClutchOffset;
-
-                oldInputRotation = inputRotation;
+                inputRotation = transform.eulerAngles.y;
             }
         }
-
-        // While clutch pressed, don't update target
-        if (Input.GetKey(KeyCode.Mouse0))
+        else // Mocap inputs
         {
-            droneVelocityControl.desired_yaw = Mathf.DeltaAngle(referenceYaw, handRotation.eulerAngles.y) * rotationSpeedScaling;
-            return;
+            Vector3 rawHandPosition = commandManager.GetPosition();
+            Quaternion rawHandRotation = commandManager.GetQuaternion();
+
+            // Reset referential for hand
+            if (Input.GetKey(KeyCode.Mouse1))
+            {
+                SetHandOrigin(rawHandPosition, rawHandRotation);
+                handClutchOffset = Vector3.zero;
+            }
+
+            // Position of the hand relative to the origin point of the "box"
+            Vector3 handBoxPosition = rawHandPosition - handOrigin;
+            Quaternion handRotation = GetHandRotation(rawHandRotation);
+
+            // Clutch activated
+            if (Input.GetKeyDown(KeyCode.Mouse0))
+            {
+                handClutchOffset += handBoxPosition;
+                referenceYaw = handRotation.eulerAngles.y;
+            }
+            // Clutch deactivated
+            else if (Input.GetKeyUp(KeyCode.Mouse0))
+            {
+                SetHandOrigin(rawHandPosition, rawHandRotation);
+                handBoxPosition = Vector3.zero;
+
+                if (cameraPosition != null && cameraPosition.FPS)
+                {
+                    Debug.Log(transform.eulerAngles.y);
+                    inputRotation = transform.eulerAngles.y + 180;
+
+                    handClutchOffset = Quaternion.Euler(0, oldInputRotation - inputRotation, 0) * handClutchOffset;
+
+                    oldInputRotation = inputRotation;
+                }
+            }
+
+            // While clutch pressed, don't update target
+            if (Input.GetKey(KeyCode.Mouse0))
+            {
+                droneVelocityControl.desired_yaw = Mathf.DeltaAngle(referenceYaw, handRotation.eulerAngles.y) * rotationSpeedScaling;
+                return;
+            }
+            else
+            {
+                droneVelocityControl.desired_yaw = 0.0f;
+            }
+
+            Vector3 targetPosition = ScaleHandPosition(handBoxPosition + handClutchOffset);
+            handTarget.transform.position = targetPosition;
+
+
+            handTarget.transform.rotation = GetHandRotation(rawHandRotation);
+
+            dronePositionControl.target = handTarget.transform;
         }
-        else
-        {
-            droneVelocityControl.desired_yaw = 0.0f;
-        }
-
-        Vector3 targetPosition = ScaleHandPosition(handBoxPosition + handClutchOffset); 
-        handTarget.transform.position = targetPosition; 
-
-        
-        handTarget.transform.rotation = GetHandRotation(rawHandRotation);
-
-        dronePositionControl.target = handTarget.transform;
 
         if (drawHandTarget)
             handTarget.SetActive(true);

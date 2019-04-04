@@ -3812,7 +3812,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5445160707720369420}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d7fdaf969441c3540bbd25a5cfea7d74, type: 3}
   m_Name: 
@@ -3820,9 +3820,9 @@ MonoBehaviour:
   commandManager: {fileID: 403520573}
   handReachCube: {x: 0.5, y: 0.5, z: 0.5}
   inputRotation: -90
-  drawHandTarget: 1
+  drawHandTarget: 0
   useController: 1
-  controllerSpeed: 0.01
+  controllerSpeed: 0.025
 --- !u!114 &5445160707720369425
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3830,7 +3830,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5445160707720369420}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0e0c451bc08c6dd4593130d36e292316, type: 3}
   m_Name: 
@@ -3840,6 +3840,9 @@ MonoBehaviour:
   inputRotation: -90
   rotationSpeedScaling: 0.02
   drawHandTarget: 0
+  useController: 1
+  controllerSpeed: 0.025
+  controllerRotationSpeed: 0.5
 --- !u!135 &5445160707720369431
 SphereCollider:
   m_ObjectHideFlags: 0

@@ -43,12 +43,6 @@ public class HandAbsolutePositionControl : MonoBehaviour
     {
         if (useController)
         {
-            Debug.Log("H:" + Input.GetAxis("Horizontal"));
-            Debug.Log("V:" + Input.GetAxis("Vertical"));
-            Debug.Log("A:" + Input.GetAxis("Altitude"));
-            Debug.Log("R:" + Input.GetAxis("Rotation"));
-            Debug.Log("C:" + Input.GetAxis("Clutch"));
-
             float h = Input.GetAxis("Horizontal");
             float v = Input.GetAxis("Vertical");
             float a = Input.GetAxis("Altitude");
