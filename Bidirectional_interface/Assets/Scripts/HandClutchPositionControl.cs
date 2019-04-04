@@ -42,6 +42,7 @@ public class HandClutchPositionControl : MonoBehaviour
 
         // This one is optional, thus cameraPosition can be null
         cameraPosition = GetComponent<DroneCamera>();
+        cameraViewRotation = 0.0f;
         if (cameraPosition != null)
         {
             cameraViewRotation = cameraPosition.transform.eulerAngles.y;
@@ -54,7 +55,7 @@ public class HandClutchPositionControl : MonoBehaviour
         handTarget.name = "Hand Target";
         handTarget.transform.localScale = 2.0f * SimulationData.DroneSize * Vector3.one;
 
-        oldCameraViewRotation = inputRotation;
+        oldCameraViewRotation = cameraViewRotation;
     }
 
     void Update()
