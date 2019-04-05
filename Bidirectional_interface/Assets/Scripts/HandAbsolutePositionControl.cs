@@ -41,6 +41,8 @@ public class HandAbsolutePositionControl : MonoBehaviour
     
     void Update()
     {
+        Debug.Log("MDRRR");
+        Debug.Log(Input.GetJoystickNames());
         if (useController)
         {
             float h = Input.GetAxis("Horizontal");

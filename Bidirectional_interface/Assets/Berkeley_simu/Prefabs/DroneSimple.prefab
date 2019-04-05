@@ -14,9 +14,9 @@ GameObject:
   - component: {fileID: 4482133591124637215}
   - component: {fileID: 4585338791953827776}
   - component: {fileID: 4482133591124637212}
+  - component: {fileID: 5108218982988395661}
   - component: {fileID: 8476517839895757779}
   - component: {fileID: 5445160707720369425}
-  - component: {fileID: 5108218982988395661}
   m_Layer: 9
   m_Name: DroneSimple
   m_TagString: Player
@@ -121,6 +121,18 @@ MonoBehaviour:
   target: {fileID: 0}
   ignoreOrientation: 1
   lookAtTarget: {fileID: 0}
+--- !u!114 &5108218982988395661
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4482133591124637214}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35c9df880c3bc5041a321ae695085a2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &8476517839895757779
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -150,6 +162,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   commandManager: {fileID: 0}
   handRoomScaling: 10
+  clutchActivated: 0
   mocapInputRotation: 0
   observationInputRotation: 0
   rotationSpeedScaling: 0.02
@@ -157,18 +170,6 @@ MonoBehaviour:
   useController: 1
   controllerSpeed: 0.025
   controllerRotationSpeed: 0.5
---- !u!114 &5108218982988395661
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4482133591124637214}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 35c9df880c3bc5041a321ae695085a2c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &4483297726663301297
 PrefabInstance:
   m_ObjectHideFlags: 0

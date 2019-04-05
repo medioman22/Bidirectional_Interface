@@ -9,6 +9,7 @@ using System.Threading;
 
 public class UDPCommandManager : MonoBehaviour
 {
+    private int rigidbodyTargetIndex = 2;
     enum MocapIndices
     {
         id = 0, // id of Optitrack rigidbody
@@ -55,6 +56,7 @@ public class UDPCommandManager : MonoBehaviour
             for (int i = 0; i < SimulationData.nbParametersMocap; i++)
             {
                 // the data points (int, 7 floats) each take 4 bytes
+                if (System.BitConverter.ToSingle(data, 0) != rigidbodyTargetIndex) { break; }
                 controlCommands[i] = System.BitConverter.ToSingle(data, i * 4);
             }
         }
