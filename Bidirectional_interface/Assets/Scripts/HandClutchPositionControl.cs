@@ -12,6 +12,7 @@ public class HandClutchPositionControl : MonoBehaviour
     private DroneCamera cameraPosition;
 
     public float handRoomScaling = 8.0f;
+    public bool clutchActivated = false;
 
     // mocapInputRotation = 0 --> you are facing the wall, and have the computers to your left and the entrance door to your right.
     // mocapInputRotation = -90 --> you are facing the computers
@@ -168,11 +169,13 @@ public class HandClutchPositionControl : MonoBehaviour
             // Clutch activated
             if (Input.GetKey(KeyCode.Mouse0))
             {
+                clutchActivated = true;
                 droneVelocityControl.desired_yaw = deltaHandYaw * rotationSpeedScaling;
             }
             else
             {
                 // Update drone target
+                clutchActivated = false;
                 droneVelocityControl.desired_yaw = 0.0f;
                 handTarget.transform.position += Quaternion.Euler(0, observationInputRotation + mocapInputRotation, 0) * deltaHandPosition * handRoomScaling;
                 dronePositionControl.target = handTarget.transform;

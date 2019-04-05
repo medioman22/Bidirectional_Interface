@@ -12,6 +12,7 @@ public class DataLogger : MonoBehaviour
     public DroneCamera cameraPos;
     public CollisionChecker collision;
     public Rigidbody drone;
+    public HandClutchPositionControl handControl;
 
     // -------------------------------------------------------------------
 
@@ -38,7 +39,6 @@ public class DataLogger : MonoBehaviour
         public Vector3 controlPosition;
         public Vector3 controlSpeed;
         public float desiredYawRate;
-        public bool resetOrigin;
         public bool clutch;
         public Vector3 mocapPosition;
         public Quaternion mocapQuaternion;
@@ -107,6 +107,7 @@ public class DataLogger : MonoBehaviour
         currentLog.desiredYawRate = velocityCtrl.desired_yaw;
         if ((int)currentExperiment == 1)
         {
+            currentLog.clutch = handControl.clutchActivated;
             currentLog.mocapPosition = mocap.GetPosition();
             currentLog.mocapQuaternion = mocap.GetQuaternion();
         }
