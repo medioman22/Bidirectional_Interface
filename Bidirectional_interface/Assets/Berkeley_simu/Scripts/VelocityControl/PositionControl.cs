@@ -39,29 +39,6 @@ public class PositionControl : MonoBehaviour
             // Drone does not rotate
             vc.desired_yaw = 0f;
         }
-        else
-        {
-            Quaternion targetOrientation = transform.rotation;
-
-            // Follow target for orientation
-            if (lookAtTarget != null)
-            {
-                
-            }
-            // Otherwise orient the drone towards position target
-            else
-            {
-                // Avoid exception thrown if positionError = 0;
-                if (positionError.magnitude > 0.01f)
-                {
-                    // Define the target orientation to face the next keypoint
-                    targetOrientation = Quaternion.LookRotation(positionError);
-                }
-
-                float yawError = Mathf.DeltaAngle(transform.eulerAngles.y, targetOrientation.eulerAngles.y);
-                vc.desired_yaw = yawError / yawTimeConstant;
-            }
-        }
 
         // as the drone may not be aligned with the referential of the world, transform.
         positionError = transform.InverseTransformDirection(positionError);
