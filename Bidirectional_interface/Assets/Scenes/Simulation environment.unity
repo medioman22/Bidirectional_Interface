@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 170076734}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657838, g: 0.49641234, b: 0.57481676, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -712,9 +712,10 @@ MonoBehaviour:
   cameraPos: {fileID: 5445160707720369421}
   collision: {fileID: 5108218982988395661}
   drone: {fileID: 5445160707720369428}
-  subjectName: Toto
-  currentExperiment: 0
-  save_path: c:/Users/havy/Desktop/Simulation_Logs/
+  handControl: {fileID: 961745991}
+  subjectName: Antoine
+  currentExperiment: 1
+  save_path: /Users/Antoine/Documents/MA4/SemesterProject/Simulation_Logs/
 --- !u!1 &407066790
 GameObject:
   m_ObjectHideFlags: 0
@@ -1493,6 +1494,18 @@ Transform:
   m_Father: {fileID: 1038131519}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &961745991 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5445160707720369425, guid: 34fd334bc9a28994dabb708f0486ce7a,
+    type: 3}
+  m_PrefabInstance: {fileID: 8476517839812043538}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e0c451bc08c6dd4593130d36e292316, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &962573989
 GameObject:
   m_ObjectHideFlags: 0
@@ -3955,11 +3968,26 @@ PrefabInstance:
       propertyPath: m_Name
       value: DroneSimple
       objectReference: {fileID: 0}
+    - target: {fileID: 8476517839895757779, guid: 34fd334bc9a28994dabb708f0486ce7a,
+        type: 3}
+      propertyPath: fixedCamera
+      value: 
+      objectReference: {fileID: 1231551804}
+    - target: {fileID: 8476517839895757779, guid: 34fd334bc9a28994dabb708f0486ce7a,
+        type: 3}
+      propertyPath: firstPersonCamera
+      value: 
+      objectReference: {fileID: 884458423}
     - target: {fileID: 4482133591124637212, guid: 34fd334bc9a28994dabb708f0486ce7a,
         type: 3}
       propertyPath: target
       value: 
       objectReference: {fileID: 1038131519}
+    - target: {fileID: 4585338791953827776, guid: 34fd334bc9a28994dabb708f0486ce7a,
+        type: 3}
+      propertyPath: desiredHeight
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4483514789422614656, guid: 34fd334bc9a28994dabb708f0486ce7a,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -4015,20 +4043,25 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 8476517839895757779, guid: 34fd334bc9a28994dabb708f0486ce7a,
-        type: 3}
-      propertyPath: fixedCamera
-      value: 
-      objectReference: {fileID: 1231551804}
-    - target: {fileID: 8476517839895757779, guid: 34fd334bc9a28994dabb708f0486ce7a,
-        type: 3}
-      propertyPath: firstPersonCamera
-      value: 
-      objectReference: {fileID: 884458423}
     - target: {fileID: 5445160707720369425, guid: 34fd334bc9a28994dabb708f0486ce7a,
         type: 3}
       propertyPath: commandManager
       value: 
       objectReference: {fileID: 403520573}
+    - target: {fileID: 5445160707720369425, guid: 34fd334bc9a28994dabb708f0486ce7a,
+        type: 3}
+      propertyPath: useController
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5445160707720369425, guid: 34fd334bc9a28994dabb708f0486ce7a,
+        type: 3}
+      propertyPath: drawHandTarget
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5445160707720369425, guid: 34fd334bc9a28994dabb708f0486ce7a,
+        type: 3}
+      propertyPath: clutchActivated
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 34fd334bc9a28994dabb708f0486ce7a, type: 3}
