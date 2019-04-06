@@ -713,7 +713,7 @@ MonoBehaviour:
   drone: {fileID: 5445160707720369428}
   handControl: {fileID: 961745991}
   subjectName: Antoine
-  currentExperiment: 0
+  currentExperiment: 1
   save_path: C:/Users/Thomas/Documents/Cours/Projet semestre 1/Project_Logs/
 --- !u!1 &406908238
 GameObject:
@@ -1220,7 +1220,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &884458421
 Transform:
   m_ObjectHideFlags: 0
@@ -1700,7 +1700,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 66.8
+  field of view: 80
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -4004,6 +4004,11 @@ PrefabInstance:
       propertyPath: controllerRotationSpeed
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 5445160707720369425, guid: 34fd334bc9a28994dabb708f0486ce7a,
+        type: 3}
+      propertyPath: observationInputRotation
+      value: 90
+      objectReference: {fileID: 0}
     - target: {fileID: 8476517839895757779, guid: 34fd334bc9a28994dabb708f0486ce7a,
         type: 3}
       propertyPath: fixedCamera
@@ -4017,7 +4022,7 @@ PrefabInstance:
     - target: {fileID: 8476517839895757779, guid: 34fd334bc9a28994dabb708f0486ce7a,
         type: 3}
       propertyPath: FPS
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4482133591124637212, guid: 34fd334bc9a28994dabb708f0486ce7a,
         type: 3}

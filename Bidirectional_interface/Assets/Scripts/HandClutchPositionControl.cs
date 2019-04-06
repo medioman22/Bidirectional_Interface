@@ -77,7 +77,7 @@ public class HandClutchPositionControl : MonoBehaviour
                 observationInputRotation = transform.eulerAngles.y;
             }
 
-            handTarget.transform.position += Quaternion.Euler(0, observationInputRotation + mocapInputRotation, 0) * direction * controllerSpeed;
+            handTarget.transform.position += Quaternion.Euler(0, observationInputRotation, 0) * direction * controllerSpeed;
 
             dronePositionControl.target = handTarget.transform;
             droneVelocityControl.desired_yaw = r * controllerRotationSpeed;
@@ -101,6 +101,7 @@ public class HandClutchPositionControl : MonoBehaviour
                 observationInputRotation = transform.eulerAngles.y;
             }
 
+            // Clutch triggered, set reference yaw
             if (Input.GetKeyUp(KeyCode.Mouse0))
             {
                 referenceYaw = handYaw;
