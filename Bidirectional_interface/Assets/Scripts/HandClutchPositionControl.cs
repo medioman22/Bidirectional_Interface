@@ -31,16 +31,12 @@ public class HandClutchPositionControl : MonoBehaviour
     public float controllerRotationSpeed = 0.5f;
 
     private GameObject handTarget;
-
-    private Vector3 handOrigin;
-    private Vector3 handClutchOffset;
-    private Quaternion handReferenceOrientation;
-    private float referenceYaw = 0.0f;
+    
     private float cameraViewRotation = 0.0f;
     private float oldCameraViewRotation = 0.0f;
 
     private Vector3 oldRawHandPosition;
-    private Quaternion oldRawHandRotation;
+    private float referenceYaw = 0.0f;
 
     void Start()
     {
@@ -62,9 +58,6 @@ public class HandClutchPositionControl : MonoBehaviour
         handTarget = new GameObject("Hand Target");
         handTarget.transform.localScale = 2.0f * SimulationData.DroneSize * Vector3.one;
         handTarget.transform.position = dronePositionControl.transform.position;
-
-        handClutchOffset = dronePositionControl.transform.position;
-        oldCameraViewRotation = cameraViewRotation;
     }
 
     void Update()
@@ -91,75 +84,16 @@ public class HandClutchPositionControl : MonoBehaviour
         }
         else // Mocap inputs
         {
-            
             Vector3 rawHandPosition = commandManager.GetPosition();
             Quaternion rawHandRotation = commandManager.GetQuaternion();
 
-            // Reset referential for hand
-            if (Input.GetKey(KeyCode.Mouse1))
-            {
-                SetHandOrigin(rawHandPosition, rawHandRotation);
-                handClutchOffset = Vector3.zero;
-            }
-
-            // Position of the hand relative to the origin point of the "box"
-            Vector3 handBoxPosition = rawHandPosition - handOrigin;
-            Quaternion handRotation = GetHandRotation(rawHandRotation);
-
-            // Clutch activated
-            if (Input.GetKeyDown(KeyCode.Mouse0))
-            {
-                handClutchOffset += handBoxPosition;
-                referenceYaw = handRotation.eulerAngles.y;
-            }
-            // Clutch deactivated
-            else if (Input.GetKeyUp(KeyCode.Mouse0))
-            {
-                SetHandOrigin(rawHandPosition, rawHandRotation);
-                handBoxPosition = Vector3.zero;
-
-                if (cameraPosition != null && cameraPosition.FPS)
-                {
-                    Debug.Log(transform.eulerAngles.y);
-                    cameraViewRotation = transform.eulerAngles.y + 180;
-
-                    // Recompute offset, because input rotation is changed
-                    handClutchOffset = Quaternion.Euler(0, oldCameraViewRotation - cameraViewRotation, 0) * handClutchOffset;
-
-                    oldCameraViewRotation = cameraViewRotation;
-                }
-            }
-
-            // While clutch pressed, don't update target just rotation
-            if (Input.GetKey(KeyCode.R))
-            {
-                droneVelocityControl.desired_yaw = Mathf.DeltaAngle(referenceYaw, handRotation.eulerAngles.y) * rotationSpeedScaling;
-                return;
-            }
-            else
-            {
-                droneVelocityControl.desired_yaw = 0.0f;
-            }
-
-            Vector3 targetPosition = ScaleHandPosition(handBoxPosition + handClutchOffset);
-            handTarget.transform.position = targetPosition;
-
-
-            handTarget.transform.rotation = GetHandRotation(rawHandRotation);
-
-            dronePositionControl.target = handTarget.transform;
-
-            /* Vector3 rawHandPosition = commandManager.GetPosition();
-            Quaternion rawHandRotation = commandManager.GetQuaternion();
-
             Vector3 deltaHandPosition = rawHandPosition - oldRawHandPosition;
-            float deltaHandYaw = rawHandRotation.eulerAngles.y - oldRawHandRotation.eulerAngles.y;
+            float handYaw = rawHandRotation.eulerAngles.y;
 
             oldRawHandPosition = rawHandPosition;
-            oldRawHandRotation = rawHandRotation;
 
-            // clamp hand displacement too big (occurs when starting because old position not set, or noise)
-            deltaHandPosition = Vector3.ClampMagnitude(deltaHandPosition, 0.5f);
+            if (deltaHandPosition.magnitude > 1.0f)
+                return;
 
             // Update observation input rotation if FPS mode
             if (cameraPosition != null && cameraPosition.FPS)
@@ -167,11 +101,16 @@ public class HandClutchPositionControl : MonoBehaviour
                 observationInputRotation = transform.eulerAngles.y;
             }
 
+            if (Input.GetKeyUp(KeyCode.Mouse0))
+            {
+                referenceYaw = handYaw;
+            }
+
             // Clutch activated
             if (Input.GetKey(KeyCode.Mouse0))
             {
                 clutchActivated = true;
-                droneVelocityControl.desired_yaw = deltaHandYaw * rotationSpeedScaling;
+                droneVelocityControl.desired_yaw = Mathf.DeltaAngle(referenceYaw, handYaw) * rotationSpeedScaling;
             }
             else
             {
@@ -181,30 +120,12 @@ public class HandClutchPositionControl : MonoBehaviour
                 Debug.Log(deltaHandPosition);
                 handTarget.transform.position += Quaternion.Euler(0, observationInputRotation + mocapInputRotation, 0) * deltaHandPosition * handRoomScaling;
                 dronePositionControl.target = handTarget.transform;
-            }*/
+            }
         }
 
         if (drawHandTarget)
             handTarget.SetActive(true);
         else
             handTarget.SetActive(false);
-    }
-
-    private void SetHandOrigin(Vector3 origin, Quaternion orientation)
-    {
-        handOrigin = origin;
-        handReferenceOrientation = orientation;
-    }
-
-    private Vector3 ScaleHandPosition(Vector3 handPosition)
-    {
-        handPosition = Quaternion.Euler(0, mocapInputRotation + cameraViewRotation, 0) * handPosition;
-        return handPosition * handRoomScaling;
-    }
-
-    private Quaternion GetHandRotation(Quaternion rawRotation)
-    {
-        // Order of multiplication is important !
-        return Quaternion.Euler(0, cameraViewRotation, 0) * rawRotation * Quaternion.Inverse(handReferenceOrientation);
     }
 }
