@@ -9,7 +9,7 @@ using System.Threading;
 
 public class UDPCommandManager : MonoBehaviour
 {
-    private int rigidbodyTargetIndex = 2;
+    public int rigidbodyTargetIndex = 2;
     enum MocapIndices
     {
         id = 0, // id of Optitrack rigidbody
