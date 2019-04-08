@@ -121,8 +121,12 @@ public class DataLogger : MonoBehaviour
 
     private void OnApplicationQuit()
     {
-        string json = JsonUtility.ToJson(cumulatedLogs);
-        File.AppendAllText(final_path, json);
+        // OnApplicationQuit() is called even when the script is disabled, thus we must make sure it is not.
+        if (enabled)
+        {
+            string json = JsonUtility.ToJson(cumulatedLogs);
+            File.AppendAllText(final_path, json);
+        }
     }
 
 
