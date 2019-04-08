@@ -118,7 +118,6 @@ public class HandClutchPositionControl : MonoBehaviour
                 // Update drone target
                 clutchActivated = false;
                 droneVelocityControl.desired_yaw = 0.0f;
-                Debug.Log(deltaHandPosition);
                 handTarget.transform.position += Quaternion.Euler(0, observationInputRotation + mocapInputRotation, 0) * deltaHandPosition * handRoomScaling;
                 dronePositionControl.target = handTarget.transform;
             }

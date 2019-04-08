@@ -20,7 +20,6 @@ public class CollisionChecker : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log("called " + other.name);
         collisionCount++;
     }
 
