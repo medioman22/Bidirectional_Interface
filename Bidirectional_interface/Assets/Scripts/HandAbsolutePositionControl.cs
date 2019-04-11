@@ -27,7 +27,7 @@ public class HandAbsolutePositionControl : MonoBehaviour
     void Start()
     {
         dronePositionControl = GetComponent<PositionControl>();
-        dronePositionControl.ignoreOrientation = true;
+        dronePositionControl.controlYaw = true;
 
         handTarget = GameObject.CreatePrimitive(PrimitiveType.Cube);
         Destroy(handTarget.GetComponent<Collider>());

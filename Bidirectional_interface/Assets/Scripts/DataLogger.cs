@@ -47,7 +47,7 @@ public class DataLogger : MonoBehaviour
         public Vector3 droneSpeed;
         public bool collision;
     }
-    private Logger currentLog = new Logger();
+    private Logger currentLog;
 
     [System.Serializable]
     public class LoggerCollection
@@ -93,6 +93,7 @@ public class DataLogger : MonoBehaviour
             final_path = MakeUnique(final_path);
         }
 
+        currentLog = new Logger();
         cumulatedLogs = new LoggerCollection();
     }
 
@@ -104,7 +105,7 @@ public class DataLogger : MonoBehaviour
         currentLog.differentialTime = Time.deltaTime;
         currentLog.controlPosition = positionCtrl.target.position;
         currentLog.controlSpeed = new Vector3(velocityCtrl.desiredVx, 0.0f, velocityCtrl.desiredVz);
-        currentLog.desiredYawRate = velocityCtrl.desired_yaw;
+        currentLog.desiredYawRate = velocityCtrl.desiredYawRate;
         if ((int)currentExperiment == 1)
         {
             currentLog.clutch = handControl.clutchActivated;

@@ -29,7 +29,7 @@ public class VelocityControl : MonoBehaviour {
     public float desiredHeight = 0.0f;
     public float desiredVx = 0.0f;
     public float desiredVz = 0.0f;
-    public float desired_yaw = 0.0f;
+    public float desiredYawRate = 0.0f;
 
     private float speedScale = 500.0f; // for propeller animation (graphic only)
 
@@ -69,7 +69,7 @@ public class VelocityControl : MonoBehaviour {
 
         // Angular velocities
         desiredOmega = -thetaError / time_constant_omega_xz_rate;
-        desiredOmega.y = desired_yaw;
+        desiredOmega.y = desiredYawRate;
 
         Vector3 omegaError = state.AngularVelocityVector - desiredOmega;
 
@@ -93,15 +93,5 @@ public class VelocityControl : MonoBehaviour {
         propFR.transform.Rotate(Vector3.forward * Time.deltaTime * desiredThrust * speedScale);
         propRR.transform.Rotate(Vector3.forward * Time.deltaTime * desiredThrust * speedScale);
         propRL.transform.Rotate(Vector3.forward * Time.deltaTime * desiredThrust * speedScale);
-
-        //Debug.Log ("Velocity" + state.VelocityVector);
-        //Debug.Log ("Desired Velocity" + desiredVelocity);
-        //Debug.Log ("Desired Acceleration" + desiredAcceleration);
-        //Debug.Log ("Angles" + state.Angles);
-        //Debug.Log ("Desired Angles" + desiredTheta);
-        //Debug.Log ("Angular Velocity" + state.AngularVelocityVector);
-        //Debug.Log ("Desired Angular Velocity" + desiredOmega);
-        //Debug.Log ("Desired Angular Acceleration" + desiredAlpha);
-        //Debug.Log ("Desired Torque" + desiredTorque);
     }
 }

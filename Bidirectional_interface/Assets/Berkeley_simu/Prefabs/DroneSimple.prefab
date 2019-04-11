@@ -102,10 +102,10 @@ MonoBehaviour:
   propFR: {fileID: 4483297726663269917}
   propRR: {fileID: 4483297726663269919}
   propRL: {fileID: 4483297726663269889}
-  desiredHeight: 3
+  desiredHeight: 0
   desiredVx: 0
   desiredVz: 0
-  desired_yaw: 0
+  desiredYawRate: 0
 --- !u!114 &4482133591124637212
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -119,8 +119,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 0}
-  ignoreOrientation: 1
-  lookAtTarget: {fileID: 0}
+  controlYaw: 0
+  targetYaw: 0
 --- !u!114 &5108218982988395661
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -161,15 +161,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   commandManager: {fileID: 0}
-  handRoomScaling: 10
+  handRoomScaling: 8
   clutchActivated: 0
   mocapInputRotation: 0
-  observationInputRotation: 0
-  rotationSpeedScaling: 0.02
+  observationInputRotation: 90
+  rotationSpeedScaling: 0.01
   drawHandTarget: 1
   useController: 1
   controllerSpeed: 0.025
-  controllerRotationSpeed: 0.5
+  controllerRotationSpeed: 2
 --- !u!1001 &4483297726663301297
 PrefabInstance:
   m_ObjectHideFlags: 0

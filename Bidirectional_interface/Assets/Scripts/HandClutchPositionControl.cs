@@ -43,7 +43,7 @@ public class HandClutchPositionControl : MonoBehaviour
         dronePositionControl = GetComponent<PositionControl>();
         droneVelocityControl = GetComponent<VelocityControl>();
 
-        dronePositionControl.ignoreOrientation = false;
+        dronePositionControl.controlYaw = false;
 
         // This one is optional, thus cameraPosition can be null
         cameraPosition = GetComponent<DroneCamera>();
@@ -80,7 +80,7 @@ public class HandClutchPositionControl : MonoBehaviour
             handTarget.transform.position += Quaternion.Euler(0, observationInputRotation, 0) * direction * controllerSpeed;
 
             dronePositionControl.target = handTarget.transform;
-            droneVelocityControl.desired_yaw = r * controllerRotationSpeed;
+            droneVelocityControl.desiredYawRate = r * controllerRotationSpeed;
         }
         else // Mocap inputs
         {
@@ -111,13 +111,13 @@ public class HandClutchPositionControl : MonoBehaviour
             if (Input.GetKey(KeyCode.Mouse0))
             {
                 clutchActivated = true;
-                droneVelocityControl.desired_yaw = Mathf.DeltaAngle(referenceYaw, handYaw) * rotationSpeedScaling;
+                droneVelocityControl.desiredYawRate = Mathf.DeltaAngle(referenceYaw, handYaw) * rotationSpeedScaling;
             }
             else
             {
                 // Update drone target
                 clutchActivated = false;
-                droneVelocityControl.desired_yaw = 0.0f;
+                droneVelocityControl.desiredYawRate = 0.0f;
                 handTarget.transform.position += Quaternion.Euler(0, observationInputRotation + mocapInputRotation, 0) * deltaHandPosition * handRoomScaling;
                 dronePositionControl.target = handTarget.transform;
             }
