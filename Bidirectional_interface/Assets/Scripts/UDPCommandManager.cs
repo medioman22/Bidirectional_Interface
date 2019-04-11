@@ -9,7 +9,6 @@ using System.Threading;
 
 public class UDPCommandManager : MonoBehaviour
 {
-    public int rigidbodyTargetIndex = 2;
     enum MocapIndices
     {
         id = 0, // id of Optitrack rigidbody
@@ -22,8 +21,21 @@ public class UDPCommandManager : MonoBehaviour
         qw = 7
     }
 
-    //[HideInInspector]
-    private float[] controlCommands = new float[SimulationData.nbParametersMocap];
+    public enum TrackedTargets
+    {
+        LeftHand = 0,
+        RightHand = 1,
+        LeftDrone = 2,
+        RightDrone = 3
+    }
+
+    public int LeftHandrigidbodyIndex = 1;
+    public int RightHandrigidbodyIndex = 2;
+    public int LeftDronerigidbodyIndex = 3;
+    public int RightDronerigidbodyIndex = 4;
+
+    // We track 4 rigidbodies (each of which has 8 params: id+pos+quaternion)
+    private float[,] optiTrackRigidbodies = new float[4, SimulationData.nbParametersMocap];
 
     //UDP
     static private string localIP = "127.0.0.1"; // local IP
@@ -55,9 +67,18 @@ public class UDPCommandManager : MonoBehaviour
 
             for (int i = 0; i < SimulationData.nbParametersMocap; i++)
             {
-                // the data points (int, 7 floats) each take 4 bytes
-                if (System.BitConverter.ToSingle(data, (int)MocapIndices.id) != rigidbodyTargetIndex) { break; }
-                controlCommands[i] = System.BitConverter.ToSingle(data, i * 4);
+                int id = System.BitConverter.ToInt32(data, (int)MocapIndices.id * 4);
+                
+                if (id == LeftHandrigidbodyIndex)
+                    optiTrackRigidbodies[(int)TrackedTargets.LeftHand, i] = System.BitConverter.ToSingle(data, i * 4);
+                else if (id == RightHandrigidbodyIndex)
+                    optiTrackRigidbodies[(int)TrackedTargets.RightHand, i] = System.BitConverter.ToSingle(data, i * 4);
+                else if (id == LeftDronerigidbodyIndex)
+                    optiTrackRigidbodies[(int)TrackedTargets.LeftDrone, i] = System.BitConverter.ToSingle(data, i * 4);
+                else if (id == RightDronerigidbodyIndex)
+                    optiTrackRigidbodies[(int)TrackedTargets.RightDrone, i] = System.BitConverter.ToSingle(data, i * 4);
+                else
+                    break;
             }
         }
     }
@@ -65,13 +86,13 @@ public class UDPCommandManager : MonoBehaviour
     public Vector3 GetPosition()
     {
         // x and z are inversed in unity compared to optitrack
-        return new Vector3(controlCommands[(int)MocapIndices.z], controlCommands[(int)MocapIndices.y], controlCommands[(int)MocapIndices.x]);
+        return new Vector3(optiTrackRigidbodies[0,(int)MocapIndices.z], optiTrackRigidbodies[0,(int)MocapIndices.y], optiTrackRigidbodies[0,(int)MocapIndices.x]);
     }
 
     public Quaternion GetQuaternion()
     {
         // x and z are inversed in unity compared to optitrack, thus quaternion must be modified accordingly
-        return new Quaternion(controlCommands[(int)MocapIndices.qz], controlCommands[(int)MocapIndices.qy], controlCommands[(int)MocapIndices.qx], -controlCommands[(int)MocapIndices.qw]);
+        return new Quaternion(optiTrackRigidbodies[0,(int)MocapIndices.qz], optiTrackRigidbodies[0,(int)MocapIndices.qy], optiTrackRigidbodies[0,(int)MocapIndices.qx], -optiTrackRigidbodies[0,(int)MocapIndices.qw]);
     }
     
 }
