@@ -56,7 +56,7 @@ public class UDPCommandManager : MonoBehaviour
             for (int i = 0; i < SimulationData.nbParametersMocap; i++)
             {
                 // the data points (int, 7 floats) each take 4 bytes
-                if (System.BitConverter.ToSingle(data, 0) != rigidbodyTargetIndex) { break; }
+                if (System.BitConverter.ToSingle(data, (int)MocapIndices.id) != rigidbodyTargetIndex) { break; }
                 controlCommands[i] = System.BitConverter.ToSingle(data, i * 4);
             }
         }
