@@ -102,7 +102,7 @@ public class HandClutchPositionControl : MonoBehaviour
             }
 
             // Clutch triggered, set reference yaw
-            if (Input.GetKeyUp(KeyCode.Mouse0))
+            if (Input.GetKeyDown(KeyCode.Mouse0))
             {
                 referenceYaw = handYaw;
             }
