@@ -109,8 +109,8 @@ public class DataLogger : MonoBehaviour
         if ((int)currentExperiment == 1)
         {
             currentLog.clutch = handControl.clutchActivated;
-            currentLog.mocapPosition = mocap.GetPosition();
-            currentLog.mocapQuaternion = mocap.GetQuaternion();
+            currentLog.mocapPosition = mocap.GetPosition(UDPCommandManager.TrackedTargets.RightHand);
+            currentLog.mocapQuaternion = mocap.GetQuaternion(UDPCommandManager.TrackedTargets.RightHand);
         }
 
         // Output

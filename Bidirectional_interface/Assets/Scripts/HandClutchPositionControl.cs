@@ -84,8 +84,8 @@ public class HandClutchPositionControl : MonoBehaviour
         }
         else // Mocap inputs
         {
-            Vector3 rawHandPosition = commandManager.GetPosition();
-            Quaternion rawHandRotation = commandManager.GetQuaternion();
+            Vector3 rawHandPosition = commandManager.GetPosition(UDPCommandManager.TrackedTargets.RightHand);
+            Quaternion rawHandRotation = commandManager.GetQuaternion(UDPCommandManager.TrackedTargets.RightHand);
 
             Vector3 deltaHandPosition = rawHandPosition - oldRawHandPosition;
             float handYaw = rawHandRotation.eulerAngles.y;

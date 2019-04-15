@@ -54,7 +54,7 @@ public class HandAbsolutePositionControl : MonoBehaviour
         }
         else // Mocap inputs
         {
-            Vector3 rawHandPosition = commandManager.GetPosition();
+            Vector3 rawHandPosition = commandManager.GetPosition(UDPCommandManager.TrackedTargets.RightHand);
 
             // Reset referential for hand
             if (Input.GetKey(KeyCode.Mouse1))

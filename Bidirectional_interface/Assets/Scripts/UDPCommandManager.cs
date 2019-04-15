@@ -23,16 +23,16 @@ public class UDPCommandManager : MonoBehaviour
 
     public enum TrackedTargets
     {
-        LeftHand = 0,
-        RightHand = 1,
-        LeftDrone = 2,
-        RightDrone = 3
+        RightHand = 0,
+        LeftHand = 1,
+        RightDrone = 2,
+        LeftDrone = 3
     }
 
-    public int LeftHandrigidbodyIndex = 1;
-    public int RightHandrigidbodyIndex = 2;
-    public int LeftDronerigidbodyIndex = 3;
-    public int RightDronerigidbodyIndex = 4;
+    public int RightHandrigidbodyID = 1;
+    public int LeftHandrigidbodyID = 2;
+    public int RightDronerigidbodyID = 3;
+    public int LeftDronerigidbodyID = 4;
 
     // We track 4 rigidbodies (each of which has 8 params: id+pos+quaternion)
     private float[,] optiTrackRigidbodies = new float[4, SimulationData.nbParametersMocap];
@@ -69,30 +69,36 @@ public class UDPCommandManager : MonoBehaviour
             {
                 int id = System.BitConverter.ToInt32(data, (int)MocapIndices.id * 4);
                 
-                if (id == LeftHandrigidbodyIndex)
-                    optiTrackRigidbodies[(int)TrackedTargets.LeftHand, i] = System.BitConverter.ToSingle(data, i * 4);
-                else if (id == RightHandrigidbodyIndex)
+                if (id == RightHandrigidbodyID)
                     optiTrackRigidbodies[(int)TrackedTargets.RightHand, i] = System.BitConverter.ToSingle(data, i * 4);
-                else if (id == LeftDronerigidbodyIndex)
-                    optiTrackRigidbodies[(int)TrackedTargets.LeftDrone, i] = System.BitConverter.ToSingle(data, i * 4);
-                else if (id == RightDronerigidbodyIndex)
+                else if (id == LeftHandrigidbodyID)
+                    optiTrackRigidbodies[(int)TrackedTargets.LeftHand, i] = System.BitConverter.ToSingle(data, i * 4);
+                else if (id == RightDronerigidbodyID)
                     optiTrackRigidbodies[(int)TrackedTargets.RightDrone, i] = System.BitConverter.ToSingle(data, i * 4);
+                else if (id == LeftDronerigidbodyID)
+                    optiTrackRigidbodies[(int)TrackedTargets.LeftDrone, i] = System.BitConverter.ToSingle(data, i * 4);
                 else
                     break;
             }
         }
     }
 
-    public Vector3 GetPosition()
+    public Vector3 GetPosition(TrackedTargets target)
     {
+        int i = (int)target;
+
         // x and z are inversed in unity compared to optitrack
-        return new Vector3(optiTrackRigidbodies[0,(int)MocapIndices.z], optiTrackRigidbodies[0,(int)MocapIndices.y], optiTrackRigidbodies[0,(int)MocapIndices.x]);
+        return new Vector3(optiTrackRigidbodies[i, (int)MocapIndices.z], optiTrackRigidbodies[i, (int)MocapIndices.y], 
+                           optiTrackRigidbodies[i, (int)MocapIndices.x]);
     }
 
-    public Quaternion GetQuaternion()
+    public Quaternion GetQuaternion(TrackedTargets target)
     {
+        int i = (int)target;
+
         // x and z are inversed in unity compared to optitrack, thus quaternion must be modified accordingly
-        return new Quaternion(optiTrackRigidbodies[0,(int)MocapIndices.qz], optiTrackRigidbodies[0,(int)MocapIndices.qy], optiTrackRigidbodies[0,(int)MocapIndices.qx], -optiTrackRigidbodies[0,(int)MocapIndices.qw]);
+        return new Quaternion(optiTrackRigidbodies[i, (int)MocapIndices.qz], optiTrackRigidbodies[i, (int)MocapIndices.qy], 
+                              optiTrackRigidbodies[i,(int)MocapIndices.qx], -optiTrackRigidbodies[i,(int)MocapIndices.qw]);
     }
     
 }
