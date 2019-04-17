@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 170076734}
-  m_IndirectSpecularColor: {r: 0.43704587, g: 0.4847446, b: 0.56500584, a: 1}
+  m_IndirectSpecularColor: {r: 0.43704656, g: 0.4847455, b: 0.56500673, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1143,7 +1143,7 @@ MonoBehaviour:
     type: 3}
   m_PrefabInstance: {fileID: 8476517839812043538}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 8476517839812043539}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0e0c451bc08c6dd4593130d36e292316, type: 3}
@@ -3012,7 +3012,7 @@ MonoBehaviour:
     type: 3}
   m_PrefabInstance: {fileID: 8476517839812043538}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 8476517839812043539}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 35c9df880c3bc5041a321ae695085a2c, type: 3}
@@ -3024,7 +3024,7 @@ MonoBehaviour:
     type: 3}
   m_PrefabInstance: {fileID: 8476517839812043538}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 8476517839812043539}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4ff12ed3a0f17f049bda54bb790f6046, type: 3}
@@ -3036,7 +3036,7 @@ MonoBehaviour:
     type: 3}
   m_PrefabInstance: {fileID: 8476517839812043538}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 8476517839812043539}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ec3b2d78ab3414b538a10156593fb2e9, type: 3}
@@ -3048,7 +3048,7 @@ MonoBehaviour:
     type: 3}
   m_PrefabInstance: {fileID: 8476517839812043538}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 8476517839812043539}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f9fd9cf0a203549e98e27622302c103a, type: 3}
@@ -3142,5 +3142,30 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 7536784256544403204, guid: 34fd334bc9a28994dabb708f0486ce7a, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 34fd334bc9a28994dabb708f0486ce7a, type: 3}
+--- !u!1 &8476517839812043539 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4482133591124637214, guid: 34fd334bc9a28994dabb708f0486ce7a,
+    type: 3}
+  m_PrefabInstance: {fileID: 8476517839812043538}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &8476517839812043540
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8476517839812043539}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 631f347c681f1ab4e817e4213d21e644, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  frontObstacle: 0
+  backObstacle: 0
+  upObstacle: 0
+  downObstacle: 0
+  leftObstacle: 0
+  rightObstacle: 0
