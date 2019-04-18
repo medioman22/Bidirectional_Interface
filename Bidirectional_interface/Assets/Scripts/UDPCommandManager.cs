@@ -67,7 +67,7 @@ public class UDPCommandManager : MonoBehaviour
 
             for (int i = 0; i < SimulationData.nbParametersMocap; i++)
             {
-                int id = System.BitConverter.ToInt32(data, (int)MocapIndices.id * 4);
+                int id = (int)System.BitConverter.ToSingle(data, (int)MocapIndices.id * 4);
                 
                 if (id == RightHandrigidbodyID)
                     optiTrackRigidbodies[(int)TrackedTargets.RightHand, i] = System.BitConverter.ToSingle(data, i * 4);

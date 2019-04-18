@@ -11,6 +11,9 @@ public class HandClutchPositionControl : MonoBehaviour
     private VelocityControl droneVelocityControl;
     private DroneCamera cameraPosition;
 
+    [Tooltip("Which hand (tracked by the Mocap) controls the drone")]
+    public UDPCommandManager.TrackedTargets trackedHand;
+
     public float handRoomScaling = 8.0f;
     [HideInInspector]
     public bool clutchActivated = false;
@@ -84,8 +87,8 @@ public class HandClutchPositionControl : MonoBehaviour
         }
         else // Mocap inputs
         {
-            Vector3 rawHandPosition = commandManager.GetPosition(UDPCommandManager.TrackedTargets.RightHand);
-            Quaternion rawHandRotation = commandManager.GetQuaternion(UDPCommandManager.TrackedTargets.RightHand);
+            Vector3 rawHandPosition = commandManager.GetPosition(trackedHand);
+            Quaternion rawHandRotation = commandManager.GetQuaternion(trackedHand);
 
             Vector3 deltaHandPosition = rawHandPosition - oldRawHandPosition;
             float handYaw = rawHandRotation.eulerAngles.y;
@@ -104,6 +107,7 @@ public class HandClutchPositionControl : MonoBehaviour
             // Clutch triggered, set reference yaw
             if (Input.GetKeyDown(KeyCode.Mouse0))
             {
+                dronePositionControl.target = transform;
                 referenceYaw = handYaw;
             }
 
