@@ -1097,7 +1097,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 403520570}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 22cdae5b0afe14446aa7b6190c1b5a0e, type: 3}
   m_Name: 
@@ -1110,7 +1110,6 @@ MonoBehaviour:
   drone: {fileID: 5445160707720369428}
   handControl: {fileID: 961745991}
   subjectName: Antoine
-  currentExperiment: 1
   save_path: C:/Users/Thomas/Documents/Cours/Projet semestre 1/Project_Logs/
 --- !u!1 &455710517
 GameObject:
@@ -2303,6 +2302,12 @@ Transform:
   m_Father: {fileID: 209619300}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 135, z: 0}
+--- !u!4 &1920768248 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4483514789422614656, guid: 34fd334bc9a28994dabb708f0486ce7a,
+    type: 3}
+  m_PrefabInstance: {fileID: 8476517839812043538}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1939682355
 GameObject:
   m_ObjectHideFlags: 0
@@ -2679,6 +2684,11 @@ PrefabInstance:
       propertyPath: commandManager
       value: 
       objectReference: {fileID: 403520573}
+    - target: {fileID: 5445160707720369425, guid: 34fd334bc9a28994dabb708f0486ce7a,
+        type: 3}
+      propertyPath: useController
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8476517839895757779, guid: 34fd334bc9a28994dabb708f0486ce7a,
         type: 3}
       propertyPath: fixedCamera
@@ -2689,6 +2699,11 @@ PrefabInstance:
       propertyPath: firstPersonCamera
       value: 
       objectReference: {fileID: 884458423}
+    - target: {fileID: 4482133591124637212, guid: 34fd334bc9a28994dabb708f0486ce7a,
+        type: 3}
+      propertyPath: target
+      value: 
+      objectReference: {fileID: 1920768248}
     - target: {fileID: 4483514789422614656, guid: 34fd334bc9a28994dabb708f0486ce7a,
         type: 3}
       propertyPath: m_LocalPosition.x
