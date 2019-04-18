@@ -104,6 +104,7 @@ public class HandClutchPositionControl : MonoBehaviour
             // Clutch triggered, set reference yaw
             if (Input.GetKeyDown(KeyCode.Mouse0))
             {
+                dronePositionControl.target = transform;
                 referenceYaw = handYaw;
             }
 

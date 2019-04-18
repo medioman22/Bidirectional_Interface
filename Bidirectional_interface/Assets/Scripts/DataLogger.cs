@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using System.IO;
 
 public class DataLogger : MonoBehaviour
@@ -18,16 +19,6 @@ public class DataLogger : MonoBehaviour
 
     // string being the subject name
     public string subjectName;
-
-    // enum to handle the type of experiment
-    public enum TypeOfExpermiment
-    {
-        Controller,
-        MotionCapture
-    }
-    public TypeOfExpermiment currentExperiment;
-    private string[] typeNames = {"Controller", "MotionCapture"};
-
 
     // class containing the data to be logged
     [System.Serializable]
@@ -87,7 +78,18 @@ public class DataLogger : MonoBehaviour
         {
             typeOfCamera = "TPS";
         }
-        final_path = save_path + subjectName + "/" + typeNames[(int)currentExperiment] + "_" + typeOfCamera + ".json";
+
+        string experimentType;
+        if (handControl.useController)
+        {
+            experimentType = "Controller";
+        }
+        else
+        {
+            experimentType = "MotionCapture";
+        }
+
+        final_path = save_path + subjectName + "/" + experimentType + "_" + typeOfCamera + "_" + SceneManager.GetActiveScene().name + ".json";
         if (File.Exists(final_path))
         {
             final_path = MakeUnique(final_path);
@@ -106,7 +108,7 @@ public class DataLogger : MonoBehaviour
         currentLog.controlPosition = positionCtrl.target.position;
         currentLog.controlSpeed = new Vector3(velocityCtrl.desiredVx, 0.0f, velocityCtrl.desiredVz);
         currentLog.desiredYawRate = velocityCtrl.desiredYawRate;
-        if ((int)currentExperiment == 1)
+        if (!handControl.useController)
         {
             currentLog.clutch = handControl.clutchActivated;
             currentLog.mocapPosition = mocap.GetPosition();

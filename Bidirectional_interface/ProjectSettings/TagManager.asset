@@ -7,7 +7,7 @@ TagManager:
   - Drone
   - Wall
   - Obstacle
-  - Target
+  - StartStop
   layers:
   - Default
   - TransparentFX
@@ -18,8 +18,8 @@ TagManager:
   - 
   - 
   - PostProcessing
-  - 
-  - 
+  - Obstacle
+  - Drone
   - 
   - 
   - 
