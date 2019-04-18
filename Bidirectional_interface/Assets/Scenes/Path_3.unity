@@ -918,7 +918,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 403520570}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 22cdae5b0afe14446aa7b6190c1b5a0e, type: 3}
   m_Name: 
@@ -1651,6 +1651,12 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
+--- !u!4 &936938271 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4483514789422614656, guid: 34fd334bc9a28994dabb708f0486ce7a,
+    type: 3}
+  m_PrefabInstance: {fileID: 8476517839812043538}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &961745991 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5445160707720369425, guid: 34fd334bc9a28994dabb708f0486ce7a,
@@ -2750,7 +2756,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1760634894}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 3.1800008, y: 2.5, z: -1.2899997}
+  m_LocalPosition: {x: 3.67, y: 1.821, z: -1.2899997}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1847108718}
@@ -3398,7 +3404,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1991106525}
   m_LocalRotation: {x: -0, y: -0.7071068, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: 1.3200002, y: 2.5, z: 0.05000007}
+  m_LocalPosition: {x: 1.3200002, y: 1.821, z: -0.142}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 80192944}
@@ -3875,6 +3881,11 @@ PrefabInstance:
       propertyPath: commandManager
       value: 
       objectReference: {fileID: 403520573}
+    - target: {fileID: 5445160707720369425, guid: 34fd334bc9a28994dabb708f0486ce7a,
+        type: 3}
+      propertyPath: useController
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8476517839895757779, guid: 34fd334bc9a28994dabb708f0486ce7a,
         type: 3}
       propertyPath: fixedCamera
@@ -3885,6 +3896,16 @@ PrefabInstance:
       propertyPath: firstPersonCamera
       value: 
       objectReference: {fileID: 884458423}
+    - target: {fileID: 8476517839895757779, guid: 34fd334bc9a28994dabb708f0486ce7a,
+        type: 3}
+      propertyPath: FPS
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4482133591124637212, guid: 34fd334bc9a28994dabb708f0486ce7a,
+        type: 3}
+      propertyPath: target
+      value: 
+      objectReference: {fileID: 936938271}
     - target: {fileID: 4483514789422614656, guid: 34fd334bc9a28994dabb708f0486ce7a,
         type: 3}
       propertyPath: m_LocalPosition.x

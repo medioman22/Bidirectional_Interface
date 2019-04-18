@@ -40,3 +40,7 @@ ProjectVersion.txt
 
 # OS X metadata
 .DS_Store
+
+data_analysis/\.ipynb_checkpoints/
+
+data_analysis/Project_Logs/

@@ -1604,6 +1604,12 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1208242562}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!4 &1225867518 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4483514789422614656, guid: 34fd334bc9a28994dabb708f0486ce7a,
+    type: 3}
+  m_PrefabInstance: {fileID: 8476517839812043538}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1231551802
 GameObject:
   m_ObjectHideFlags: 0
@@ -3077,6 +3083,21 @@ PrefabInstance:
       propertyPath: commandManager
       value: 
       objectReference: {fileID: 403520573}
+    - target: {fileID: 5445160707720369425, guid: 34fd334bc9a28994dabb708f0486ce7a,
+        type: 3}
+      propertyPath: useController
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5445160707720369425, guid: 34fd334bc9a28994dabb708f0486ce7a,
+        type: 3}
+      propertyPath: mocapInputRotation
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5445160707720369425, guid: 34fd334bc9a28994dabb708f0486ce7a,
+        type: 3}
+      propertyPath: observationInputRotation
+      value: 90
+      objectReference: {fileID: 0}
     - target: {fileID: 8476517839895757779, guid: 34fd334bc9a28994dabb708f0486ce7a,
         type: 3}
       propertyPath: fixedCamera
@@ -3087,6 +3108,16 @@ PrefabInstance:
       propertyPath: firstPersonCamera
       value: 
       objectReference: {fileID: 884458423}
+    - target: {fileID: 8476517839895757779, guid: 34fd334bc9a28994dabb708f0486ce7a,
+        type: 3}
+      propertyPath: FPS
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4482133591124637212, guid: 34fd334bc9a28994dabb708f0486ce7a,
+        type: 3}
+      propertyPath: target
+      value: 
+      objectReference: {fileID: 1225867518}
     - target: {fileID: 4483514789422614656, guid: 34fd334bc9a28994dabb708f0486ce7a,
         type: 3}
       propertyPath: m_LocalPosition.x
