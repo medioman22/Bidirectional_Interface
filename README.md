@@ -10,3 +10,9 @@ Repository containing the work performed for the semester project entitle "Bidir
 This project contains different subparts. First a common part being to control a drone with one hand by variating its position in space which will be decoded into a drone position.
 
 Then the workflow splitted into two main parts : The first beeing to implement the control of two different drones at the same time using two hands and the second part being to add haptics feedback to the users hand to detect whether the drone is close to an object or not to avoid collisions.
+
+## TODO
+
+Items that are not critical but should be handled eventually:
+* ~~Implement more general data logger based on Interface~~ Don't do
+* Use collision layers in CollisionChecker script (useful to ignore some collision, e.g. floor, other drones, ... )

@@ -36,7 +36,7 @@ public class KeypointControl : MonoBehaviour
         else if (keypoints.Length > 0 && targetIndex >= keypoints.Length)
         {
             targetIndex = keypoints.Length - 1;
-            posController.ignoreOrientation = true;
+            posController.controlYaw = true;
         }
             
 
