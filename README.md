@@ -26,15 +26,20 @@ ssh debian@192.168.7.2
 Then type the password which will actually appear on your screen.
 
 ### Make the motors vibrate
-1) Navigate in your SSH terminal to the Firmware folder of the wearable directory : `cd Wearable-Software/Firmware/src/`.
-2) Launch the Main.py (should require super-user)
+1) Navigate in your SSH terminal to the Firmware folder of the wearable directory and launch the main (should require super-user rights) :
 ```
+cd Wearable-Software/Firmware/src/
 sudo python Main.py
 ```
 3) Now there are 2 ways to make the motor vibrate : You should know that serveral libraries are required to make these scripts work. There is a .yml file in the Interface folder which can be used to directly create an environment with the right libraries.
 
 #### Possibility 1 : Use the UI
-1) In your local clone of the repo, go to the Interface folder and launch the main.py present in the src folder `cd Bidirectional_interface/Haptics/Interface/src/`. It should make a UI pop up. Select the device in the list and change the PWM values to make the motor vibrate.
+1) In your local clone of the repo, go to the Interface folder and launch the main.py present in the src folder 
+```
+cd Bidirectional_interface/Haptics/Interface/src/
+python main.py
+```
+It should make a UI pop up. Select the device in the list and change the PWM values to make the motor vibrate.
 
 #### Possibility 2 : Use the python API
 1) You can use the `test.py` script in the API_Calls folder as an example. Navigate to the last line and modify as you wish the "dim" variable being the identifier for the motors, and the "value" being the actual PWM value.
