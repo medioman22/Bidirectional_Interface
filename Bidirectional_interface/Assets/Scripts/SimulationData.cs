@@ -16,5 +16,7 @@ public static class SimulationData
     public const int nbParametersMocap = 8; // index, pos (3), quaternion (4)
 
     public static readonly Vector3 RoomDimensions = new Vector3(8, 6, 8); // [m^3]
+
+    public const int nbDistanceSensors = 6;
 }
 

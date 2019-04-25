@@ -4,12 +4,23 @@ using UnityEngine;
 
 public class LaserSensors : MonoBehaviour
 {
-    public float frontObstacle;
-    public float backObstacle;
-    public float upObstacle;
-    public float downObstacle;
-    public float leftObstacle;
-    public float rightObstacle;
+    [System.Serializable]
+    public class ObstacleDistances
+    {
+        public float frontObstacle;
+        public float backObstacle;
+        public float upObstacle;
+        public float downObstacle;
+        public float leftObstacle;
+        public float rightObstacle;
+    }
+
+    public ObstacleDistances allDistances;
+
+    void Start()
+    {
+        allDistances = new ObstacleDistances();
+    }
 
     // Update is called once per frame
     void Update()
@@ -29,22 +40,22 @@ public class LaserSensors : MonoBehaviour
         Debug.DrawRay(transform.position, transform.right, Color.red);
 
         if (Physics.Raycast(transform.position, transform.forward, out frontHit)) {
-            frontObstacle = frontHit.distance;
+            allDistances.frontObstacle = frontHit.distance;
         }
         if (Physics.Raycast(transform.position, transform.forward * -1, out backHit)) {
-            backObstacle = backHit.distance;
+            allDistances.backObstacle = backHit.distance;
         }
         if (Physics.Raycast(transform.position, transform.up, out upHit)) {
-            upObstacle = upHit.distance;
+            allDistances.upObstacle = upHit.distance;
         }
         if (Physics.Raycast(transform.position, transform.up * -1, out downHit)) {
-            downObstacle = downHit.distance;
+            allDistances.downObstacle = downHit.distance;
         }
         if (Physics.Raycast(transform.position, transform.right * -1, out leftHit)) {
-            leftObstacle = leftHit.distance;
+            allDistances.leftObstacle = leftHit.distance;
         }
         if (Physics.Raycast(transform.position, transform.right, out rightHit)) {
-            rightObstacle = rightHit.distance;
+            allDistances.rightObstacle = rightHit.distance;
         }
     }
 }
