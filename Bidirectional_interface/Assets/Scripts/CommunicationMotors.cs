@@ -18,7 +18,6 @@ public class CommunicationMotors : MonoBehaviour
     static private int sendingPort;
     IPEndPoint ipEndPoint;
     UdpClient client;
-    //Socket socket;
 
     void Start()
     {
@@ -30,11 +29,6 @@ public class CommunicationMotors : MonoBehaviour
         sendingPort = 8051; //port used to send the distances to python
         ipEndPoint = new IPEndPoint(IPAddress.Parse(localIP), sendingPort);
         client = new UdpClient();
-
-        //socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-        //socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
-        //socket.EnableBroadcast = true;
-        //socket.Bind(new IPEndPoint(IPAddress.Parse(localIP), sendingPort));
     }
 
     private void Update()
@@ -54,7 +48,7 @@ public class CommunicationMotors : MonoBehaviour
             data[(j*4)+2] = curByte[2];
             data[(j*4)+3] = curByte[3];
         }
-        
+
         client.Send(data, data.Length, ipEndPoint);
     }
 
