@@ -13,9 +13,6 @@ Then the workflow splitted into two main parts : The first beeing to implement t
 
 ## Use the BBG
 
-# TO BE FIXED :
-Using the API, I cannot send multiple requests of PWMs. The first works well, but then I have to reset the motors by restarting the Main.py to actually send another request. Pretty annoying.
-
 ### Setup the connection
 1) Connect the BBG to a power supply & let it start
 2) After a while, you will see a new WiFi appear being the board. Connect to it
