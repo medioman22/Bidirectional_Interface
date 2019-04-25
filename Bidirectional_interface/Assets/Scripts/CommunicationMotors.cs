@@ -61,4 +61,14 @@ public class CommunicationMotors : MonoBehaviour
         distances[4] = sensorValues.allDistances.leftObstacle;
         distances[5] = sensorValues.allDistances.rightObstacle;
     }
+
+
+    private void OnApplicationQuit()
+    {
+        for (int i=0; i<SimulationData.nbDistanceSensors; i++)
+        {
+            distances[i] = float.PositiveInfinity;
+        }
+        sendDistancesToPython();
+    }
 }

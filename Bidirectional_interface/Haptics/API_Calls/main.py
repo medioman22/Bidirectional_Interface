@@ -89,12 +89,16 @@ while(True):
             strs = 'ffffff'
             # unpack.
             unpacked = struct.unpack(strs, packet)
+            # parse the data
             fillDict(unpacked)
 
             for orientation in distances_dict.keys():
                 if with_connection:
+                    # if close enough to a wall
                     if (distances_dict[orientation] < DISTANCE_THRESHOLD):
+                        # make the motors vibrate
                         value = distances_dict[orientation] * (-MAXIMUM_MOTOR_INPUT/DISTANCE_THRESHOLD) + MAXIMUM_MOTOR_INPUT # affine transformation
                         c.sendMessages([json.dumps({"dim":  motorsIndexes[orientation], "value": value, "type": "Set", "name": I2C_interface})])
                     else:
+                        # reset motors
                         c.sendMessages([json.dumps({"dim":  motorsIndexes[orientation], "value": 0, "type": "Set", "name": I2C_interface})])
