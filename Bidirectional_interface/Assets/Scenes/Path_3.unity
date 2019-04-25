@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 170076734}
-  m_IndirectSpecularColor: {r: 0.43704656, g: 0.4847455, b: 0.56500673, a: 1}
+  m_IndirectSpecularColor: {r: 0.43704617, g: 0.48474455, b: 0.5650059, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -918,7 +918,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 403520570}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 22cdae5b0afe14446aa7b6190c1b5a0e, type: 3}
   m_Name: 
@@ -3876,36 +3876,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: DroneSimple
       objectReference: {fileID: 0}
-    - target: {fileID: 5445160707720369425, guid: 34fd334bc9a28994dabb708f0486ce7a,
-        type: 3}
-      propertyPath: commandManager
-      value: 
-      objectReference: {fileID: 403520573}
-    - target: {fileID: 5445160707720369425, guid: 34fd334bc9a28994dabb708f0486ce7a,
-        type: 3}
-      propertyPath: useController
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8476517839895757779, guid: 34fd334bc9a28994dabb708f0486ce7a,
-        type: 3}
-      propertyPath: fixedCamera
-      value: 
-      objectReference: {fileID: 1231551804}
-    - target: {fileID: 8476517839895757779, guid: 34fd334bc9a28994dabb708f0486ce7a,
-        type: 3}
-      propertyPath: firstPersonCamera
-      value: 
-      objectReference: {fileID: 884458423}
-    - target: {fileID: 8476517839895757779, guid: 34fd334bc9a28994dabb708f0486ce7a,
-        type: 3}
-      propertyPath: FPS
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4482133591124637212, guid: 34fd334bc9a28994dabb708f0486ce7a,
-        type: 3}
-      propertyPath: target
-      value: 
-      objectReference: {fileID: 936938271}
     - target: {fileID: 4483514789422614656, guid: 34fd334bc9a28994dabb708f0486ce7a,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -3961,6 +3931,36 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5445160707720369425, guid: 34fd334bc9a28994dabb708f0486ce7a,
+        type: 3}
+      propertyPath: commandManager
+      value: 
+      objectReference: {fileID: 403520573}
+    - target: {fileID: 5445160707720369425, guid: 34fd334bc9a28994dabb708f0486ce7a,
+        type: 3}
+      propertyPath: useController
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8476517839895757779, guid: 34fd334bc9a28994dabb708f0486ce7a,
+        type: 3}
+      propertyPath: fixedCamera
+      value: 
+      objectReference: {fileID: 1231551804}
+    - target: {fileID: 8476517839895757779, guid: 34fd334bc9a28994dabb708f0486ce7a,
+        type: 3}
+      propertyPath: firstPersonCamera
+      value: 
+      objectReference: {fileID: 884458423}
+    - target: {fileID: 8476517839895757779, guid: 34fd334bc9a28994dabb708f0486ce7a,
+        type: 3}
+      propertyPath: FPS
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4482133591124637212, guid: 34fd334bc9a28994dabb708f0486ce7a,
+        type: 3}
+      propertyPath: target
+      value: 
+      objectReference: {fileID: 936938271}
     m_RemovedComponents:
     - {fileID: 7536784256544403204, guid: 34fd334bc9a28994dabb708f0486ce7a, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 34fd334bc9a28994dabb708f0486ce7a, type: 3}
@@ -3982,9 +3982,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 631f347c681f1ab4e817e4213d21e644, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  frontObstacle: 0
-  backObstacle: 0
-  upObstacle: 0
-  downObstacle: 0
-  leftObstacle: 0
-  rightObstacle: 0
+  allDistances:
+    frontObstacle: 0
+    backObstacle: 0
+    upObstacle: 0
+    downObstacle: 0
+    leftObstacle: 0
+    rightObstacle: 0
+--- !u!114 &8476517839812043541
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8476517839812043539}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e57b94e5d5a341247ba1ca1c21ed791f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

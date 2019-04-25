@@ -7,23 +7,28 @@ import json
 import sys
 import os
 
-""" 
-sys.path.insert(1, os.path.join(sys.path[0], '../Interface/src'))
-from connections.beagleboneGreenWirelessConnection import BeagleboneGreenWirelessConnection
+DISTANCE_THRESHOLD = 0.5
+MAXIMUM_MOTOR_INPUT = 99
+with_connection = True
+if with_connection:
+    print("Establishing the connection to the BBG device...")
+else:
+    print("Ignoring the connection...")
 
 
+if with_connection:
+    sys.path.insert(1, os.path.join(sys.path[0], '../Interface/src'))
+    from connections.beagleboneGreenWirelessConnection import BeagleboneGreenWirelessConnection
 
-######## Setup BBG connection #######
-c = BeagleboneGreenWirelessConnection()
-I2C_interface = "PCA9685@I2C[1]"
-c.connect()
-print('Status: {}'.format(c.getState()))
-c.sendMessages([json.dumps({"type": "Settings", "name": I2C_interface, "dutyFrequency": '50 Hz'})])
-time.sleep(3)
-c.sendMessages([json.dumps({"type": "Settings", "name": I2C_interface, "scan": False})])
-#####################################
-"""
-
+    ######## Setup BBG connection #######
+    c = BeagleboneGreenWirelessConnection()
+    I2C_interface = "PCA9685@I2C[1]"
+    c.connect()
+    print('Status: {}'.format(c.getState()))
+    c.sendMessages([json.dumps({"type": "Settings", "name": I2C_interface, "dutyFrequency": '50 Hz'})])
+    time.sleep(3)
+    c.sendMessages([json.dumps({"type": "Settings", "name": I2C_interface, "scan": False})])
+    #####################################
 
 ############# setup UDP communication #############
 # function to get the data from Unity
@@ -58,6 +63,13 @@ distances_dict = {  "frontObstacle" : 0,
                     "leftObstacle" : 0,
                     "rightObstacle" : 0 }
 
+motorsIndexes = {  "frontObstacle" : 0,
+                    "backObstacle" : 1,
+                    "upObstacle" : 9,
+                    "downObstacle" : 3,
+                    "leftObstacle" : 4,
+                    "rightObstacle" : 5 }
+
 def fillDict(current_data):
     distances_dict["frontObstacle"] = current_data[0]
     distances_dict["backObstacle"] = current_data[1]
@@ -79,6 +91,10 @@ while(True):
             unpacked = struct.unpack(strs, packet)
             fillDict(unpacked)
 
-
-
-        #c.sendMessages([json.dumps({"dim":  0, "value": 90, "type": "Set", "name": I2C_interface})])
+            for orientation in distances_dict.keys():
+                if with_connection:
+                    if (distances_dict[orientation] < DISTANCE_THRESHOLD):
+                        value = distances_dict[orientation] * (-MAXIMUM_MOTOR_INPUT/DISTANCE_THRESHOLD) + MAXIMUM_MOTOR_INPUT # affine transformation
+                        c.sendMessages([json.dumps({"dim":  motorsIndexes[orientation], "value": value, "type": "Set", "name": I2C_interface})])
+                    else:
+                        c.sendMessages([json.dumps({"dim":  motorsIndexes[orientation], "value": 0, "type": "Set", "name": I2C_interface})])

@@ -41,6 +41,9 @@ ProjectVersion.txt
 # OS X metadata
 .DS_Store
 
+# Python binaries
+*.pyc
+
 data_analysis/\.ipynb_checkpoints/
 
 data_analysis/Project_Logs/
