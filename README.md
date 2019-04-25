@@ -30,7 +30,7 @@ sudo python Main.py
 ```
 3) Now there are 2 ways to make the motor vibrate : You should know that serveral libraries are required to make these scripts work. There is a .yml file in the Interface folder which can be used to directly create an environment with the right libraries.
 
-##### In both cases, you need to define a python environment with all the required libraries. There is a [.yml file](Bidirectional_interface/Haptics/Interface/) that you can use to actually create the right environment.
+##### In both cases, you need to define a python environment with all the required libraries. There is a [.yml file](Bidirectional_interface/Haptics/Interface/) that you can use to actually create the right environment if you're under MacOS. If under windows, there is also a text file containing the requirements to create the right environment.
 
 #### Possibility 1 : Use the UI
 1) In your local clone of the repo, go to the Interface folder and launch the main.py present in the src folder 
