@@ -2906,6 +2906,11 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4482133591124637214, guid: 34fd334bc9a28994dabb708f0486ce7a,
+        type: 3}
+      propertyPath: m_TagString
+      value: Drone
+      objectReference: {fileID: 0}
     - target: {fileID: 5445160707720369425, guid: 34fd334bc9a28994dabb708f0486ce7a,
         type: 3}
       propertyPath: commandManager
@@ -4271,6 +4276,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: DroneSimple
+      objectReference: {fileID: 0}
+    - target: {fileID: 4482133591124637214, guid: 34fd334bc9a28994dabb708f0486ce7a,
+        type: 3}
+      propertyPath: m_TagString
+      value: Drone
       objectReference: {fileID: 0}
     - target: {fileID: 5445160707720369425, guid: 34fd334bc9a28994dabb708f0486ce7a,
         type: 3}
