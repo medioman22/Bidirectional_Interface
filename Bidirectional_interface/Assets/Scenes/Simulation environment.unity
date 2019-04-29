@@ -2602,6 +2602,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5979f023ddb50e745a21b7afe0be5d5c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  commandManager: {fileID: 0}
+  handRoomScaling: 8
+  mocapInputRotation: 0
+  observationInputRotation: 90
+  drawBeamTarget: 1
+  useController: 1
+  controllerSpeed: 0.025
+  controllerRotationSpeed: 3
 --- !u!1 &1485395105
 GameObject:
   m_ObjectHideFlags: 0

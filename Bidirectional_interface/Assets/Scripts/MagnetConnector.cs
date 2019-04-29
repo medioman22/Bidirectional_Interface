@@ -65,7 +65,7 @@ public class MagnetConnector : MonoBehaviour
 
     void OnDrawGizmos()
     {
-        Gizmos.color = Color.red;
+        Gizmos.color = Color.green;
         Gizmos.DrawCube(transform.TransformPoint(anchor), Vector3.one * 0.025f);
     }
 
@@ -95,6 +95,7 @@ public class MagnetConnector : MonoBehaviour
 
         // Created link
         joint = drone.AddComponent(typeof(SpringJoint)) as SpringJoint;
+        joint.autoConfigureConnectedAnchor = false;
         joint.connectedBody = rgbd;
         joint.connectedAnchor = anchor;
         joint.spring = 100f;
