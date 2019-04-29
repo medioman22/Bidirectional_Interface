@@ -52,13 +52,13 @@ public class MagnetConnector : MonoBehaviour
         if (joint == null)
         {
             connected = false;
+            _connectedDroneController = null;
 
             // Enable mocap control if previously attached to a drone
             if (connectedMocapController != null)
             {
                 connectedMocapController.enabled = true;
                 connectedMocapController = null;
-                _connectedDroneController = null;
             }
         }
     }
@@ -75,10 +75,12 @@ public class MagnetConnector : MonoBehaviour
         {
             if (!connected)
             {
-                if (CreateLink(other.gameObject))
-                    connected = true;
-                else
-                    connected = false;
+                // Make sure this collider is the one that was triggered
+                if ((magnetCollider.ClosestPoint(other.transform.position) - other.transform.position).magnitude < SimulationData.DroneSize * 0.6f)
+                {
+                    if (CreateLink(other.gameObject))
+                        connected = true;
+                }
             }
         }
     }

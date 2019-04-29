@@ -153,7 +153,7 @@ public class CooperativeControl : MonoBehaviour
             Vector3 rawRightHandPosition = commandManager.GetPosition(UDPCommandManager.TrackedTargets.RightHand);
             Vector3 rawLeftHandPosition = commandManager.GetPosition(UDPCommandManager.TrackedTargets.LeftHand);
 
-            Quaternion handsRotation = Quaternion.FromToRotation(Vector3.left, rawLeftHandPosition - rawRightHandPosition);
+            Quaternion handsRotation = Quaternion.LookRotation(rawLeftHandPosition - rawRightHandPosition);
             float yaw = handsRotation.eulerAngles.y;
             float pitch = handsRotation.eulerAngles.x;
 
@@ -190,7 +190,7 @@ public class CooperativeControl : MonoBehaviour
             {
                 // Update beam target
                 beamTarget.transform.position += Quaternion.Euler(0, observationInputRotation + mocapInputRotation, 0) * deltaHandCentroid * handRoomScaling;
-                beamTarget.transform.rotation = Quaternion.Euler(pitch, yaw, 0.0f);
+                beamTarget.transform.rotation = Quaternion.Euler(pitch, observationInputRotation + mocapInputRotation + yaw, 0.0f);
 
                 // Set drone targets
                 for (int i = 0; i < connectors.Count; i++)
