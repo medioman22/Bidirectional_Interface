@@ -70,7 +70,7 @@ InputManager:
     axis: 3
     joyNum: 0
   - serializedVersion: 3
-    m_Name: Tilt
+    m_Name: Pitch
     descriptiveName: 
     descriptiveNegativeName: 
     negativeButton: y
@@ -230,7 +230,7 @@ InputManager:
     axis: 3
     joyNum: 0
   - serializedVersion: 3
-    m_Name: Tilt
+    m_Name: Pitch
     descriptiveName: 
     descriptiveNegativeName: 
     negativeButton: 
