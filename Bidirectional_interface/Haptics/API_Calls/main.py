@@ -64,8 +64,8 @@ distances_dict = {  "frontObstacle" : 0,
                     "rightObstacle" : 0 }
 
 motorsIndexes = {  "frontObstacle" : 0,
-                    "backObstacle" : 1,
-                    "upObstacle" : 9,
+                    "backObstacle" : 9,
+                    "upObstacle" : 1,
                     "downObstacle" : 3,
                     "leftObstacle" : 4,
                     "rightObstacle" : 5 }
@@ -91,7 +91,7 @@ while(True):
             unpacked = struct.unpack(strs, packet)
             # parse the data
             fillDict(unpacked)
-
+	
             for orientation in distances_dict.keys():
                 if with_connection:
                     # if close enough to a wall
