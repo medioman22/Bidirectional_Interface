@@ -71,11 +71,11 @@ opposites =     {   "frontObstacle" : "backObstacle",
                     "leftObstacle" : "rightObstacle",
                     "rightObstacle" : "leftObstacle"}
 
-motorsIndexes = {  "frontObstacle" : 0,
+motorsIndexes = {  "frontObstacle" : 4,
                     "backObstacle" : 9,
                     "upObstacle" : 1,
                     "downObstacle" : 3,
-                    "leftObstacle" : 4,
+                    "leftObstacle" : 0,
                     "rightObstacle" : 5 }
 
 def fillDict(current_data):
