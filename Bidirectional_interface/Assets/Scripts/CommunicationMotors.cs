@@ -65,12 +65,13 @@ public class CommunicationMotors : MonoBehaviour
 
     private void OnApplicationQuit()
     {
+        for (int i=0; i<SimulationData.nbDistanceSensors; i++)
+        {
+            distances[i] = float.PositiveInfinity;
+        }
+        
         for (int j = 0; j<20; j++)
         {
-            for (int i=0; i<SimulationData.nbDistanceSensors; i++)
-            {
-                distances[i] = float.PositiveInfinity;
-            }
             sendDistancesToPython();
         }
     }
