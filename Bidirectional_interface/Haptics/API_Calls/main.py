@@ -72,9 +72,9 @@ opposites =     {   "frontObstacle" : "backObstacle",
                     "rightObstacle" : "leftObstacle"}
 
 motorsIndexes = {  "frontObstacle" : 4,
-                    "backObstacle" : 9,
-                    "upObstacle" : 1,
-                    "downObstacle" : 3,
+                    "backObstacle" : 3,
+                    "upObstacle" : 9,
+                    "downObstacle" : 1,
                     "leftObstacle" : 0,
                     "rightObstacle" : 5 }
 
