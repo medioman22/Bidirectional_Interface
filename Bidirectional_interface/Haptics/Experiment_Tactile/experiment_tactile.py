@@ -16,7 +16,7 @@ import os
 # either 1 or 2
 # 1: timing experiment
 # 2: detection experiment
-EXPERIMENT = 2
+EXPERIMENT = 1
 SUBJECT_NAME = "Matteo"
 ############################
 ############################
@@ -62,10 +62,13 @@ motor_mapping = {"w" : "frontObstacle",
 
 # timing experiment
 if EXPERIMENT == 1:
-
+	print("############################################################################")
+	print("############################################################################")
 	print("Running the reaction time analysis....")
+	time.sleep(3)
 	print("Please push the escape bar as soon as you feel a motor vibrate, no matter which motor.")
-	time.sleep(1)
+	time.sleep(3)
+	print("Starting the experiment...")
 
     # array containing the reaction times
 	times = []
@@ -87,7 +90,7 @@ if EXPERIMENT == 1:
 		c.sendMessages([json.dumps({"dim":  motor, "value": 0, "type": "Set", "name": I2C_interface})])
 		print("Finished run", i+1, "over", N_TEST)
 
-	with open("results_1/results_"+SUBJECT_NAME+".csv", 'w', newline='') as myfile:
+	with open("results_time/results_"+SUBJECT_NAME+".csv", 'w', newline='') as myfile:
 		wr = csv.writer(myfile, quoting=csv.QUOTE_ALL)
 		wr.writerow(times)
 
@@ -98,16 +101,29 @@ if EXPERIMENT == 1:
 
 # detection experiment
 elif EXPERIMENT == 2:
+	print("############################################################################")
+	print("############################################################################")
+
 	print("Running the identification experiment ...")
+	time.sleep(3)
 	print("You will feel sequentially different motors vibrate. Try to identify which motor vibrate only with the tactile information.")
 	print("Each direction is mapped to a specific key.")
+	time.sleep(3)
 	print("Here is a recap of the corresponding key for each direction :")
-	print(" Front : w")
-	print(" Back : s")
-	print(" Left : a")
-	print(" Right : d")
-	print(" Up : o")
-	print(" Down : l")
+	time.sleep(1)
+	print("Front : w")
+	time.sleep(1)
+	print("Back : s")
+	time.sleep(1)
+	print("Left : a")
+	time.sleep(1)
+	print("Right : d")
+	time.sleep(1)
+	print("Up : o")
+	time.sleep(1)
+	print("Down : l")
+	time.sleep(2)
+	print("Starting the experiment...")
 
 	time.sleep(1)
 
@@ -140,7 +156,7 @@ elif EXPERIMENT == 2:
 		time.sleep(1)
 		print("Finished run", i+1, "over", N_TEST, " You answered : ", motor_mapping[key_pressed])
 
-	with open("results_2/results_"+SUBJECT_NAME+".csv", 'w', newline='') as myfile:
+	with open("results_identification/results_"+SUBJECT_NAME+".csv", 'w', newline='') as myfile:
 		wr = csv.writer(myfile, quoting=csv.QUOTE_ALL)
 		wr.writerow(sent_motor)
 		wr.writerow(identified_motors)
