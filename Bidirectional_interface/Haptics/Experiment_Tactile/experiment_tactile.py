@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import random
+import time, msvcrt
+import json, csv
+import sys
+import os
 #####################################################################
 #####################################################################
 #####################################################################
@@ -8,20 +12,18 @@ import random
 #####################################################################
 #####################################################################
 #####################################################################
-import time, msvcrt
-import json, csv
-import sys
-import os
 
 # either 1 or 2
 # 1: timing experiment
 # 2: detection experiment
 EXPERIMENT = 2
 SUBJECT_NAME = "Matteo"
+############################
+############################
 
 MOTOR_INPUT = 80
 N_TEST = 10
-with_connection = True
+with_connection = False
 
 MEAN_TIME = 0.45
 TIME_OFFSET = 3
@@ -60,72 +62,92 @@ motor_mapping = {"w" : "frontObstacle",
 
 # timing experiment
 if EXPERIMENT == 1:
+
+	print("Running the reaction time analysis....")
+	print("Please push the escape bar as soon as you feel a motor vibrate, no matter which motor.")
+	time.sleep(1)
+
     # array containing the reaction times
-    times = []
+	times = []
 
-    for i in range(N_TEST):
-        motor = random.choice(motor_list)
-        # sleep a certain amount of time (randomized)
-        time.sleep(random.uniform(0.200,5))
+	for i in range(N_TEST):
+		motor = random.choice(motor_list)
+		# sleep a certain amount of time (randomized)
+		time.sleep(random.uniform(0.200,5))
 
-        c.sendMessages([json.dumps({"dim":  motor, "value": MOTOR_INPUT, "type": "Set", "name": I2C_interface})])
-        beg = time.time()
+		c.sendMessages([json.dumps({"dim":  motor, "value": MOTOR_INPUT, "type": "Set", "name": I2C_interface})])
+		beg = time.time()
 
-        # wait the key pressing
-        key = msvcrt.getch()
+		# wait the key pressing
+		key = msvcrt.getch()
 
-        elapsed = time.time() - beg
-        times.append(elapsed)
+		elapsed = time.time() - beg
+		times.append(elapsed)
 
-        c.sendMessages([json.dumps({"dim":  motor, "value": 0, "type": "Set", "name": I2C_interface})])
-        print("Finished run", i+1, "over", N_TEST)
+		c.sendMessages([json.dumps({"dim":  motor, "value": 0, "type": "Set", "name": I2C_interface})])
+		print("Finished run", i+1, "over", N_TEST)
 
-    with open("results_1/results_"+SUBJECT_NAME+".csv", 'w', newline='') as myfile:
-        wr = csv.writer(myfile, quoting=csv.QUOTE_ALL)
-        wr.writerow(times)
+	with open("results_1/results_"+SUBJECT_NAME+".csv", 'w', newline='') as myfile:
+		wr = csv.writer(myfile, quoting=csv.QUOTE_ALL)
+		wr.writerow(times)
+
+	print("Experiment finished. Thanks !!")
 
     # to make time to the queries for stopping the motors to arrive
-    time.sleep(3)
+	time.sleep(3)
 
 # detection experiment
 elif EXPERIMENT == 2:
-    sent_motor = []
-    identified_motors = []
+	print("Running the identification experiment ...")
+	print("You will feel sequentially different motors vibrate. Try to identify which motor vibrate only with the tactile information.")
+	print("Each direction is mapped to a specific key.")
+	print("Here is a recap of the corresponding key for each direction :")
+	print(" Front : w")
+	print(" Back : s")
+	print(" Left : a")
+	print(" Right : d")
+	print(" Up : o")
+	print(" Down : l")
 
-    for i in range(N_TEST):
-        motor = random.choice(motor_list)
-        sent_motor.append(motorsIndexes[motor])
+	time.sleep(1)
 
-        # just to put a difference between the runs
-        time.sleep(2)
+	sent_motor = []
+	identified_motors = []
 
-        c.sendMessages([json.dumps({"dim":  motor, "value": MOTOR_INPUT, "type": "Set", "name": I2C_interface})])
-        time.sleep(MEAN_TIME)
-        c.sendMessages([json.dumps({"dim":  motor, "value": 0, "type": "Set", "name": I2C_interface})])
+	for i in range(N_TEST):
+		motor = random.choice(motor_list)
+		sent_motor.append(motorsIndexes[motor])
 
-        # added an offset
-        # if key pressed within the time, outputs what has been pressed. Else
-        # outputs a space.
-        time.sleep(TIME_OFFSET)
-        print("Timeout")
-        if msvcrt.kbhit():
-            key_pressed = msvcrt.getch().decode("utf-8")
-            identified_motors.append(motor_mapping[key_pressed])
-        else:
-            identified_motors.append(" ")
+		# just to put a difference between the runs
+		time.sleep(2)
 
-        # just to put a difference between the runs
-        time.sleep(1)
-        print("Finished run", i+1, "over", N_TEST, " You answered : ", motor_mapping[key_pressed])
+		c.sendMessages([json.dumps({"dim":  motor, "value": MOTOR_INPUT, "type": "Set", "name": I2C_interface})])
+		time.sleep(MEAN_TIME)
+		c.sendMessages([json.dumps({"dim":  motor, "value": 0, "type": "Set", "name": I2C_interface})])
 
-    with open("results_2/results_"+SUBJECT_NAME+".csv", 'w', newline='') as myfile:
-        wr = csv.writer(myfile, quoting=csv.QUOTE_ALL)
-        wr.writerow(sent_motor)
-        wr.writerow(identified_motors)
+		# added an offset
+		# if key pressed within the time, outputs what has been pressed. Else
+		# outputs a space.
+		time.sleep(TIME_OFFSET)
+		print("Timeout")
+		if msvcrt.kbhit():
+			key_pressed = msvcrt.getch().decode("utf-8")
+			identified_motors.append(motor_mapping[key_pressed])
+		else:
+			identified_motors.append(" ")
 
-    # to make time to the queries for stopping the motors to arrive
-    time.sleep(3)
+		# just to put a difference between the runs
+		time.sleep(1)
+		print("Finished run", i+1, "over", N_TEST, " You answered : ", motor_mapping[key_pressed])
+
+	with open("results_2/results_"+SUBJECT_NAME+".csv", 'w', newline='') as myfile:
+		wr = csv.writer(myfile, quoting=csv.QUOTE_ALL)
+		wr.writerow(sent_motor)
+		wr.writerow(identified_motors)
+
+	# to make time to the queries for stopping the motors to arrive
+	time.sleep(3)
 
 else:
-    print("Not a valid experiment")
-    exit(0)
+	print("Not a valid experiment")
+	exit(0)
