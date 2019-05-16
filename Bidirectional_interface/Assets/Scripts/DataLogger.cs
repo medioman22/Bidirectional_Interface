@@ -14,6 +14,7 @@ public class DataLogger : MonoBehaviour
     public CollisionChecker collision;
     public Rigidbody drone;
     public HandClutchPositionControl handControl;
+    public LaserSensors sensors;
 
     // -------------------------------------------------------------------
 
@@ -36,6 +37,14 @@ public class DataLogger : MonoBehaviour
         // Output
         public Vector3 dronePosition;
         public Vector3 droneSpeed;
+
+        public float frontObstacle;
+        public float backObstacle;
+        public float leftObstacle;
+        public float rightObstacle;
+        public float upObstacle;
+        public float downObstacle;
+
         public bool collision;
     }
     private Logger currentLog;
@@ -119,6 +128,14 @@ public class DataLogger : MonoBehaviour
         currentLog.dronePosition = drone.position;
         currentLog.droneSpeed = drone.velocity;
         currentLog.collision = collision.IsColliding;
+        // sensors
+        currentLog.frontObstacle = sensors.allDistances.frontObstacle;
+        currentLog.backObstacle = sensors.allDistances.backObstacle;
+        currentLog.leftObstacle = sensors.allDistances.leftObstacle;
+        currentLog.rightObstacle = sensors.allDistances.rightObstacle;
+        currentLog.upObstacle = sensors.allDistances.upObstacle;
+        currentLog.downObstacle = sensors.allDistances.downObstacle;
+
         cumulatedLogs.allLogs.Add(currentLog);
     }
 
