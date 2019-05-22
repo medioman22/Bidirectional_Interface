@@ -16,17 +16,16 @@ import os
 # either 1 or 2
 # 1: timing experiment
 # 2: detection experiment
-EXPERIMENT = 1
-SUBJECT_NAME = "Matteo"
+EXPERIMENT = 2
+SUBJECT_NAME = "Thomas"
 ############################
 ############################
 
-MOTOR_INPUT = 80
-N_TEST = 10
-with_connection = False
+MOTOR_INPUT = 90
+N_TEST = 20
+with_connection = True
 
 MEAN_TIME = 0.45
-TIME_OFFSET = 3
 
 if with_connection:
     print("Establishing the connection to the BBG device...")
@@ -57,7 +56,8 @@ motor_mapping = {"w" : "frontObstacle",
                  "o" : "upObstacle",
                  "l" : "downObstacle",
                  "a" : "leftObstacle",
-                 "d" : "rightObstacle"}
+                 "d" : "rightObstacle",
+				 " " : "<< nothing >>"}
 
 
 # timing experiment
@@ -107,21 +107,52 @@ elif EXPERIMENT == 2:
 	print("Running the identification experiment ...")
 	time.sleep(3)
 	print("You will feel sequentially different motors vibrate. Try to identify which motor vibrate only with the tactile information.")
-	print("Each direction is mapped to a specific key.")
+	print("Tell the direction out loud.")
 	time.sleep(3)
-	print("Here is a recap of the corresponding key for each direction :")
+	print("Here is what each vibration for each direction feels like : ")
 	time.sleep(1)
-	print("Front : w")
+
+	c.sendMessages([json.dumps({"dim":  4, "value": MOTOR_INPUT, "type": "Set", "name": I2C_interface})])
+	print("You are now feeling a front obstacle")
 	time.sleep(1)
-	print("Back : s")
+	c.sendMessages([json.dumps({"dim":  4, "value": 0, "type": "Set", "name": I2C_interface})])
+
+	time.sleep(2)
+
+	c.sendMessages([json.dumps({"dim":  3, "value": MOTOR_INPUT, "type": "Set", "name": I2C_interface})])
+	print("You are now feeling a back obstacle")
 	time.sleep(1)
-	print("Left : a")
+	c.sendMessages([json.dumps({"dim":  3, "value": 0, "type": "Set", "name": I2C_interface})])
+
+	time.sleep(2)
+
+	c.sendMessages([json.dumps({"dim":  0, "value": MOTOR_INPUT, "type": "Set", "name": I2C_interface})])
+	print("You are now feeling a left obstacle")
 	time.sleep(1)
-	print("Right : d")
+	c.sendMessages([json.dumps({"dim":  0, "value": 0, "type": "Set", "name": I2C_interface})])
+
+	time.sleep(2)
+
+	c.sendMessages([json.dumps({"dim":  5, "value": MOTOR_INPUT, "type": "Set", "name": I2C_interface})])
+	print("You are now feeling a right obstacle")
 	time.sleep(1)
-	print("Up : o")
+	c.sendMessages([json.dumps({"dim":  5, "value": 0, "type": "Set", "name": I2C_interface})])
+
+	time.sleep(2)
+
+	c.sendMessages([json.dumps({"dim":  9, "value": MOTOR_INPUT, "type": "Set", "name": I2C_interface})])
+	print("You are now feeling an up obstacle")
 	time.sleep(1)
-	print("Down : l")
+	c.sendMessages([json.dumps({"dim":  9, "value": 0, "type": "Set", "name": I2C_interface})])
+
+	time.sleep(2)
+
+	c.sendMessages([json.dumps({"dim":  1, "value": MOTOR_INPUT, "type": "Set", "name": I2C_interface})])
+	print("You are now feeling a down obstacle")
+	time.sleep(1)
+	c.sendMessages([json.dumps({"dim":  1, "value": 0, "type": "Set", "name": I2C_interface})])
+
+	print("Testing done...")
 	time.sleep(2)
 	print("Starting the experiment...")
 
@@ -144,12 +175,13 @@ elif EXPERIMENT == 2:
 		# added an offset
 		# if key pressed within the time, outputs what has been pressed. Else
 		# outputs a space.
-		time.sleep(TIME_OFFSET)
+		time.sleep(4)
 		print("Timeout")
 		if msvcrt.kbhit():
 			key_pressed = msvcrt.getch().decode("utf-8")
 			identified_motors.append(motor_mapping[key_pressed])
 		else:
+			key_pressed = " "
 			identified_motors.append(" ")
 
 		# just to put a difference between the runs
@@ -163,6 +195,8 @@ elif EXPERIMENT == 2:
 
 	# to make time to the queries for stopping the motors to arrive
 	time.sleep(3)
+
+	print("Experiment finished. Thanks !!")
 
 else:
 	print("Not a valid experiment")
