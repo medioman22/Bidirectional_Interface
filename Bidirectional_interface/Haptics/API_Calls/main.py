@@ -7,7 +7,7 @@ import json
 import sys
 import os
 
-DISTANCE_THRESHOLD = 0.5
+DISTANCE_THRESHOLD = 0.3
 MAXIMUM_MOTOR_INPUT = 99
 with_connection = True
 
@@ -38,13 +38,13 @@ def get_data(my_socket):
     # read data as long as packets are coming
     data_ready = False
     data_ready = select.select([my_socket],[],[],0)[0]
-    
+
     while data_ready:
         t, _ = my_socket.recvfrom(1024) # buffer size is 1024 bytes
         data.append(t)
         data_ready = False
         data_ready = select.select([my_socket],[],[],0)[0]
-    return data 
+    return data
 
 # local IP. Do not change that
 UDP_IP = "127.0.0.1"
@@ -93,7 +93,7 @@ while(True):
     time.sleep(0.05)
     if len(distances):
         print("acquired distances, total number = ", len(distances))
-        
+
         # send only the last packet otherwise too many packets sent too fast
         packet = distances[-1]
         # 6 floats
@@ -108,7 +108,7 @@ while(True):
                 # if close enough to a wall
                 if (distances_dict[orientation] < DISTANCE_THRESHOLD):
                     if(distances_dict[opposites[orientation]] < DISTANCE_THRESHOLD):
-                        
+
                         # take difference. Ignore if negative
                         value = (distances_dict[orientation] * (-MAXIMUM_MOTOR_INPUT/DISTANCE_THRESHOLD) + MAXIMUM_MOTOR_INPUT) \
                                     - (distances_dict[opposites[orientation]] * (-MAXIMUM_MOTOR_INPUT/DISTANCE_THRESHOLD) + MAXIMUM_MOTOR_INPUT)
