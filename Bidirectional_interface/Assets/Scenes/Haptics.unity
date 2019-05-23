@@ -368,7 +368,7 @@ Light:
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10
   m_Shadows:
-    m_Type: 2
+    m_Type: 0
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -759,7 +759,7 @@ MonoBehaviour:
   drone: {fileID: 5445160707720369428}
   handControl: {fileID: 961745991}
   sensors: {fileID: 8476517839812043540}
-  subjectName: Thomas
+  subjectName: Matteo
   save_path: C:\Users\SymbioticDrone\Documents\Bidirectional_Interface\Bidirectional_interface\Haptics\Logs_Experiment\
 --- !u!1 &457120732
 GameObject:
@@ -3355,6 +3355,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: DroneSimple
       objectReference: {fileID: 0}
+    - target: {fileID: 4482133591124637214, guid: 34fd334bc9a28994dabb708f0486ce7a,
+        type: 3}
+      propertyPath: m_Layer
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 5445160707720369425, guid: 34fd334bc9a28994dabb708f0486ce7a,
         type: 3}
       propertyPath: commandManager
@@ -3465,6 +3470,56 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4483297726663269909, guid: 34fd334bc9a28994dabb708f0486ce7a,
+        type: 3}
+      propertyPath: m_Layer
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 4483297726663269889, guid: 34fd334bc9a28994dabb708f0486ce7a,
+        type: 3}
+      propertyPath: m_Layer
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 4483297726663269891, guid: 34fd334bc9a28994dabb708f0486ce7a,
+        type: 3}
+      propertyPath: m_Layer
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 4483297726663269905, guid: 34fd334bc9a28994dabb708f0486ce7a,
+        type: 3}
+      propertyPath: m_Layer
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 4483297726663269907, guid: 34fd334bc9a28994dabb708f0486ce7a,
+        type: 3}
+      propertyPath: m_Layer
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 4483297726663269911, guid: 34fd334bc9a28994dabb708f0486ce7a,
+        type: 3}
+      propertyPath: m_Layer
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 4483297726663269913, guid: 34fd334bc9a28994dabb708f0486ce7a,
+        type: 3}
+      propertyPath: m_Layer
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 4483297726663269915, guid: 34fd334bc9a28994dabb708f0486ce7a,
+        type: 3}
+      propertyPath: m_Layer
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 4483297726663269917, guid: 34fd334bc9a28994dabb708f0486ce7a,
+        type: 3}
+      propertyPath: m_Layer
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 4483297726663269919, guid: 34fd334bc9a28994dabb708f0486ce7a,
+        type: 3}
+      propertyPath: m_Layer
+      value: 10
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 7536784256544403204, guid: 34fd334bc9a28994dabb708f0486ce7a, type: 3}
     - {fileID: 5444737748578754804, guid: 34fd334bc9a28994dabb708f0486ce7a, type: 3}
@@ -3501,7 +3556,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8476517839812043539}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e57b94e5d5a341247ba1ca1c21ed791f, type: 3}
   m_Name: 
