@@ -713,7 +713,6 @@ MonoBehaviour:
   drone: {fileID: 5445160707720369428}
   handControl: {fileID: 961745991}
   subjectName: Antoine
-  currentExperiment: 1
   save_path: C:/Users/Thomas/Documents/Cours/Projet semestre 1/Project_Logs/
 --- !u!1 &406908238
 GameObject:
@@ -1650,6 +1649,76 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1162274212}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &1175194011
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1175194013}
+  - component: {fileID: 1175194012}
+  - component: {fileID: 1175194014}
+  m_Layer: 0
+  m_Name: LogPlotter
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1175194012
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1175194011}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd45c5d4e4fb5fa4e9edca42420053ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  filepath: C:/Users/havy/Desktop/Project_Logs/Initial Arena/Yann/Controller_FPS.json
+  plotObject: 1
+  color: {r: 0.6320754, g: 0.19159368, b: 0.14609292, a: 0}
+  size: 0.05
+  animated: 0
+  startDelay: 1
+  timeScale: 1
+--- !u!4 &1175194013
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1175194011}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 8
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1175194014
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1175194011}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd45c5d4e4fb5fa4e9edca42420053ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  filepath: C:/Users/havy/Desktop/Project_Logs/3 Paths/Max/Controller_FPS_Path_1.json
+  plotObject: 1
+  color: {r: 0, g: 1, b: 1, a: 1}
+  size: 0.1
+  animated: 0
+  startDelay: 1
+  timeScale: 1
 --- !u!1 &1231551802
 GameObject:
   m_ObjectHideFlags: 0
