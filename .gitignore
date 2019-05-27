@@ -59,3 +59,5 @@ data_analysis/Initial_Arena/
 data_analysis/Learning_Curve/
 
 *.jpg
+
+data_analysis/confusion\.png
