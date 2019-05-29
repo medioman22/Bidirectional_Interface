@@ -61,3 +61,5 @@ data_analysis/Learning_Curve/
 *.jpg
 
 data_analysis/confusion\.png
+
+data_analysis/hapt_mocap/
