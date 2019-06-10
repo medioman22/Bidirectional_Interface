@@ -5,14 +5,18 @@
 # Bidirectional Interface I & II
 Repository containing the work performed for the semester project entitle "Bidirectional wearable interface for mobile robot teleoperation" performed at the LIS (EPFL).
 
+Authors :
+**Antoine Weber**
+**Thomas Havy**
 
 ## Structure
-This project contains different subparts. First a common part being to control a drone with one hand by variating its position in space which will be decoded into a drone position.
+The master branch contains the common work of both the authors. Indeed, the first part of this project was to implement a hand control interface to control a drone in position.
+The pose of the hand was captured using an OptiTrack system, and was then sent to the Unity game engine that embedded a drone simulator.
+The master branch also includes different arenas in Unity that were tested during thist first common part.
 
-Then the workflow splitted into two main parts : The first beeing to implement the control of two different drones at the same time using two hands and the second part being to add haptics feedback to the users hand to detect whether the drone is close to an object or not to avoid collisions.
+## Haptics branch
+**Antoine Weber**
+This branch contains the work performed to add haptic feedback to the developed hand interface.
+Haptic feedback were added to the interface to try to improve and accelerate the learning procedure of the interface. For the sake of this project, the feedback was implemented on a glove and was representing the distance to obstacles in all 6 3D directions.
 
-## TODO
-
-Items that are not critical but should be handled eventually:
-* ~~Implement more general data logger based on Interface~~ Don't do
-* Use collision layers in CollisionChecker script (useful to ignore some collision, e.g. floor, other drones, ... )
+Hence, this branch contains a different arena tested exclusively to validate the haptic device. Moreover, it also contains different python scripts that were used to communicate the different distances of the drone to the walls to a BBG card which was connected to the motor drives used for the tactile feedback.
