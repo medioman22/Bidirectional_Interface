@@ -38,12 +38,12 @@ public class HandClutchPositionControl : MonoBehaviour
     private Vector3 oldRawHandPosition;
     private float referenceYaw = 0.0f;
 
+    private float fixedYaw = 0.0f;
+
     void Start()
     {
         dronePositionControl = GetComponent<PositionControl>();
         droneVelocityControl = GetComponent<VelocityControl>();
-
-        dronePositionControl.controlYaw = false;
 
         // This one is optional, thus cameraPosition can be null
         cameraPosition = GetComponent<DroneCamera>();
@@ -52,6 +52,15 @@ public class HandClutchPositionControl : MonoBehaviour
         {
             cameraViewRotation = cameraPosition.transform.eulerAngles.y;
             oldCameraViewRotation = cameraViewRotation;
+
+            if (cameraPosition.FPS)
+                dronePositionControl.controlYaw = false;
+            else
+            {
+                dronePositionControl.controlYaw = true;
+                fixedYaw = transform.eulerAngles.y;
+                dronePositionControl.targetYaw = fixedYaw;
+            }
         }
 
         // Instantiate hand target
@@ -80,7 +89,11 @@ public class HandClutchPositionControl : MonoBehaviour
             handTarget.transform.position += Quaternion.Euler(0, observationInputRotation, 0) * direction * controllerSpeed;
 
             dronePositionControl.target = handTarget.transform;
-            droneVelocityControl.desiredYawRate = r * controllerRotationSpeed;
+
+            if (cameraPosition != null && cameraPosition.FPS)
+                droneVelocityControl.desiredYawRate = r * controllerRotationSpeed;
+            else if (cameraPosition != null && !cameraPosition.FPS)
+                dronePositionControl.targetYaw = fixedYaw;
         }
         else // Mocap inputs
         {
@@ -108,17 +121,27 @@ public class HandClutchPositionControl : MonoBehaviour
                 referenceYaw = handYaw;
             }
 
+            // In TPV, we keep the drone yaw fixed
+            if (cameraPosition != null && !cameraPosition.FPS)
+            {
+                dronePositionControl.targetYaw = fixedYaw;
+            }
+
             // Clutch activated
             if (Input.GetKey(KeyCode.Mouse0))
             {
                 clutchActivated = true;
-                droneVelocityControl.desiredYawRate = Mathf.DeltaAngle(referenceYaw, handYaw) * rotationSpeedScaling;
+                 if (cameraPosition != null && cameraPosition.FPS)
+                    droneVelocityControl.desiredYawRate = Mathf.DeltaAngle(referenceYaw, handYaw) * rotationSpeedScaling;
             }
             else
             {
                 // Update drone target
                 clutchActivated = false;
-                droneVelocityControl.desiredYawRate = 0.0f;
+
+                if (cameraPosition != null && cameraPosition.FPS)
+                    droneVelocityControl.desiredYawRate = 0.0f;
+
                 handTarget.transform.position += Quaternion.Euler(0, observationInputRotation + mocapInputRotation, 0) * deltaHandPosition * handRoomScaling;
                 dronePositionControl.target = handTarget.transform;
             }
