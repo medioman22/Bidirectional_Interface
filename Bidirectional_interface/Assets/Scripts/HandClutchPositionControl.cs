@@ -6,7 +6,8 @@ using UnityEngine;
 [RequireComponent(typeof(VelocityControl))]
 public class HandClutchPositionControl : MonoBehaviour
 {
-    public UDPCommandManager commandManager;
+    public int handRigidbodyID = 1;
+    private OptitrackStreamingClient streamingClient;
     private PositionControl dronePositionControl;
     private VelocityControl droneVelocityControl;
     private DroneCamera cameraPosition;
@@ -15,11 +16,12 @@ public class HandClutchPositionControl : MonoBehaviour
     [HideInInspector]
     public bool clutchActivated = false;
 
-    // mocapInputRotation = 0 --> you are facing the wall, and have the computers to your left and the entrance door to your right.
-    // mocapInputRotation = -90 --> you are facing the computers
-    // mocapInputRotation = 90 --> you have the computers behind you
+    // mocapInputRotation = 90 --> you are facing the wall, and have the computers to your left and the entrance door to your right.
+    // mocapInputRotation = -90 --> you are facing the wall, and have the computers to your right.
+    // mocapInputRotation = 180 --> you are facing the computers
+    // mocapInputRotation = 0 --> you have the computers behind you
     [Tooltip("Change forward direction (z-axis) for mocap")]
-    public float mocapInputRotation = 0.0f;
+    public float mocapInputRotation = 90.0f;
     public float observationInputRotation = 0.0f;
 
     public float rotationSpeedScaling = 0.02f;
@@ -35,10 +37,30 @@ public class HandClutchPositionControl : MonoBehaviour
     private float cameraViewRotation = 0.0f;
     private float oldCameraViewRotation = 0.0f;
 
+    private Vector3 rawHandPosition = Vector3.zero;
+    private Quaternion rawHandRotation = Quaternion.identity;
     private Vector3 oldRawHandPosition;
     private float referenceYaw = 0.0f;
 
     private float fixedYaw = 0.0f;
+
+    // For logger
+    public Vector3 MocapHandPosition
+    {
+        get
+        {
+            return rawHandPosition;
+        }
+    }
+
+    // For logger
+    public Quaternion MocapHandRotation
+    {
+        get
+        {
+            return rawHandRotation;
+        }
+    }
 
     void Start()
     {
@@ -67,6 +89,14 @@ public class HandClutchPositionControl : MonoBehaviour
         handTarget = new GameObject("Hand Target");
         handTarget.transform.localScale = 2.0f * SimulationData.DroneSize * Vector3.one;
         handTarget.transform.position = dronePositionControl.transform.position;
+
+        streamingClient = OptitrackStreamingClient.FindDefaultClient();
+
+        // If we still couldn't find one, disable this component.
+        if (streamingClient == null)
+        {
+            Debug.LogError("Streaming client not found, place a streaming client in the scene.");
+        }
     }
 
     void Update()
@@ -97,8 +127,12 @@ public class HandClutchPositionControl : MonoBehaviour
         }
         else // Mocap inputs
         {
-            Vector3 rawHandPosition = commandManager.GetPosition();
-            Quaternion rawHandRotation = commandManager.GetQuaternion();
+            OptitrackRigidBodyState rgbdOptitrack = streamingClient.GetLatestRigidBodyState(handRigidbodyID);
+            if (rgbdOptitrack != null)
+            {
+                rawHandPosition = rgbdOptitrack.Pose.Position;
+                rawHandRotation = rgbdOptitrack.Pose.Orientation;
+            }
 
             Vector3 deltaHandPosition = rawHandPosition - oldRawHandPosition;
             float handYaw = rawHandRotation.eulerAngles.y;

@@ -31,4 +31,18 @@ public class CollisionChecker : MonoBehaviour
         if (collisionCount < 0)
             collisionCount = 0;
     }
+
+    void OnCollisionEnter(Collision collision)
+    {
+        collisionCount++;
+    }
+
+    void OnCollisionExit(Collision collision)
+    {
+        collisionCount--;
+
+        // Sanity check
+        if (collisionCount < 0)
+            collisionCount = 0;
+    }
 }

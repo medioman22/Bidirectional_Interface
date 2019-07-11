@@ -46,6 +46,8 @@ ProjectVersion.txt
 
 data_analysis/\.ipynb_checkpoints/
 
+Bidirectional_interface/SimulationLogs/
+
 data_analysis/Project_Logs/
 
 Bidirectional_interface/Haptics/Experiment_Tactile/results_identification/

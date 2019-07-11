@@ -6,20 +6,26 @@ using System.IO;
 
 public class DataLogger : MonoBehaviour
 {
+    public GameObject drone;
+
     // all the classes to get informations
-    public UDPCommandManager mocap;
-    public PositionControl positionCtrl;
-    public VelocityControl velocityCtrl;
-    public DroneCamera cameraPos;
-    public CollisionChecker collision;
-    public Rigidbody drone;
-    public HandClutchPositionControl handControl;
-    public LaserSensors sensors;
+    private PositionControl positionCtrl;
+    private VelocityControl velocityCtrl;
+    private DroneCamera cameraPos;
+    private CollisionChecker collision;
+    private Rigidbody droneRgbd;
+    private HandClutchPositionControl handControl;
+    private LaserSensors sensors;
 
     // -------------------------------------------------------------------
 
-    // string being the subject name
     public string subjectName;
+    public string save_path = "c:/Users/aweber/Desktop/Simulation_Logs/";
+    private string final_path;
+
+    public bool recording = true;
+
+    // -------------------------------------------------------------------
 
     // class containing the data to be logged
     [System.Serializable]
@@ -61,13 +67,17 @@ public class DataLogger : MonoBehaviour
     }
     private LoggerCollection cumulatedLogs;
 
-    // -------------------------------------------------------------------
-
-    public string save_path = "c:/Users/aweber/Desktop/Simulation_Logs/";
-    private string final_path;
-
     private void Start()
     {
+        // all the classes to get informations
+        positionCtrl = drone.GetComponent<PositionControl>();
+        velocityCtrl = drone.GetComponent<VelocityControl>();
+        cameraPos = drone.GetComponent<DroneCamera>();
+        collision = drone.GetComponent<CollisionChecker>();
+        droneRgbd = drone.GetComponent<Rigidbody>();
+        handControl = drone.GetComponent<HandClutchPositionControl>();
+        sensors = drone.GetComponent<LaserSensors>();
+
         if (!Directory.Exists(save_path))
         {
             Directory.CreateDirectory(save_path);
@@ -99,10 +109,7 @@ public class DataLogger : MonoBehaviour
         }
 
         final_path = save_path + subjectName + "/" + experimentType + "_" + typeOfCamera + "_" + SceneManager.GetActiveScene().name + ".json";
-        if (File.Exists(final_path))
-        {
-            final_path = MakeUnique(final_path);
-        }
+        final_path = MakeUnique(final_path);
 
         currentLog = new Logger();
         cumulatedLogs = new LoggerCollection();
@@ -111,32 +118,35 @@ public class DataLogger : MonoBehaviour
     // Update is called once per frame
     void LateUpdate()
     {
-        // Input
-        currentLog.absoluteTime = Time.time;
-        currentLog.differentialTime = Time.deltaTime;
-        currentLog.controlPosition = positionCtrl.target.position;
-        currentLog.controlSpeed = new Vector3(velocityCtrl.desiredVx, 0.0f, velocityCtrl.desiredVz);
-        currentLog.desiredYawRate = velocityCtrl.desiredYawRate;
-        if (!handControl.useController)
+        if (recording)
         {
-            currentLog.clutch = handControl.clutchActivated;
-            currentLog.mocapPosition = mocap.GetPosition();
-            currentLog.mocapQuaternion = mocap.GetQuaternion();
+            // Input
+            currentLog.absoluteTime = Time.time;
+            currentLog.differentialTime = Time.deltaTime;
+            currentLog.controlPosition = positionCtrl.target.position;
+            currentLog.controlSpeed = new Vector3(velocityCtrl.desiredVx, 0.0f, velocityCtrl.desiredVz);
+            currentLog.desiredYawRate = velocityCtrl.desiredYawRate;
+            if (!handControl.useController)
+            {
+                currentLog.clutch = handControl.clutchActivated;
+                currentLog.mocapPosition = handControl.MocapHandPosition;
+                currentLog.mocapQuaternion = handControl.MocapHandRotation;
+            }
+
+            // Output
+            currentLog.dronePosition = droneRgbd.position;
+            currentLog.droneSpeed = droneRgbd.velocity;
+            currentLog.collision = collision.IsColliding;
+            // sensors
+            currentLog.frontObstacle = sensors.allDistances.frontObstacle;
+            currentLog.backObstacle = sensors.allDistances.backObstacle;
+            currentLog.leftObstacle = sensors.allDistances.leftObstacle;
+            currentLog.rightObstacle = sensors.allDistances.rightObstacle;
+            currentLog.upObstacle = sensors.allDistances.upObstacle;
+            currentLog.downObstacle = sensors.allDistances.downObstacle;
+
+            cumulatedLogs.allLogs.Add(currentLog);
         }
-
-        // Output
-        currentLog.dronePosition = drone.position;
-        currentLog.droneSpeed = drone.velocity;
-        currentLog.collision = collision.IsColliding;
-        // sensors
-        currentLog.frontObstacle = sensors.allDistances.frontObstacle;
-        currentLog.backObstacle = sensors.allDistances.backObstacle;
-        currentLog.leftObstacle = sensors.allDistances.leftObstacle;
-        currentLog.rightObstacle = sensors.allDistances.rightObstacle;
-        currentLog.upObstacle = sensors.allDistances.upObstacle;
-        currentLog.downObstacle = sensors.allDistances.downObstacle;
-
-        cumulatedLogs.allLogs.Add(currentLog);
     }
 
     private void OnApplicationQuit()
@@ -152,16 +162,20 @@ public class DataLogger : MonoBehaviour
 
     private string MakeUnique(string path)
     {
+        string initialPath = path;
         string dir = Path.GetDirectoryName(path);
         string fileName = Path.GetFileNameWithoutExtension(path);
         string fileExt = Path.GetExtension(path);
 
-        for (int i = 1; ; ++i)
+        for (int i = 0; i < 1000; ++i)
         {
+            path = Path.Combine(dir, fileName + "_" + i + fileExt);
+
             if (!File.Exists(path))
                 return path;
-
-            path = Path.Combine(dir, fileName + "_" + i + fileExt);
         }
+
+        Debug.LogError("Could not create unique log file.");
+        return initialPath;
     }
 }
