@@ -5,15 +5,7 @@ using UnityEngine;
 public class LaserSensors : MonoBehaviour
 {
     private DroneCamera cameraPosition;
-
-    public HandClutchPositionControl posControl;
-    public float theta;
-
-
-    float bufferRight;
-    float bufferLeft;
-    float bufferFront;
-    float bufferBack;
+    private HandClutchPositionControl posControl;
 
     [System.Serializable]
     public class ObstacleDistances
@@ -31,18 +23,26 @@ public class LaserSensors : MonoBehaviour
     void Start()
     {
         cameraPosition = GetComponent<DroneCamera>();
+        posControl = GetComponent<HandClutchPositionControl>();
         allDistances = new ObstacleDistances();
     }
 
     // Update is called once per frame
     void Update()
     {
+        float theta;
+
         RaycastHit frontHit;
         RaycastHit backHit;
         RaycastHit upHit;
         RaycastHit downHit;
         RaycastHit leftHit;
         RaycastHit rightHit;
+
+        float tempRight;
+        float tempLeft;
+        float tempFront;
+        float tempBack;
 
         Debug.DrawRay(transform.position, transform.forward, Color.red);
         Debug.DrawRay(transform.position, transform.forward * -1, Color.red);
@@ -89,42 +89,42 @@ public class LaserSensors : MonoBehaviour
                 // to have right angles for projection
                 theta += 90;
 
-                bufferFront = Mathf.Abs(Mathf.Cos(theta * Mathf.PI / 180)) * allDistances.rightObstacle;
-                bufferRight = Mathf.Abs(Mathf.Cos(theta * Mathf.PI / 180)) * allDistances.backObstacle;
-                bufferLeft = Mathf.Abs(Mathf.Cos(theta * Mathf.PI / 180)) * allDistances.frontObstacle;
-                bufferBack = Mathf.Abs(Mathf.Cos(theta * Mathf.PI / 180)) * allDistances.leftObstacle;
+                tempFront = Mathf.Abs(Mathf.Cos(theta * Mathf.PI / 180)) * allDistances.rightObstacle;
+                tempRight = Mathf.Abs(Mathf.Cos(theta * Mathf.PI / 180)) * allDistances.backObstacle;
+                tempLeft = Mathf.Abs(Mathf.Cos(theta * Mathf.PI / 180)) * allDistances.frontObstacle;
+                tempBack = Mathf.Abs(Mathf.Cos(theta * Mathf.PI / 180)) * allDistances.leftObstacle;
 
-                allDistances.frontObstacle = bufferFront;
-                allDistances.backObstacle = bufferBack;
-                allDistances.leftObstacle = bufferLeft;
-                allDistances.rightObstacle = bufferRight;
+                allDistances.frontObstacle = tempFront;
+                allDistances.backObstacle = tempBack;
+                allDistances.leftObstacle = tempLeft;
+                allDistances.rightObstacle = tempRight;
             }
             else if (theta > 45 && theta < 135)
             {
                 // to have right angles for projection
                 theta -= 90;
 
-                bufferFront = Mathf.Abs(Mathf.Cos(theta * Mathf.PI / 180)) * allDistances.leftObstacle;
-                bufferRight = Mathf.Abs(Mathf.Cos(theta * Mathf.PI / 180)) * allDistances.frontObstacle;
-                bufferLeft = Mathf.Abs(Mathf.Cos(theta * Mathf.PI / 180)) * allDistances.backObstacle;
-                bufferBack = Mathf.Abs(Mathf.Cos(theta * Mathf.PI / 180)) * allDistances.rightObstacle;
+                tempFront = Mathf.Abs(Mathf.Cos(theta * Mathf.PI / 180)) * allDistances.leftObstacle;
+                tempRight = Mathf.Abs(Mathf.Cos(theta * Mathf.PI / 180)) * allDistances.frontObstacle;
+                tempLeft = Mathf.Abs(Mathf.Cos(theta * Mathf.PI / 180)) * allDistances.backObstacle;
+                tempBack = Mathf.Abs(Mathf.Cos(theta * Mathf.PI / 180)) * allDistances.rightObstacle;
 
-                allDistances.frontObstacle = bufferFront;
-                allDistances.backObstacle = bufferBack;
-                allDistances.leftObstacle = bufferLeft;
-                allDistances.rightObstacle = bufferRight;
+                allDistances.frontObstacle = tempFront;
+                allDistances.backObstacle = tempBack;
+                allDistances.leftObstacle = tempLeft;
+                allDistances.rightObstacle = tempRight;
             }
             else if (Mathf.Abs(theta) > 135)
             {
-                bufferFront = Mathf.Abs(Mathf.Cos(theta * Mathf.PI / 180)) * allDistances.backObstacle;
-                bufferRight = Mathf.Abs(Mathf.Cos(theta * Mathf.PI / 180)) * allDistances.leftObstacle;
-                bufferLeft = Mathf.Abs(Mathf.Cos(theta * Mathf.PI / 180)) * allDistances.rightObstacle;
-                bufferBack = Mathf.Abs(Mathf.Cos(theta * Mathf.PI / 180)) * allDistances.frontObstacle;
+                tempFront = Mathf.Abs(Mathf.Cos(theta * Mathf.PI / 180)) * allDistances.backObstacle;
+                tempRight = Mathf.Abs(Mathf.Cos(theta * Mathf.PI / 180)) * allDistances.leftObstacle;
+                tempLeft = Mathf.Abs(Mathf.Cos(theta * Mathf.PI / 180)) * allDistances.rightObstacle;
+                tempBack = Mathf.Abs(Mathf.Cos(theta * Mathf.PI / 180)) * allDistances.frontObstacle;
 
-                allDistances.frontObstacle = bufferFront;
-                allDistances.backObstacle = bufferBack;
-                allDistances.leftObstacle = bufferLeft;
-                allDistances.rightObstacle = bufferRight;
+                allDistances.frontObstacle = tempFront;
+                allDistances.backObstacle = tempBack;
+                allDistances.leftObstacle = tempLeft;
+                allDistances.rightObstacle = tempRight;
             }
         }
     }
