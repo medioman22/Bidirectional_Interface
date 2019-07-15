@@ -149,7 +149,7 @@ public class HandClutchPositionControl : MonoBehaviour
             }
 
             // Clutch triggered, set reference yaw
-            if (OVRInput.GetDown(OVRInput.RawButton.RIndexTrigger))
+            if (!OVRInput.GetDown(OVRInput.RawButton.RIndexTrigger))
             //if (Input.GetKeyDown(KeyCode.Mouse0))
             {
                 dronePositionControl.target = transform;
@@ -163,7 +163,7 @@ public class HandClutchPositionControl : MonoBehaviour
             }
 
             // Clutch activated
-            if (OVRInput.Get(OVRInput.RawButton.RIndexTrigger))
+            if (!OVRInput.Get(OVRInput.RawButton.RIndexTrigger))
             //if (Input.GetKey(KeyCode.Mouse0))
             {
                 clutchActivated = true;
