@@ -782,7 +782,7 @@ PrefabInstance:
         type: 3}
       propertyPath: logger
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1444067401}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a2135f9a8b63df84089ae9262d9ed2f0, type: 3}
 --- !u!1001 &389429855
@@ -794,11 +794,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 400004, guid: 126d619cf4daa52469682f85c1378b4a, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -3.863
+      value: -3.12
       objectReference: {fileID: 0}
     - target: {fileID: 400004, guid: 126d619cf4daa52469682f85c1378b4a, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.57
+      value: 1.759
       objectReference: {fileID: 0}
     - target: {fileID: 400004, guid: 126d619cf4daa52469682f85c1378b4a, type: 3}
       propertyPath: m_LocalPosition.z
@@ -2239,6 +2239,18 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1410665431}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &1444067401 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1601698761621062689, guid: b9139acd1d2291746a0bf14520abfaba,
+    type: 3}
+  m_PrefabInstance: {fileID: 1601698761218095134}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 22cdae5b0afe14446aa7b6190c1b5a0e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1450216959
 GameObject:
   m_ObjectHideFlags: 0
@@ -2981,7 +2993,7 @@ PrefabInstance:
         type: 3}
       propertyPath: logger
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1444067401}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c12ecbe969a52844ab538519cc8dd940, type: 3}
 --- !u!1 &1945469273
@@ -3514,6 +3526,16 @@ PrefabInstance:
       propertyPath: firstPersonCamera
       value: 
       objectReference: {fileID: 884458423}
+    - target: {fileID: 7242085898918763045, guid: c5a7642cdbba8cf4485432d4160b9bdb,
+        type: 3}
+      propertyPath: FPS
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6535481729958989031, guid: c5a7642cdbba8cf4485432d4160b9bdb,
+        type: 3}
+      propertyPath: mocapInputRotation
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c5a7642cdbba8cf4485432d4160b9bdb, type: 3}
 --- !u!1001 &9076141967146525772
