@@ -19,12 +19,15 @@ public static class SimulationData
 
     public const int nbDistanceSensors = 6;
 
-    public const float startUpControlDelay = 3.0f; // s
+    public const float startUpControlDelay = 1.5f; // s
 
     // This variable is incremented every time the simulation path is reloaded
     public static int runNumber = 0; 
 
     // This variable is used to store the name of the current subject
     public static string subjectName = "";
+
+    // This variable is used to store if the drone is controlled via controller or mocap
+    public static bool useController = false;
 }
 
