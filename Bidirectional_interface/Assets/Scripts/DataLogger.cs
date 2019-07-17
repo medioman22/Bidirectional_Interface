@@ -20,8 +20,7 @@ public class DataLogger : MonoBehaviour
     // -------------------------------------------------------------------
 
     public string subjectName;
-    public string save_path = "c:/Users/aweber/Desktop/Simulation_Logs/";
-    private string final_path;
+    public string savePath = "./SimulationLogs/";
 
     public bool recording = true;
 
@@ -78,39 +77,6 @@ public class DataLogger : MonoBehaviour
         handControl = drone.GetComponent<HandClutchPositionControl>();
         sensors = drone.GetComponent<LaserSensors>();
 
-        if (!Directory.Exists(save_path))
-        {
-            Directory.CreateDirectory(save_path);
-        }
-
-        if (!Directory.Exists(save_path+subjectName))
-        {
-            Directory.CreateDirectory(save_path + subjectName);
-        }
-
-        string typeOfCamera;
-        if (cameraPos.FPS)
-        {
-            typeOfCamera = "FPS";
-        }
-        else
-        {
-            typeOfCamera = "TPS";
-        }
-
-        string experimentType;
-        if (handControl.useController)
-        {
-            experimentType = "Controller";
-        }
-        else
-        {
-            experimentType = "MotionCapture";
-        }
-
-        final_path = save_path + subjectName + "/" + experimentType + "_" + typeOfCamera + "_" + SceneManager.GetActiveScene().name + ".json";
-        final_path = MakeUnique(final_path);
-
         currentLog = new Logger();
         cumulatedLogs = new LoggerCollection();
     }
@@ -154,11 +120,45 @@ public class DataLogger : MonoBehaviour
         // OnApplicationQuit() is called even when the script is disabled, thus we must make sure it is not.
         if (enabled)
         {
-            string json = JsonUtility.ToJson(cumulatedLogs);
-            File.AppendAllText(final_path, json);
+            SaveResults();
         }
     }
 
+    public void SaveResults()
+    {
+        // Create folders if needed
+        if (!Directory.Exists(savePath))
+        {
+            Directory.CreateDirectory(savePath);
+        }
+
+        if (!Directory.Exists(savePath+subjectName))
+        {
+            Directory.CreateDirectory(savePath + subjectName);
+        }
+
+        // Create filename
+        string experimentType;
+        if (handControl.useController)
+        {
+            experimentType = "Controller";
+        }
+        else
+        {
+            experimentType = "MotionCapture";
+        }
+
+        string pathName = SceneManager.GetActiveScene().name;
+
+        // Create a formatted time stamp with the current time
+        string timeStamp = System.DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss");
+
+        string finalPath = savePath + subjectName + "/" + experimentType + "_" + pathName + "_" + timeStamp + ".json";
+
+        // Save results
+        string json = JsonUtility.ToJson(cumulatedLogs);
+        File.AppendAllText(finalPath, json);
+    }
 
     private string MakeUnique(string path)
     {

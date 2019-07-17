@@ -18,5 +18,13 @@ public static class SimulationData
     public static readonly Vector3 RoomDimensions = new Vector3(8, 6, 8); // [m^3]
 
     public const int nbDistanceSensors = 6;
+
+    public const float startUpControlDelay = 3.0f; // s
+
+    // This variable is incremented every time the simulation path is reloaded
+    public static int runNumber = 0; 
+
+    // This variable is used to store the name of the current subject
+    public static string subjectName = "";
 }
 

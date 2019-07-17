@@ -30,7 +30,7 @@ Transform:
   m_GameObject: {fileID: 7165729105934605851}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -2.262, y: 0.733, z: -2.91}
-  m_LocalScale: {x: 0.2, y: 1, z: 1}
+  m_LocalScale: {x: 7.0166235, y: 6.2786746, z: 6.644312}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -122,5 +122,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   logger: {fileID: 0}
-  recordOnCollision: 1
+  restartPathPanel: {fileID: 0}
+  startRecording: 1
   hideObjectInPlayMode: 1
