@@ -20,6 +20,7 @@ public class SimulationLoading : MonoBehaviour
         }
         else
         {
+            subjectNamePanel.SetActive(false);
             logger = GetComponent<DataLogger>();
             logger.subjectName = SimulationData.subjectName;
             

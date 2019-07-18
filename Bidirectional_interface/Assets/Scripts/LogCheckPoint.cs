@@ -8,6 +8,7 @@ public class LogCheckPoint : MonoBehaviour
 {
     public DataLogger logger;
     public GameObject restartPathPanel;
+    public UnityEngine.UI.Button restartPathButton;
 
     [Tooltip("If true, the logger will be activated when the drone exits the collider. If false, it will be deactivated when the drone enters the collider.")]
     public bool startRecording = true;
@@ -35,6 +36,7 @@ public class LogCheckPoint : MonoBehaviour
                 logger.recording = false;
                 restartPathPanel.SetActive(true);
                 HandClutchPositionControl drone = other.GetComponent<HandClutchPositionControl>();
+                restartPathButton.Select();
                 StartCoroutine(WaitAndStopDrone(drone, SimulationData.startUpControlDelay / 3.0f));
             }
         }
