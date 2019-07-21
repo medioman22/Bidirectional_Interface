@@ -149,7 +149,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   fixedCamera: {fileID: 0}
   firstPersonCamera: {fileID: 0}
-  FPS: 1
+  FPS: 0
 --- !u!114 &6535481729958989031
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -157,7 +157,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3391234783022477288}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0e0c451bc08c6dd4593130d36e292316, type: 3}
   m_Name: 
@@ -165,7 +165,7 @@ MonoBehaviour:
   handRigidbodyID: 1
   handRoomScaling: 8
   clutchActivated: 0
-  mocapInputRotation: 90
+  mocapInputRotation: 0
   observationInputRotation: 90
   rotationSpeedScaling: 0.05
   drawHandTarget: 1
