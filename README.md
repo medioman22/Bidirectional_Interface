@@ -41,5 +41,5 @@ python main.py
 It should make a UI pop up. Select the device in the list and change the PWM values to make the motor vibrate.
 
 #### Possibility 2 : Use the python API
-1) You can use the `test.py` script in the API_Calls folder as an example. Navigate to the last line and modify as you wish the "dim" variable being the identifier for the motors, and the "value" being the actual PWM value.
+1) You can use the `main.py` script in the API_Calls folder as an example. This script will read the data sent by Unity and send the vibration queries to the BBG card.
 
