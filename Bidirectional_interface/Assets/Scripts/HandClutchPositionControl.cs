@@ -149,10 +149,9 @@ public class HandClutchPositionControl : MonoBehaviour
             }
 
             // Clutch triggered, set reference yaw
-            if (!OVRInput.GetDown(OVRInput.RawButton.RIndexTrigger))
+            if (OVRInput.GetUp(OVRInput.RawButton.RIndexTrigger))
             //if (Input.GetKeyDown(KeyCode.Mouse0))
             {
-                dronePositionControl.target = transform;
                 referenceYaw = handYaw;
             }
 
@@ -169,6 +168,8 @@ public class HandClutchPositionControl : MonoBehaviour
                 clutchActivated = true;
                  if (cameraPosition != null && cameraPosition.FPS)
                     droneVelocityControl.desiredYawRate = Mathf.DeltaAngle(referenceYaw, handYaw) * rotationSpeedScaling;
+
+                handTarget.transform.position = transform.position;
             }
             else
             {
@@ -179,8 +180,9 @@ public class HandClutchPositionControl : MonoBehaviour
                     droneVelocityControl.desiredYawRate = 0.0f;
 
                 handTarget.transform.position += Quaternion.Euler(0, observationInputRotation + mocapInputRotation, 0) * deltaHandPosition * handRoomScaling;
-                dronePositionControl.target = handTarget.transform;
             }
+
+            dronePositionControl.target = handTarget.transform;
         }
 
         if (drawHandTarget)
