@@ -7,12 +7,15 @@ public class SimulationLoading : MonoBehaviour
 {
     public HandClutchPositionControl drone;
     public GameObject subjectNamePanel;
+    public GameObject restartPathPanel;
     public Text goLabel;
 
     private DataLogger logger;
 
     void Start()
     {
+        restartPathPanel.SetActive(false);
+
         if (SimulationData.runNumber == 0)
         {
             // Show Name selection UI

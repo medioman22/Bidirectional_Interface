@@ -21,6 +21,16 @@ public class SubjectNameUI : MonoBehaviour
         validateButton.onClick.AddListener(OnValidateButtonPressed);
     }
 
+    void Update()
+    {
+        if (subjectNamePanel.activeSelf)
+        {
+            // Refocus the UI if no element is selected
+            if (UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject == null)
+                subjectNameField.Select();
+        }
+    }
+
     void OnValidateButtonPressed()
     {
         string name = subjectNameField.text;

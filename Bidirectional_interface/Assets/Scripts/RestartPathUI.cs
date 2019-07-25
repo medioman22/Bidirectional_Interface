@@ -18,6 +18,16 @@ public class RestartPathUI : MonoBehaviour
         quitButton.onClick.AddListener(OnQuitButtonPressed);
     }
 
+    void Update()
+    {
+        if (restartPathPanel.activeSelf)
+        {
+            // Refocus the UI if no element is selected
+            if (UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject == null)
+                restartButton.Select();
+        }
+    }
+
     void OnRestartButtonPressed()
     {
             restartPathPanel.SetActive(false);

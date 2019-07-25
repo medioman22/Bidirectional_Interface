@@ -3415,6 +3415,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: SimulatitonManager
       objectReference: {fileID: 0}
+    - target: {fileID: 2811121945766659011, guid: 9e5ea08e01c60844398aa50e7af49eb7,
+        type: 3}
+      propertyPath: drone
+      value: 
+      objectReference: {fileID: 5445160707720369420}
     - target: {fileID: 2811121945766659008, guid: 9e5ea08e01c60844398aa50e7af49eb7,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -3470,11 +3475,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 2811121945766659011, guid: 9e5ea08e01c60844398aa50e7af49eb7,
-        type: 3}
-      propertyPath: drone
-      value: 
-      objectReference: {fileID: 5445160707720369420}
     - target: {fileID: 3547002579144089416, guid: 9e5ea08e01c60844398aa50e7af49eb7,
         type: 3}
       propertyPath: drone
