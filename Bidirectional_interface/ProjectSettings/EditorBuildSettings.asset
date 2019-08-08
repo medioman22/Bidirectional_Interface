@@ -8,4 +8,7 @@ EditorBuildSettings:
   - enabled: 0
     path: 
     guid: 00000000000000000000000000000000
+  - enabled: 1
+    path: Assets/Scenes/Haptics.unity
+    guid: 1a835f44a49f18546891dbaef326ed8f
   m_configObjects: {}

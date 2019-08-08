@@ -41,6 +41,51 @@ ProjectVersion.txt
 # OS X metadata
 .DS_Store
 
+# Python binaries
+*.pyc
+
 data_analysis/\.ipynb_checkpoints/
 
+Bidirectional_interface/SimulationLogs/
+
 data_analysis/Project_Logs/
+
+data_analysis/3_Paths/
+
+data_analysis/Initial_Arena/
+
+data_analysis/Learning_Curve/
+
+*.jpg
+
+data_analysis/confusion\.png
+
+data_analysis/hapt_mocap/
+
+data_analysis/Jonas/
+
+data_analysis/Matteo/
+
+data_analysis/Thomas/
+
+
+Bidirectional_interface/Haptics/Experiment_Tactile/results_identification/
+
+Bidirectional_interface/Haptics/Experiment_Tactile/results_time/
+
+data_analysis/Matteo/
+
+data_analysis/Thomas/
+
+Bidirectional_interface/SimulationLogs/
+data_analysis/Matteo/
+
+data_analysis/Thomas/
+
+data_analysis/Learning_Curve - Old/
+
+data_analysis/testM_1/
+
+data_analysis/LearningExperimentSimulation/
+
+data_analysis/Learning_Curve_TESTS/

@@ -6,19 +6,29 @@ using System.IO;
 
 public class DataLogger : MonoBehaviour
 {
+    public GameObject drone;
+
     // all the classes to get informations
-    public UDPCommandManager mocap;
-    public PositionControl positionCtrl;
-    public VelocityControl velocityCtrl;
-    public DroneCamera cameraPos;
-    public CollisionChecker collision;
-    public Rigidbody drone;
-    public HandClutchPositionControl handControl;
+    private PositionControl positionCtrl;
+    private VelocityControl velocityCtrl;
+    private DroneCamera cameraPos;
+    private CollisionChecker collision;
+    private Rigidbody droneRgbd;
+    private HandClutchPositionControl handControl;
+    private LaserSensors sensors;
+    private ExperimentSetup expSetup;
 
     // -------------------------------------------------------------------
 
-    // string being the subject name
+    private expType eType;
+    private hapticType hType;
+
     public string subjectName;
+    public string savePath = "./SimulationLogs/";
+
+    public bool recording = true;
+
+    // -------------------------------------------------------------------
 
     // class containing the data to be logged
     [System.Serializable]
@@ -36,6 +46,14 @@ public class DataLogger : MonoBehaviour
         // Output
         public Vector3 dronePosition;
         public Vector3 droneSpeed;
+
+        public float frontObstacle;
+        public float backObstacle;
+        public float leftObstacle;
+        public float rightObstacle;
+        public float upObstacle;
+        public float downObstacle;
+
         public bool collision;
     }
     private Logger currentLog;
@@ -52,33 +70,72 @@ public class DataLogger : MonoBehaviour
     }
     private LoggerCollection cumulatedLogs;
 
-    // -------------------------------------------------------------------
-
-    public string save_path = "c:/Users/aweber/Desktop/Simulation_Logs/";
-    private string final_path;
-
     private void Start()
     {
-        if (!Directory.Exists(save_path))
-        {
-            Directory.CreateDirectory(save_path);
-        }
+        // all the classes to get informations
+        positionCtrl = drone.GetComponent<PositionControl>();
+        velocityCtrl = drone.GetComponent<VelocityControl>();
+        cameraPos = drone.GetComponent<DroneCamera>();
+        collision = drone.GetComponent<CollisionChecker>();
+        droneRgbd = drone.GetComponent<Rigidbody>();
+        handControl = drone.GetComponent<HandClutchPositionControl>();
+        sensors = drone.GetComponent<LaserSensors>();
+        expSetup = this.GetComponent<ExperimentSetup>();
 
-        if (!Directory.Exists(save_path+subjectName))
-        {
-            Directory.CreateDirectory(save_path + subjectName);
-        }
+        eType = expSetup.ExperimentType;
+        hType = expSetup.HapticType;
 
-        string typeOfCamera;
-        if (cameraPos.FPS)
-        {
-            typeOfCamera = "FPS";
-        }
-        else
-        {
-            typeOfCamera = "TPS";
-        }
+        currentLog = new Logger();
+        cumulatedLogs = new LoggerCollection();
+    }
 
+    // Update is called once per frame
+    void LateUpdate()
+    {
+        if (recording)
+        {
+            // Input
+            currentLog.absoluteTime = Time.time;
+            currentLog.differentialTime = Time.deltaTime;
+            currentLog.controlPosition = positionCtrl.target.position;
+            currentLog.controlSpeed = new Vector3(velocityCtrl.desiredVx, 0.0f, velocityCtrl.desiredVz);
+            currentLog.desiredYawRate = velocityCtrl.desiredYawRate;
+            if (!handControl.useController)
+            {
+                currentLog.clutch = handControl.clutchActivated;
+                currentLog.mocapPosition = handControl.MocapHandPosition;
+                currentLog.mocapQuaternion = handControl.MocapHandRotation;
+            }
+
+            // Output
+            currentLog.dronePosition = droneRgbd.position;
+            currentLog.droneSpeed = droneRgbd.velocity;
+            currentLog.collision = collision.IsColliding;
+            // sensors
+            currentLog.frontObstacle = sensors.allDistances.frontObstacle;
+            currentLog.backObstacle = sensors.allDistances.backObstacle;
+            currentLog.leftObstacle = sensors.allDistances.leftObstacle;
+            currentLog.rightObstacle = sensors.allDistances.rightObstacle;
+            currentLog.upObstacle = sensors.allDistances.upObstacle;
+            currentLog.downObstacle = sensors.allDistances.downObstacle;
+
+            cumulatedLogs.allLogs.Add(currentLog);
+        }
+    }
+
+    private void OnApplicationQuit()
+    {
+        // OnApplicationQuit() is called even when the script is disabled, thus we must make sure it is not.
+        if (enabled)
+        {
+            SaveResults();
+        }
+    }
+
+    public void SaveResults()
+    {
+
+        // Create filename
         string experimentType;
         if (handControl.useController)
         {
@@ -89,62 +146,54 @@ public class DataLogger : MonoBehaviour
             experimentType = "MotionCapture";
         }
 
-        final_path = save_path + subjectName + "/" + experimentType + "_" + typeOfCamera + "_" + SceneManager.GetActiveScene().name + ".json";
-        if (File.Exists(final_path))
+        subjectName = subjectName + "_" + experimentType;
+
+        // Create folders if needed
+        if (!Directory.Exists(savePath))
         {
-            final_path = MakeUnique(final_path);
+            Directory.CreateDirectory(savePath);
         }
 
-        currentLog = new Logger();
-        cumulatedLogs = new LoggerCollection();
-    }
-
-    // Update is called once per frame
-    void LateUpdate()
-    {
-        // Input
-        currentLog.absoluteTime = Time.time;
-        currentLog.differentialTime = Time.deltaTime;
-        currentLog.controlPosition = positionCtrl.target.position;
-        currentLog.controlSpeed = new Vector3(velocityCtrl.desiredVx, 0.0f, velocityCtrl.desiredVz);
-        currentLog.desiredYawRate = velocityCtrl.desiredYawRate;
-        if (!handControl.useController)
+        if (!Directory.Exists(savePath+subjectName))
         {
-            currentLog.clutch = handControl.clutchActivated;
-            currentLog.mocapPosition = mocap.GetPosition();
-            currentLog.mocapQuaternion = mocap.GetQuaternion();
+            Directory.CreateDirectory(savePath + subjectName);
         }
 
-        // Output
-        currentLog.dronePosition = drone.position;
-        currentLog.droneSpeed = drone.velocity;
-        currentLog.collision = collision.IsColliding;
-        cumulatedLogs.allLogs.Add(currentLog);
-    }
+        string pathName = "";
 
-    private void OnApplicationQuit()
-    {
-        // OnApplicationQuit() is called even when the script is disabled, thus we must make sure it is not.
-        if (enabled)
+        pathName = eType.ToString();
+
+        if (eType==expType.Haptics)
         {
-            string json = JsonUtility.ToJson(cumulatedLogs);
-            File.AppendAllText(final_path, json);
+            pathName = pathName + "_" + hType.ToString();
         }
-    }
 
+        // Create a formatted time stamp with the current time
+        string timeStamp = System.DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss");
+
+        string finalPath = savePath + subjectName + "/" + pathName + "_" + timeStamp + ".json";
+
+        // Save results
+        string json = JsonUtility.ToJson(cumulatedLogs);
+        File.AppendAllText(finalPath, json);
+    }
 
     private string MakeUnique(string path)
     {
+        string initialPath = path;
         string dir = Path.GetDirectoryName(path);
         string fileName = Path.GetFileNameWithoutExtension(path);
         string fileExt = Path.GetExtension(path);
 
-        for (int i = 1; ; ++i)
+        for (int i = 0; i < 1000; ++i)
         {
+            path = Path.Combine(dir, fileName + "_" + i + fileExt);
+
             if (!File.Exists(path))
                 return path;
-
-            path = Path.Combine(dir, fileName + "_" + i + fileExt);
         }
+
+        Debug.LogError("Could not create unique log file.");
+        return initialPath;
     }
 }
