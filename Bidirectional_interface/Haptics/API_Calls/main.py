@@ -7,7 +7,7 @@ import json
 import sys
 import os
 
-DISTANCE_THRESHOLD = 0.4
+DISTANCE_THRESHOLD = 0.5
 MAXIMUM_MOTOR_INPUT = 99
 with_connection = True
 

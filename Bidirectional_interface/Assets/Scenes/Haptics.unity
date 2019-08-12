@@ -1246,7 +1246,7 @@ Light:
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10
   m_Shadows:
-    m_Type: 2
+    m_Type: 0
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -3791,7 +3791,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &930173003
 Transform:
   m_ObjectHideFlags: 0
@@ -5379,7 +5379,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c001c7c9e19a3e4e8f32d7c92d06a1f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ExperimentType: 0
+  ExperimentType: 1
   HapticType: 0
   haptics: {fileID: 930173002}
   learning: {fileID: 1824622763}
@@ -6102,6 +6102,7 @@ GameObject:
   - component: {fileID: 1575116075}
   - component: {fileID: 1575116074}
   - component: {fileID: 1575116073}
+  - component: {fileID: 1575116076}
   m_Layer: 0
   m_Name: PanelXobs
   m_TagString: Untagged
@@ -6180,6 +6181,20 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1575116071}
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!64 &1575116076
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1575116071}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Convex: 1
+  m_CookingOptions: 14
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!1 &1581496906
 GameObject:
@@ -6914,7 +6929,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1824622764
 Transform:
   m_ObjectHideFlags: 0
@@ -7451,6 +7466,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: StopLogger (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 2317553338422465934, guid: a2135f9a8b63df84089ae9262d9ed2f0,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2317553338422465920, guid: a2135f9a8b63df84089ae9262d9ed2f0,
         type: 3}
@@ -9076,7 +9096,7 @@ PrefabInstance:
     - target: {fileID: 3394322291506172278, guid: c5a7642cdbba8cf4485432d4160b9bdb,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -3
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3394322291506172278, guid: c5a7642cdbba8cf4485432d4160b9bdb,
         type: 3}
@@ -9086,7 +9106,7 @@ PrefabInstance:
     - target: {fileID: 3394322291506172278, guid: c5a7642cdbba8cf4485432d4160b9bdb,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -3
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3394322291506172278, guid: c5a7642cdbba8cf4485432d4160b9bdb,
         type: 3}

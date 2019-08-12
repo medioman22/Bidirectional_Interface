@@ -18,11 +18,13 @@ public enum hapticType
     GoThroughZ = 5,
 }
 
+
 public class ExperimentSetup : MonoBehaviour
 {
 
     public expType ExperimentType;
     public hapticType HapticType;
+    public bool Practice = false;
 
     public GameObject haptics;
     public GameObject learning;
@@ -94,33 +96,47 @@ public class ExperimentSetup : MonoBehaviour
             drone.transform.position = new Vector3(0.0f, 0.4f, 0.0f);
             drone.transform.rotation = Quaternion.Euler(0, 90, 0);
             DeactivateAllHapticObstacles();
+
+            GameObject is_active;
+
             if (HapticType == hapticType.ApproachX)
             {
-                panelX.SetActive(true);
-            }
-            else if (HapticType == hapticType.ApproachX)
-            {
-                panelX.SetActive(true);
+                is_active = panelX;
             }
             else if (HapticType == hapticType.ApproachY)
             {
-                panelY.SetActive(true);
+                is_active = panelY;
             }
             else if (HapticType == hapticType.ApproachZ)
             {
-                panelZ.SetActive(true);
+                is_active = panelZ;
             }
             else if (HapticType == hapticType.GoThroughX)
             {
-                gateX.SetActive(true);
+                is_active = gateX;
             }
             else if (HapticType == hapticType.GoThroughY)
             {
-                gateY.SetActive(true);
+                is_active = gateY;
             }
             else if (HapticType == hapticType.GoThroughZ)
             {
-                gateZ.SetActive(true);
+                is_active = gateZ;
+            }
+            else
+            {
+                is_active = panelX;
+            }
+
+            is_active.SetActive(true);
+            GameObject stop = is_active.transform.Find("StopLogger").gameObject;
+            if (Practice)
+            {
+                stop.SetActive(false);
+            }
+            else
+            {
+                stop.SetActive(true);
             }
         }
     }
