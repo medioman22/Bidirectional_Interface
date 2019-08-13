@@ -6,24 +6,34 @@ using UnityEngine;
 public class ColorCollisionChildren : MonoBehaviour
 {
     public Material collisionMaterial;
+    public Material crossedMaterial;
     public Material standardMaterial;
 
-    public bool KeepRed = false;
+    public bool KeepColor = false;
 
     private Renderer[] rend;
     private IAmColliding[] coll;
+    private IAmCrossed[] cross;
 
     // Start is called before the first frame update
     void Start()
     {
         rend = GetComponentsInChildren<Renderer>();
         coll = GetComponentsInChildren<IAmColliding>();
+        cross = GetComponentsInChildren<IAmCrossed>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (!KeepRed) turnAllStandard();
+        if (!KeepColor) turnAllStandard();
+        foreach (IAmCrossed i in cross)
+        {
+            if (i.Crossed)
+            {
+                turnAllGreen();
+            }
+        }
         foreach (IAmColliding i in coll)
         {
             if (i.Colliding)
@@ -38,6 +48,14 @@ public class ColorCollisionChildren : MonoBehaviour
         foreach (Renderer i in rend)
         {
             i.material = collisionMaterial;
+        }
+    }
+
+    void turnAllGreen()
+    {
+        foreach (Renderer i in rend)
+        {
+            i.material = crossedMaterial;
         }
     }
 

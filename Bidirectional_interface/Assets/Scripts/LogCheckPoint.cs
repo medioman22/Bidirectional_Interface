@@ -30,10 +30,11 @@ public class LogCheckPoint : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetButtonDown("CloseEnough") || OVRInput.Get(OVRInput.Button.One))
+        if (Input.GetButtonDown("CloseEnough") || OVRInput.Get(OVRInput.Button.One) || (Input.GetKey(KeyCode.LeftShift) && Input.GetKeyDown(KeyCode.A)))
         {
             Done();
         }
+
     }
 
     void OnTriggerEnter(Collider other)

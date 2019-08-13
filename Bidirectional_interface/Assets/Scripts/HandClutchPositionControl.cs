@@ -162,9 +162,10 @@ public class HandClutchPositionControl : MonoBehaviour
                 }
 
                 // Clutch activated
+                //if (OVRInput.Get(OVRInput.Axis1D.PrimaryIndexTrigger) < 0.5)
                 if (!OVRInput.Get(OVRInput.RawButton.RIndexTrigger))
-                //if (Input.GetKey(KeyCode.Mouse0))
-                {
+                //if (!Input.GetKey(KeyCode.Mouse0))
+                    {
                     clutchActivated = true;
                     if (cameraPosition != null && cameraPosition.FPS)
                         droneVelocityControl.desiredYawRate = Mathf.DeltaAngle(referenceYaw, handYaw) * rotationSpeedScaling;

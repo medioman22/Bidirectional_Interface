@@ -129,14 +129,19 @@ public class ExperimentSetup : MonoBehaviour
             }
 
             is_active.SetActive(true);
-            GameObject stop = is_active.transform.Find("StopLogger").gameObject;
-            if (Practice)
+
+
+            if (HapticType == hapticType.GoThroughX || HapticType == hapticType.GoThroughY || HapticType == hapticType.GoThroughZ)
             {
-                stop.SetActive(false);
-            }
-            else
-            {
-                stop.SetActive(true);
+                ColorCollisionChildren col = is_active.GetComponent<ColorCollisionChildren>();
+                if (Practice)
+                {
+                    col.KeepColor = false;
+                }
+                else
+                {
+                    col.KeepColor = true;
+                }
             }
         }
     }

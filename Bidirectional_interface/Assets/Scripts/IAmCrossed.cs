@@ -20,4 +20,13 @@ public class IAmCrossed : MonoBehaviour
             Crossed = true;
         }
     }
+
+    // Update is called once per frame
+    void OnTriggerExit(Collider other)
+    {
+        if (other.tag == "Drone")
+        {
+            Crossed = false;
+        }
+    }
 }
