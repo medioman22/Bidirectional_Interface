@@ -9,11 +9,15 @@ Created on Thu Feb 28 12:05:04 2019
 import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.pylab import savefig
 
 
         
     
-def bar_multi(vals, error = None, xlabels = '', ylabel = '', title = '', legend = '', normalize = False, colors = None, ax = None):
+def bar_multi(vals, error = None, xlabels = '', xticks = None, yticks = None, xlim = None, ylim = None, ylabel = '', title = '', legend = '', normalize = False, colors = None, w= None, ax = None, save = False, where = None):
+    
+    
+    print(colors)
     
     if colors is None:
         colors = 'rgbkmyc'
@@ -68,32 +72,41 @@ def bar_multi(vals, error = None, xlabels = '', ylabel = '', title = '', legend 
             [error, _] = norm_list(error, M)
     
     x = np.arange(n_ticks) + 1
-    w = 0.3
+    if w is None:
+        w = 0.3
     
     bars = []
     
     for count, i in enumerate(vals):
         if error is None:
-            bars.append(ax.bar(x - w*l_each/2 + w*(count + 1/2), i, width=w,align='center', label = legend[count], color = colors[count]))
+            bars.append(ax.bar(x - w*l_each/2 + w*(count + 1/2), i, width=w,align='center', label = legend[count], color = colors[count], ecolor = colors[count]))
         else:
-            bars.append(ax.bar(x - w*l_each/2 + w*(count + 1/2), i, yerr=error[count],width=w,align='center', label = legend[count]))
+            bars.append(ax.bar(x - w*l_each/2 + w*(count + 1/2), i, yerr=error[count],width=w,align='center', label = legend[count], color = colors[count], ecolor = colors[count]))
             
     if not no_legend:
         ax.legend()
         
     plt.xticks(x, xlabels, axes=ax)
     
-    plt.xticks(rotation=90)
+    if xlim is not None:
+        plt.xlim(xlim)    
+    if ylim is not None:
+        plt.xlim(ylim)
+    if xticks is not None:
+        plt.xticks(xticks)    
+    if yticks is not None:
+        plt.yticks(yticks)
         
     ax.spines['right'].set_visible(False)
     ax.spines['top'].set_visible(False)
-    
-    plt.show()
+
+    if save:
+        savefig(where, bbox_inches='tight')
     
     return ax
         
         
-def boxplot_elegant(ax, data, position, c):
+def boxplot_elegant(ax, data, position, c, whis = 1.5):
     
     plt.boxplot(data, notch=None, positions = position, patch_artist=True,
                 boxprops=dict(color=c, facecolor='none'),
@@ -101,6 +114,7 @@ def boxplot_elegant(ax, data, position, c):
                 whiskerprops=dict(color=c),
                 flierprops=dict(color=c, markeredgecolor=c),
                 medianprops=dict(color=c),
+                whis = whis
                 )
     
 def make_fig_simple():
