@@ -8,6 +8,9 @@ Created on Thu Feb 28 12:05:04 2019
 
 import matplotlib.pyplot as plt
 import numpy as np
+import matplotlib.pyplot as plt
+
+
         
     
 def bar_multi(vals, error = None, xlabels = '', ylabel = '', title = '', legend = '', normalize = False, colors = None, ax = None):
@@ -99,3 +102,9 @@ def boxplot_elegant(ax, data, position, c):
                 flierprops=dict(color=c, markeredgecolor=c),
                 medianprops=dict(color=c),
                 )
+    
+def make_fig_simple():
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    
+    return [fig, ax]
