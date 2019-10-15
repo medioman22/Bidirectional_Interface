@@ -32,7 +32,8 @@ public class HandClutchPositionControl : MonoBehaviour
     public float controllerSpeed = 0.025f;
     public float controllerRotationSpeed = 0.5f;
 
-    private GameObject handTarget;
+    public GameObject swarm;
+    public GameObject handTarget;
 
     private float cameraViewRotation = 0.0f;
     private float oldCameraViewRotation = 0.0f;
@@ -76,7 +77,7 @@ public class HandClutchPositionControl : MonoBehaviour
             oldCameraViewRotation = cameraViewRotation;
 
             if (cameraPosition.FPS)
-                dronePositionControl.controlYaw = false;
+                dronePositionControl.controlYaw = false; 
             else
             {
                 dronePositionControl.controlYaw = true;
@@ -86,9 +87,10 @@ public class HandClutchPositionControl : MonoBehaviour
         }
 
         // Instantiate hand target
-        handTarget = new GameObject("Hand Target");
-        handTarget.transform.localScale = 2.0f * SimulationData.DroneSize * Vector3.one;
-        handTarget.transform.position = dronePositionControl.transform.position;
+        //handTarget = new GameObject("Hand target");
+        handTarget = GameObject.Find("Hand target");
+        //handTarget.transform.localScale = 2.0f * SimulationData.DroneSize * Vector3.one;
+        //handTarget.transform.position = dronePositionControl.transform.position;
 
         streamingClient = OptitrackStreamingClient.FindDefaultClient();
 
@@ -116,14 +118,14 @@ public class HandClutchPositionControl : MonoBehaviour
                 observationInputRotation = transform.eulerAngles.y;
             }
 
-            handTarget.transform.position += Quaternion.Euler(0, observationInputRotation, 0) * direction * controllerSpeed;
+            //handTarget.transform.position += Quaternion.Euler(0, observationInputRotation, 0) * direction * controllerSpeed;
 
             dronePositionControl.target = handTarget.transform;
 
-            if (cameraPosition != null && cameraPosition.FPS)
-                droneVelocityControl.desiredYawRate = r * controllerRotationSpeed;
-            else if (cameraPosition != null && !cameraPosition.FPS)
-                dronePositionControl.targetYaw = fixedYaw;
+            //if (cameraPosition != null && cameraPosition.FPS)
+            //    droneVelocityControl.desiredYawRate = r * controllerRotationSpeed;
+            //else if (cameraPosition != null && !cameraPosition.FPS)
+            //    dronePositionControl.targetYaw = fixedYaw;
         }
         else // Mocap inputs
         {

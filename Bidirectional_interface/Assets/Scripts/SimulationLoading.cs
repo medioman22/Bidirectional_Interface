@@ -8,6 +8,7 @@ public class SimulationLoading : MonoBehaviour
     public HandClutchPositionControl drone;
     public GameObject subjectNamePanel;
     public GameObject restartPathPanel;
+
     public Text goLabel;
 
     private DataLogger logger;
@@ -16,13 +17,13 @@ public class SimulationLoading : MonoBehaviour
     {
         restartPathPanel.SetActive(false);
 
-        if (SimulationData.runNumber == 0)
-        {
-            // Show Name selection UI
-            subjectNamePanel.SetActive(true);
-        }
-        else
-        {
+        //if (SimulationData.runNumber ==0)
+        //{
+        //    // Show Name selection UI
+        //    subjectNamePanel.SetActive(true);
+        //}
+        //else
+        //{
             subjectNamePanel.SetActive(false);
             logger = GetComponent<DataLogger>();
             logger.subjectName = SimulationData.subjectName;
@@ -30,7 +31,7 @@ public class SimulationLoading : MonoBehaviour
             // Allow control of drone after 3 seconds
             drone.useController = SimulationData.useController;
             StartCoroutine(WaitAndActivateDrone(SimulationData.startUpControlDelay));
-        }
+        //}
     }
 
     IEnumerator WaitAndActivateDrone(float time)

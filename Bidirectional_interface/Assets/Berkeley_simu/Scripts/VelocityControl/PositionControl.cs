@@ -44,6 +44,7 @@ public class PositionControl : MonoBehaviour
             vc.desiredVx = positionError.x / positionTimeConstant + dFactor * (positionError.x - lastPositionError.x) / Time.fixedDeltaTime;
             vc.desiredVz = positionError.z / positionTimeConstant + dFactor * (positionError.z - lastPositionError.z) / Time.fixedDeltaTime;
             vc.desiredHeight = target.position.y;
+     
 
             lastPositionError = positionError;
         }
