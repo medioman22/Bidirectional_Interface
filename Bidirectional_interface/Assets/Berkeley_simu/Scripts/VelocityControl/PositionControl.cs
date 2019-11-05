@@ -29,6 +29,8 @@ public class PositionControl : MonoBehaviour
     void Start ()
     {
         vc = GetComponent<VelocityControl>();
+        //if (!this.transform.parent.GetComponent<UpdateHandTarget>().flying) target.position = transform.position + new Vector3 (0.0f, 1.0f, 0.0f);
+
     }
 
     void FixedUpdate ()

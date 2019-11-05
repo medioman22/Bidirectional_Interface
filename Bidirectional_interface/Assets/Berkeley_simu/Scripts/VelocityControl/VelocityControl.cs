@@ -13,6 +13,9 @@ public class VelocityControl : MonoBehaviour {
     public GameObject propRL;
     public bool isSlave = true;
 
+    public Vector3 desiredTheta;
+
+
     private float gravity = Physics.gravity.magnitude;
     private float time_constant_y_velocity = 1.0f; // Normal-person coordinates
     public float time_constant_acceleration = 0.5f;
@@ -48,16 +51,17 @@ public class VelocityControl : MonoBehaviour {
     // Update is called once per frame
     void FixedUpdate ()
     {
-        state.GetState ();
+        if (Input.GetKeyDown("space")) isSlave = !isSlave;
+            state.GetState ();
         
         // NOTE: I'm using stupid vector order (sideways, up, forward) at the end
 
-        Vector3 desiredTheta;
         Vector3 desiredOmega;
 
         float heightError = state.Altitude - desiredHeight;
 
-        if (!isSlave) desiredVelocity = new Vector3(desiredVx, -heightError / time_constant_y_velocity, desiredVz);
+
+        if (!isSlave || !this.transform.parent.GetComponent<UpdateHandTarget>().flying) desiredVelocity = new Vector3(desiredVx, -heightError / time_constant_y_velocity, desiredVz);
        
         Vector3 velocityError = state.VelocityVector - desiredVelocity;
         
@@ -97,7 +101,8 @@ public class VelocityControl : MonoBehaviour {
         propFR.transform.Rotate(Vector3.forward * Time.deltaTime * desiredThrust * speedScale);
         propRR.transform.Rotate(Vector3.forward * Time.deltaTime * desiredThrust * speedScale);
         propRL.transform.Rotate(Vector3.forward * Time.deltaTime * desiredThrust * speedScale);
-    }
+
+      }
     public void Reset()
     {
         state.VelocityVector = Vector3.zero;
