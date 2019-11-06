@@ -10,6 +10,7 @@ import os
 DISTANCE_THRESHOLD = 0.5
 MAXIMUM_MOTOR_INPUT = 99
 with_connection = True
+NB_OF_DRONES = 5
 
 if with_connection:
     print("Establishing the connection to the BBG device...")
@@ -56,35 +57,19 @@ distances_socket = socket.socket(socket.AF_INET, # Internet
 distances_socket.bind((UDP_IP, UDP_PORT_DISTANCES))
 ##################################################
 
+positions_dict = {}
 
-distances_dict = {  "frontObstacle" : 0,
-                    "backObstacle" : 0,
-                    "upObstacle" : 0,
-                    "downObstacle" : 0,
-                    "leftObstacle" : 0,
-                    "rightObstacle" : 0 }
 
-opposites =     {   "frontObstacle" : "backObstacle",
-                    "backObstacle" : "frontObstacle",
-                    "upObstacle" : "downObstacle",
-                    "downObstacle" : "upObstacle",
-                    "leftObstacle" : "rightObstacle",
-                    "rightObstacle" : "leftObstacle"}
-
-motorsIndexes = {  "frontObstacle" : 4,
-                    "backObstacle" : 3,
-                    "upObstacle" : 9,
-                    "downObstacle" : 1,
-                    "leftObstacle" : 0,
-                    "rightObstacle" : 5 }
+motorsIndexes = {  "up" : 4,
+                    "back" : 5,
+                    "front" : 6,
+                    "right" : 7,
+                    "down" : 8,
+                    "left" : 9 }
 
 def fillDict(current_data):
-    distances_dict["frontObstacle"] = current_data[0]
-    distances_dict["backObstacle"] = current_data[1]
-    distances_dict["upObstacle"] = current_data[2]
-    distances_dict["downObstacle"] = current_data[3]
-    distances_dict["leftObstacle"] = current_data[4]
-    distances_dict["rightObstacle"] = current_data[5]
+    for i in range(0,NB_OF_DRONES):
+        positions_dict[str(i)] = [current_data[i*3], current_data[i*3 + 1], current_data[i*3 + 2]]
 
 # MAIN LOOP
 while(True):
@@ -96,31 +81,33 @@ while(True):
 
         # send only the last packet otherwise too many packets sent too fast
         packet = distances[-1]
-        # 6 floats
-        strs = 'ffffff'
+        # 15 floats (5 drones and 3 positions each)
+        strs = ''
+        for i in range(0, NB_OF_DRONES):
+            strs += 'fff'
         # unpack.
-        unpacked = struct.unpack(strs, packet)
+        posUnpacked = struct.unpack(strs, packet)
         # parse the data
-        fillDict(unpacked)
-        print(distances_dict)
-        for orientation in distances_dict.keys():
-            if with_connection:
-                # if close enough to a wall
-                if (distances_dict[orientation] < DISTANCE_THRESHOLD):
-                    if(distances_dict[opposites[orientation]] < DISTANCE_THRESHOLD):
-
-                        # take difference. Ignore if negative
-                        value = (distances_dict[orientation] * (-MAXIMUM_MOTOR_INPUT/DISTANCE_THRESHOLD) + MAXIMUM_MOTOR_INPUT) \
-                                    - (distances_dict[opposites[orientation]] * (-MAXIMUM_MOTOR_INPUT/DISTANCE_THRESHOLD) + MAXIMUM_MOTOR_INPUT)
-                        if (value < 0):
-                            continue
-                        else:
-                            c.sendMessages([json.dumps({"dim":  motorsIndexes[orientation], "value": value, "type": "Set", "name": I2C_interface})])
-
-                    else:
-                        # make the motors vibrate
-                        value = distances_dict[orientation] * (-MAXIMUM_MOTOR_INPUT/DISTANCE_THRESHOLD) + MAXIMUM_MOTOR_INPUT # affine transformation
-                        c.sendMessages([json.dumps({"dim":  motorsIndexes[orientation], "value": value, "type": "Set", "name": I2C_interface})])
-                else:
-                    # reset motors
-                    c.sendMessages([json.dumps({"dim":  motorsIndexes[orientation], "value": 0, "type": "Set", "name": I2C_interface})])
+        fillDict(posUnpacked)
+        print(positions_dict)
+#        for orientation in distances_dict.keys():
+#            if with_connection:
+#                # if close enough to a wall
+#                if (distances_dict[orientation] < DISTANCE_THRESHOLD):
+#                    if(distances_dict[opposites[orientation]] < DISTANCE_THRESHOLD):
+#
+#                        # take difference. Ignore if negative
+#                        value = (distances_dict[orientation] * (-MAXIMUM_MOTOR_INPUT/DISTANCE_THRESHOLD) + MAXIMUM_MOTOR_INPUT) \
+#                                    - (distances_dict[opposites[orientation]] * (-MAXIMUM_MOTOR_INPUT/DISTANCE_THRESHOLD) + MAXIMUM_MOTOR_INPUT)
+#                        if (value < 0):
+#                            continue
+#                        else:
+#                            c.sendMessages([json.dumps({"dim":  motorsIndexes[orientation], "value": value, "type": "Set", "name": I2C_interface})])
+#
+#                    else:
+#                        # make the motors vibrate
+#                        value = distances_dict[orientation] * (-MAXIMUM_MOTOR_INPUT/DISTANCE_THRESHOLD) + MAXIMUM_MOTOR_INPUT # affine transformation
+#                        c.sendMessages([json.dumps({"dim":  motorsIndexes[orientation], "value": value, "type": "Set", "name": I2C_interface})])
+#                else:
+#                    # reset motors
+#                    c.sendMessages([json.dumps({"dim":  motorsIndexes[orientation], "value": 0, "type": "Set", "name": I2C_interface})])
