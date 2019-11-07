@@ -29,5 +29,10 @@ public static class SimulationData
 
     // This variable is used to store if the drone is controlled via controller or mocap
     public static bool useController = false;
+
+    //This is the target height to be reached during the experiment
+    public static float desiredHeight = 1.0f;
+
+    public static float takeoffHeight = 0.5f;
 }
 

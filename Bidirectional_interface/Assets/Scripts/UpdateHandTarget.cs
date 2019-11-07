@@ -19,6 +19,10 @@ public class UpdateHandTarget : MonoBehaviour
     public float K_align = 0.1f;
     public float P = 0.38f;
     public float D = 2.4f;
+    public int droneState = LANDED;
+    public int experimentState = LANDED;
+
+
 
     [Range(0.0f, 1.0f)]
     public float Flatness;
@@ -30,27 +34,33 @@ public class UpdateHandTarget : MonoBehaviour
     static int TAKING_OFF = 1;
     static int REACHING_HEIGHT = 2;
     static int FLYING = 3;
-    static int LANDING  = 4;
+    static int LANDING = 4;
 
+
+    static int GO_TO_FIRST_WAYPOINT = 5;
+    static int EXTENSION = 6;
+    static int WAYPOINT_NAV = 7;
+    static int CONTRACTION = 8;
 
     private Vector3 CenterOfMass;
     private float AccelerationMax = 0.5f;
     private bool masterExist = false;
     private float delta_K_coh = 0.01f;
-    private float droneState = LANDED;
     private float take_off_height = 1.0f;
-    private Transform test;
     private GameObject[] droneTargets = new GameObject[5];
+    private GameObject[] allWaypoints;
+    private Vector3 nextWaypoint;
+    private int currentWaypoint = 0;
     // Start is called before the first frame update
     void Start()
     {
         handTarget = new GameObject("Hand target");
-    
+
         int i = 0;
         foreach (Transform child in transform)
         {
             if (child.gameObject.tag == "Drone")
-            {   
+            {
                 allDrones.Add(child.gameObject);
                 var drone = allDrones.Last();
                 if (!masterExist)
@@ -60,13 +70,14 @@ public class UpdateHandTarget : MonoBehaviour
                     masterExist = true;
                 }
                 else drone.GetComponent<VelocityControl>().isSlave = true;
-                droneTargets[i] = new GameObject("drone" + i.ToString() );
+                droneTargets[i] = new GameObject("drone" + i.ToString());
                 droneTargets[i].transform.position = drone.transform.position;
                 i += 1;
             }
-
         }
+        allWaypoints = GameObject.FindGameObjectsWithTag("Waypoint");
     }
+
 
     // Update is called once per frame
     void FixedUpdate()
@@ -78,8 +89,8 @@ public class UpdateHandTarget : MonoBehaviour
             float v = Input.GetAxis("Vertical");
             float a = Input.GetAxis("Altitude");
             float r = Input.GetAxis("Rotation");
-            Vector3 desiredVelocity = new Vector3 (0.0f,0.0f,0.0f);
-     
+            Vector3 desiredVelocity = new Vector3(0.0f, 0.0f, 0.0f);
+
             Vector3 direction = new Vector3(h, a, v);
 
             if (droneState == TAKING_OFF)
@@ -100,6 +111,7 @@ public class UpdateHandTarget : MonoBehaviour
                 if (Mathf.Abs(CoG.y - take_off_height) < 0.05)
                 {
                     droneState = FLYING;
+                    experimentState = GO_TO_FIRST_WAYPOINT;
                     handTarget.transform.position = CoG;
                     flying = true;
                 }
@@ -107,6 +119,39 @@ public class UpdateHandTarget : MonoBehaviour
             else if (droneState == FLYING)
             {
                 handTarget.transform.position += Quaternion.Euler(0, observationInputRotation, 0) * direction * controllerSpeed;
+                if (experimentState == GO_TO_FIRST_WAYPOINT)
+                {
+                    Vector3 CoG = AveragePosition();
+                    nextWaypoint = allWaypoints[currentWaypoint].transform.GetChild(0).transform.position;
+                    print((nextWaypoint - CoG).magnitude);
+                    if ((nextWaypoint - CoG).magnitude < 1.0f)
+                    {
+                        currentWaypoint += 1;
+                        experimentState = EXTENSION;
+                    }
+                }
+                else if (experimentState == EXTENSION)
+                {
+                    experimentState = WAYPOINT_NAV;
+                }
+                else if (experimentState == WAYPOINT_NAV)
+                {
+                    Vector3 CoG = AveragePosition();
+                    if (currentWaypoint < allWaypoints.Length)
+                    {
+                        print((nextWaypoint - CoG).magnitude);
+                        nextWaypoint = allWaypoints[currentWaypoint].transform.GetChild(0).transform.position;
+                        if ((nextWaypoint - CoG).magnitude < 1.0f) currentWaypoint += 1;
+                    }
+                    else experimentState = CONTRACTION;
+                }
+                else if (experimentState == CONTRACTION)
+                {
+                    experimentState = LANDING;
+                }
+                print(experimentState);
+
+                //Flocking behavior
                 foreach (GameObject drone in allDrones)
                 {
                     if (!drone.GetComponent<VelocityControl>().isSlave)
@@ -144,32 +189,16 @@ public class UpdateHandTarget : MonoBehaviour
                     i += 1;
                 }
                 droneState = LANDED;
-                
             }
-
-            
         }
 
-
-        if (Input.GetAxis("Mouse ScrollWheel") > 0f) // forward
-        {
-            K_coh += delta_K_coh;
-        }
-        else if (Input.GetAxis("Mouse ScrollWheel") < 0f) // forward
-        {
-            K_coh -= delta_K_coh;
-        }
+        if (Input.GetAxis("Mouse ScrollWheel") > 0f) K_coh += delta_K_coh;// forward
+        else if (Input.GetAxis("Mouse ScrollWheel") < 0f) K_coh -= delta_K_coh; // forward
 
         if (Input.GetKeyDown(KeyCode.Mouse1))
         {
-            if (droneState == LANDED || droneState == TAKING_OFF)
-            {
-                droneState = TAKING_OFF;
-            }
-            else if (droneState == FLYING || droneState == LANDING)
-            {
-                droneState = LANDING;
-            }
+            if (droneState == LANDED || droneState == TAKING_OFF) droneState = TAKING_OFF;
+            else if (droneState == FLYING || droneState == LANDING) droneState = LANDING;
         }
     }
 
@@ -188,24 +217,24 @@ public class UpdateHandTarget : MonoBehaviour
         {
             if (neighbour.name != Drone.name)
             {
-                var diff = Drone.transform.position- neighbour.transform.position;
+                var diff = Drone.transform.position - neighbour.transform.position;
                 var difflen = diff.magnitude;
-                SeparationVector += diff / (difflen*difflen);
-                SeparationVector[1] *= (1-Flatness) ;
+                SeparationVector += diff / (difflen * difflen);
+                SeparationVector[1] *= (1 - Flatness);
             }
         }
-        return  Drone.transform.InverseTransformDirection(SeparationVector);
+        return Drone.transform.InverseTransformDirection(SeparationVector);
     }
     Vector3 Alignement(GameObject Drone)
     {
         Vector3 AlignementVector = new Vector3(0, 0, 0);
-       AlignementVector = AverageVelocity() - Drone.GetComponent<VelocityControl>().state.VelocityVector;
-       return AlignementVector;
+        AlignementVector = AverageVelocity() - Drone.GetComponent<VelocityControl>().state.VelocityVector;
+        return AlignementVector;
     }
 
     Vector3 AveragePosition()
     {
-        Vector3 Positions = new Vector3 (0,0,0);
+        Vector3 Positions = new Vector3(0, 0, 0);
         foreach (GameObject drone in allDrones)
         {
             Positions += drone.transform.position;
@@ -225,4 +254,3 @@ public class UpdateHandTarget : MonoBehaviour
         return Veloctiy;
     }
 }
-    
