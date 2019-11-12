@@ -90,10 +90,10 @@ public class Log : MonoBehaviour
         return nameArray;
     }
 
-    private string getPath(string droneName)
+    private string getPath(string subjectName)
     {
 #if UNITY_EDITOR
-        return Application.dataPath + "/Logs/" + droneName + DateTime.Now.ToString("h_mm_ss") + ".csv";
+        return Application.dataPath + "/Logs/" + subjectName + "_" + DateTime.Now.ToString("h_mm_ss") + ".csv";
 #elif UNITY_ANDROID
             return Application.persistentDataPath+"Saved_data.csv";
 #elif UNITY_IPHONE
@@ -120,9 +120,9 @@ public class Log : MonoBehaviour
         for (int index = 0; index < length; index++)
             sb.AppendLine(string.Join(delimiter, output[index]));
 
-        string filePath = getPath(name);
+        string filePath = getPath(SimulationData.subjectName);
         //Directory.CreateDirectory(filePath);
-        print(filePath);
+        //print(filePath);
         StreamWriter outStream = System.IO.File.CreateText(filePath);
         outStream.WriteLine(sb);
         outStream.Close();

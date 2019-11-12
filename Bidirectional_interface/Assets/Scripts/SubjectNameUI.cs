@@ -12,8 +12,8 @@ public class SubjectNameUI : MonoBehaviour
     public Text invalidNameText;
     public Text goLabel;
 
-    public HandClutchPositionControl drone;
-    public DataLogger logger;
+    public UpdateHandTarget drone;
+    //public DataLogger logger;
 
     // Start is called before the first frame update
     void Start()
@@ -39,15 +39,17 @@ public class SubjectNameUI : MonoBehaviour
         {
             invalidNameText.gameObject.SetActive(false);
             SimulationData.subjectName = name;
-            logger.subjectName = name;
+            //logger.subjectName = name;
+            GameObject droneTest = GameObject.Find("Swarm");
+            droneTest.GetComponent<UpdateHandTarget>().useController = useControllerToggle.isOn;
 
-            drone.useController = useControllerToggle.isOn;
+            //drone.useController = useControllerToggle.isOn;
             SimulationData.useController = useControllerToggle.isOn;
-            StartCoroutine(WaitAndActivateDrone(SimulationData.startUpControlDelay));
+            //StartCoroutine(WaitAndActivateDrone(SimulationData.startUpControlDelay));
             subjectNamePanel.SetActive(false);
             // // Reload Scene
-            // Scene scene = SceneManager.GetActiveScene(); 
-            // SceneManager.LoadScene(scene.name);
+            //Scene scene = SceneManager.GetActiveScene(); 
+            //SceneManager.LoadScene(scene.name);
         }
         else
         {

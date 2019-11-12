@@ -5,7 +5,6 @@ using UnityEngine.UI;
 
 public class SimulationLoading : MonoBehaviour
 {
-    public HandClutchPositionControl drone;
     public GameObject subjectNamePanel;
     public GameObject restartPathPanel;
 
@@ -17,27 +16,27 @@ public class SimulationLoading : MonoBehaviour
     {
         restartPathPanel.SetActive(false);
 
-        //if (SimulationData.runNumber ==0)
-        //{
-        //    // Show Name selection UI
-        //    subjectNamePanel.SetActive(true);
-        //}
-        //else
-        //{
-            subjectNamePanel.SetActive(false);
+        if (SimulationData.runNumber == 0)
+        {
+            // Show Name selection UI
+            subjectNamePanel.SetActive(true);
+        }
+        else
+        {
+            subjectNamePanel.SetActive(true);
             logger = GetComponent<DataLogger>();
             logger.subjectName = SimulationData.subjectName;
             
             // Allow control of drone after 3 seconds
-            drone.useController = SimulationData.useController;
+            //drone.useController = SimulationData.useController;
             StartCoroutine(WaitAndActivateDrone(SimulationData.startUpControlDelay));
-        //}
+        }
     }
 
     IEnumerator WaitAndActivateDrone(float time)
     {
         yield return new WaitForSeconds(time);
-        drone.enabled = true;
+        //drone.enabled = true;
         StartCoroutine(AnimateGoLabel(1.0f));
     }
 

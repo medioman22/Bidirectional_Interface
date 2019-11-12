@@ -138,7 +138,7 @@ public class SocketSender : MonoBehaviour
     private float heightError()
     {
         float currenHeight = averageHeight();
-        float desiredHeight = SimulationData.desiredHeight;
+        float desiredHeight = gameObject.transform.GetComponent<UpdateHandTarget>().desiredHeight;
         return currenHeight - desiredHeight;
     }
 
