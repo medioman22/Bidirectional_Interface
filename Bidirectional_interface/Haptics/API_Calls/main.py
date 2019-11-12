@@ -8,22 +8,27 @@ import sys
 import os
 import numpy as np
 
+
 DISTANCE_THRESHOLD = 0.5
 MAXIMUM_MOTOR_INPUT = 99
 with_connection = True
 NB_OF_DRONES = 5
-NB_OF_INFORMATION = 8
+NB_OF_INFORMATION = 7
 DESIRED_HEIGHT = 1.0
 LOWEST_INTENSITY = 40
 HIGHEST_INTENSITY = 99
 MAX_ERROR = DESIRED_HEIGHT
+MAX_DISTANCE = 4.0
+MAX_EXTENSION_ERROR = 1.0
 MARGIN = 0.1
 
-LANDED = 0
-TAKING_OFF = 1
-REACHING_HEIGHT = 2
-FLYING = 3
-LANDING  = 4;
+REACHING_HEIGHT = 2;
+GO_TO_FIRST_WAYPOINT = 5;
+EXTENSION = 6;
+WAYPOINT_NAV = 7;
+CONTRACTION = 8;
+
+emergency_stop = False;
 
 if with_connection:
     print("Establishing the connection to the BBG device...")
@@ -105,6 +110,59 @@ def sendHeightFeedback(current_height):
         c.sendMessages([json.dumps({"dim":  motorsIndexes["down"], "value": 0, "type": "Set", "name": I2C_interface})])
         c.sendMessages([json.dumps({"dim":  motorsIndexes["up"], "value": 0, "type": "Set", "name": I2C_interface})])
         
+
+def sendHeightCue(error):
+    max_error = MAX_DISTANCE
+    motor_intensity = abs(error*(HIGHEST_INTENSITY - LOWEST_INTENSITY)/max_error) + LOWEST_INTENSITY
+    if motor_intensity < LOWEST_INTENSITY: motor_intensity = 0
+    if motor_intensity > HIGHEST_INTENSITY: motor_intensity = HIGHEST_INTENSITY
+    
+    if error < 0 :
+        turnOnMotors(["down"], motor_intensity)
+    else :
+        turnOnMotors(["up"], motor_intensity)
+
+
+def sendExtensionCue(error):
+    max_error = MAX_EXTENSION_ERROR
+    motor_intensity = abs(error*(HIGHEST_INTENSITY - LOWEST_INTENSITY)/max_error) + LOWEST_INTENSITY
+    if motor_intensity < LOWEST_INTENSITY: motor_intensity = 0
+    if motor_intensity > HIGHEST_INTENSITY: motor_intensity = HIGHEST_INTENSITY
+    
+    if error < 0 :
+        turnOnMotors(["left", "right"], motor_intensity)
+    else :
+        turnOnMotors(["up", "down"], motor_intensity)          
+
+def sendDirectionalCue(distanceToWaypoint):
+    x_distance = distanceToWaypoint[0]
+    y_distance = distanceToWaypoint[2]
+    send1DirectionalCue(x_distance, "right", "left")
+    send1DirectionalCue(y_distance, "upfront", "downback")    
+    
+def send1DirectionalCue(distance, direction, negative_direction):
+    motor_intensity = abs(distance*(HIGHEST_INTENSITY - LOWEST_INTENSITY)/MAX_DISTANCE)+LOWEST_INTENSITY
+    if motor_intensity < LOWEST_INTENSITY: motor_intensity = 0
+    if motor_intensity > HIGHEST_INTENSITY: motor_intensity = HIGHEST_INTENSITY
+    if distance < - MARGIN:
+        turnOnMotors([negative_direction], motor_intensity)
+    elif distance > MARGIN :
+        turnOnMotors([direction], motor_intensity)
+    else:
+       shutDownAllMotors()
+
+def shutDownAllMotors():
+    for key, motor in motorsIndexes.items() :
+        c.sendMessages([json.dumps({"dim":  motor, "value": 0, "type": "Set", "name": I2C_interface})])
+             
+def turnOnMotors(list_of_motors, intensity):
+    for key in motorsIndexes:
+        if key in list_of_motors:
+            c.sendMessages([json.dumps({"dim":  motorsIndexes[key], "value": intensity, "type": "Set", "name": I2C_interface})])
+        else:
+            c.sendMessages([json.dumps({"dim":  motorsIndexes[key], "value": 0, "type": "Set", "name": I2C_interface})])            
+
+
 def calculateMaxRadius(positionList):
     maxRadius = 0.0
     CoG = averagePosition(positionList)
@@ -117,28 +175,23 @@ def calculateMaxRadius(positionList):
 
 def calculateDistCoGWaypoint(positionList, waypointPos):
     CoG = averagePosition(positionList)
-    return objectPos - CoG
+    return waypointPos - CoG
+       
+        
 
     
-        
-        
-        
-            
 def fillInfoDict(current_data):
     i = 0
     information_dict["height_error"] = current_data[i]
     i+=1
-    information_dict["max_radius"] = current_data[i]
+    information_dict["extension_error"] = current_data[i]
+    i+=1
+    information_dict["contraction_error"] = current_data[i]
     i+=1
     information_dict["next_waypoint_direction"] = [current_data[i], current_data[i+1], current_data[i+2]]
     i+=3
-    information_dict["pilot_direction"] = [current_data[i], current_data[i+1], current_data[i+2]]
+    information_dict["experiment_state"] = round(current_data[i])
 
-def fillPositionsDict(current_data):
-    global droneState
-    for i in range(0,NB_OF_DRONES):
-        positions_dict[str(i+1)] = [current_data[i*3], current_data[i*3 + 1], current_data[i*3 + 2]]
-    droneState = int(current_data[NB_OF_DRONES])
     
     
     
@@ -170,25 +223,37 @@ while(True):
         # send only the last packet otherwise too many packets sent too fast
         packet = positions[-1]
         
-        strs = 'f'
+        strs = ''
         # 15 floats (5 drones and 3 positions each) + 1 for dronestate
-        for i in range(0, NB_OF_DRONES):
-                strs += 'fff'
-#        for i in range(0, NB_OF_INFORMATION):
-#            strs += 'f'
+#        for i in range(0, NB_OF_DRONES):
+#                strs += 'fff'
+        for i in range(0, NB_OF_INFORMATION):
+            strs += 'f'
         # unpack.
-        posUnpacked = struct.unpack(strs, packet)
+        infoUnpacked = struct.unpack(strs, packet)
         # parse the data
-        fillPositionsDict(posUnpacked)
-        positionList = list(positions_dict.values())
-#        fillInfoDict(infoUnpacked)
-#        print(positions_dict)
-#        print(droneState)
-        averageHeight = averageHeight(positionList)
-        maxRadius = calculateMaxRadius(positionList)
-        print(maxRadius)
-#        sendHeightFeedback(averageHeight)   
-#        print(CoG)
+        #fillPositionsDict(posUnpacked)
+        #positionList = list(positions_dict.values())
+        fillInfoDict(infoUnpacked)
+
+        print(information_dict)
+        
+        experiment_state = information_dict["experiment_state"]
+        if experiment_state == REACHING_HEIGHT:
+            sendHeightCue(information_dict["height_error"])
+        elif experiment_state == GO_TO_FIRST_WAYPOINT:
+            sendDirectionalCue(information_dict["next_waypoint_direction"])
+#            sendHeightCue(information_dict["height_error"])
+        elif experiment_state == EXTENSION:
+            sendExtensionCue(information_dict["extension_error"])
+        elif experiment_state == WAYPOINT_NAV:
+            sendDirectionalCue(information_dict["next_waypoint_direction"])
+#            sendHeightCue(information_dict["height_error"])            
+        elif experiment_state == CONTRACTION:
+            sendExtensionCue(information_dict["contraction_error"])
+        else :
+            shutDownAllMotors()
+    
 #        for orientation in positions_dict.keys():
 #            if with_connection:
 #                # if close enough to a wall

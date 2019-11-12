@@ -33,9 +33,9 @@ public class SocketSender : MonoBehaviour
         nbOfDrones = allDrones.Count;
 
         //for each drone, there is 3 positions and each position is a float which requires 4 bytes, plus the dronestate
-        data = new byte[(nbOfDrones * 3 + 1) *4];
+        //data = new byte[(nbOfDrones * 3 + 1) *4];
         //8 different float a envoyer au script python
-        //data = new byte[8 * 4];
+        data = new byte[7* 4];
 
         localIP = "127.0.0.1"; // local IP
         sendingPort = 8051; //port used to send the distances to python
@@ -49,9 +49,10 @@ public class SocketSender : MonoBehaviour
 
     private void Update()
     {
-        fillPositionsArray();
-        sendDistancesToPython();
+        //fillPositionsArray();
+        //sendDistancesToPython();
         //sendInformationToPython();
+        sendInformationToPython2();
     }
 
     private void fillPositionsArray()
@@ -104,15 +105,45 @@ public class SocketSender : MonoBehaviour
         //Distance to next waypoint
         j = vector3toByte(distanceToWaypoint(new Vector3(0.0f, 0.0f, 0.0f)), j);
         print(distanceToWaypoint(new Vector3(0.0f, 0.0f, 0.0f)));
+
         //Distance from pilote
         j = vector3toByte(distanceToWaypoint(new Vector3(1.0f, 1.0f, 1.0f)), j);
 
         client.Send(data, data.Length, ipEndPoint);
-    
-
-
     }
 
+    private void sendInformationToPython2()
+    {
+        UpdateHandTarget swarm = GetComponent<UpdateHandTarget>();
+        byte[] currentByte = new byte[4];
+        int j = 0;
+        //Difference between real and desired height
+        currentByte = System.BitConverter.GetBytes(swarm.heightError);
+        //print(heightError());
+        floatToByte(j, currentByte);
+        j++;
+        //Max distance between an element and the Center Of Gravity of the swarm
+        currentByte = System.BitConverter.GetBytes(swarm.extensionError);
+        //print(maxRadius());
+        floatToByte(j, currentByte);
+        j++;
+
+        //Max distance between an element and the Center Of Gravity of the swarm
+        currentByte = System.BitConverter.GetBytes(swarm.contractionError);
+        //print(maxRadius());
+        floatToByte(j, currentByte);
+        j++;
+        //Distance to next waypoint
+        j = vector3toByte(swarm.distanceToWaypoint, j);
+        print(distanceToWaypoint(new Vector3(0.0f, 0.0f, 0.0f)));
+
+        //Max distance between an element and the Center Of Gravity of the swarm
+        currentByte = System.BitConverter.GetBytes(Convert.ToSingle(swarm.experimentState));
+        //print(maxRadius());
+        floatToByte(j, currentByte);
+
+        client.Send(data, data.Length, ipEndPoint);
+    }
     private void floatToByte(int j, byte[] currentByte)
     {
         for (int i = 0; i < 4; i++)

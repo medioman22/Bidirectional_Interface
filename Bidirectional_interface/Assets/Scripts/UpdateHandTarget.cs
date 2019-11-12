@@ -22,12 +22,20 @@ public class UpdateHandTarget : MonoBehaviour
     public int droneState = LANDED;
     public int experimentState = LANDED;
 
+    public float handRoomScaling = 8.0f;
+
     //This is the target height to be reached during the experiment
     public float desiredHeight = 1.0f;
     public float maxLandingRadius = 1.0f;
     public float minExtensionForExp = 2.0f;
     public float marginFromCenterOfWaypoint = 0.5f;
 
+    public int handRigidbodyID = 1;
+    public bool drawHandTarget = true;
+
+    public bool clutchActivated = false;
+
+    public float mocapInputRotation = 90.0f;
 
 
     [Range(0.0f, 1.0f)]
@@ -36,12 +44,18 @@ public class UpdateHandTarget : MonoBehaviour
     [System.NonSerialized]
     public bool flying = false;
 
+
+    //Value to be send to the user for feedback
+    public float heightError = 0.0f;
+    public Vector3 distanceToWaypoint = new Vector3(0.0f, 0.0f, 0.0f);
+    public float extensionError = 0.0f;
+    public float contractionError = 0.0f;
+
     const int LANDED = 0;
     const int TAKING_OFF = 1;
     const int REACHING_HEIGHT = 2;
     const int FLYING = 3;
     const int LANDING = 4;
-
 
     const int GO_TO_FIRST_WAYPOINT = 5;
     const int EXTENSION = 6;
@@ -57,6 +71,17 @@ public class UpdateHandTarget : MonoBehaviour
     private GameObject[] allWaypoints;
     private Vector3 nextWaypoint;
     private int currentWaypoint = 1;
+
+    private Vector3 rawHandPosition = Vector3.zero;
+    private Quaternion rawHandRotation = Quaternion.identity;
+    private Vector3 oldRawHandPosition;
+    private float referenceYaw = 0.0f;
+
+    private OptitrackStreamingClient streamingClient;
+    private DroneCamera cameraPosition;
+
+    private float fixedYaw = 0.0f;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -88,137 +113,202 @@ public class UpdateHandTarget : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
+        Vector3 desiredVelocity = new Vector3(0.0f, 0.0f, 0.0f);
         CenterOfMass = AveragePosition();
+
         if (useController)
         {
             float h = Input.GetAxis("Horizontal");
             float v = Input.GetAxis("Vertical");
             float a = Input.GetAxis("Altitude");
             float r = Input.GetAxis("Rotation");
-            Vector3 desiredVelocity = new Vector3(0.0f, 0.0f, 0.0f);
-
             Vector3 direction = new Vector3(h, a, v);
-            Vector3 CoG;
-            switch (droneState)
+            handTarget.transform.position += Quaternion.Euler(0, observationInputRotation, 0) * direction * controllerSpeed;
+        }
+        else // Mocap inputs
+        {
+            OptitrackRigidBodyState rgbdOptitrack = streamingClient.GetLatestRigidBodyState(handRigidbodyID);
+
+            if (rgbdOptitrack != null)
             {
-                case TAKING_OFF:
-                    int i = 0;
-                    foreach (GameObject drone in allDrones)
-                    {
-                        Vector3 t_o = new Vector3(0.0f, take_off_height, 0.0f);
-                        droneTargets[i].transform.position += t_o;
-                        drone.GetComponent<PositionControl>().target = droneTargets[i].transform;
-                        i += 1;
-                    }
-                    droneState = REACHING_HEIGHT;
-                    break;
+                rawHandPosition = rgbdOptitrack.Pose.Position;
+                rawHandRotation = rgbdOptitrack.Pose.Orientation;
 
-                case REACHING_HEIGHT:
-                    CoG = AveragePosition();
-                    print("The height error is " + Mathf.Abs(CoG.y - take_off_height));
-                    if (Mathf.Abs(CoG.y - take_off_height) < 0.05)
-                    {
-                        droneState = FLYING;
-                        experimentState = REACHING_HEIGHT;
-                        handTarget.transform.position = CoG;
-                        flying = true;
-                    }
-                    break;
+                Vector3 deltaHandPosition = rawHandPosition - oldRawHandPosition;
+                float handYaw = rawHandRotation.eulerAngles.y;
 
-                case FLYING:
-                    handTarget.transform.position += Quaternion.Euler(0, observationInputRotation, 0) * direction * controllerSpeed;
-                    switch (experimentState)
-                    {
-                        case REACHING_HEIGHT:
-                            CoG = AveragePosition();
-                            print("The height error is " + Mathf.Abs(CoG.y - desiredHeight));
-                            if (Mathf.Abs(CoG.y - desiredHeight) < 0.05) experimentState = GO_TO_FIRST_WAYPOINT;
-                            break;
+                oldRawHandPosition = rawHandPosition;
 
-                        case GO_TO_FIRST_WAYPOINT:
-                            CoG = AveragePosition();
-                            int index = 0;
+                if (deltaHandPosition.magnitude > 1.0f)
+                    return;
+
+                // Update observation input rotation if FPS mode
+                if (cameraPosition != null && cameraPosition.FPS)
+                {
+                    observationInputRotation = transform.eulerAngles.y;
+                }
+
+                // Clutch triggered, set reference yaw
+                if (OVRInput.GetUp(OVRInput.RawButton.RIndexTrigger))
+                //if (Input.GetKeyDown(KeyCode.Mouse0))
+                {
+                    referenceYaw = handYaw;
+                }
+
+                // In TPV, we keep the drone yaw fixed
+                //if (cameraPosition != null && !cameraPosition.FPS)
+                //{
+                //    dronePositionControl.targetYaw = fixedYaw;
+                //}
+
+                // Clutch activated
+                //if (OVRInput.Get(OVRInput.Axis1D.PrimaryIndexTrigger) < 0.5)
+
+                if (!OVRInput.Get(OVRInput.RawButton.RIndexTrigger))
+                //if (!Input.GetKey(KeyCode.Mouse0))
+                {
+                    clutchActivated = true;
+                    //if (cameraPosition != null && cameraPosition.FPS)
+                    //    droneVelocityControl.desiredYawRate = Mathf.DeltaAngle(referenceYaw, handYaw) * rotationSpeedScaling;
+
+                    handTarget.transform.position = transform.position;
+                }
+                else
+                {
+                    // Update drone target
+                    clutchActivated = false;
+
+                    //if (cameraPosition != null && cameraPosition.FPS)
+                    //    droneVelocityControl.desiredYawRate = 0.0f;
+
+                    handTarget.transform.position += Quaternion.Euler(0, observationInputRotation + mocapInputRotation, 0) * deltaHandPosition * handRoomScaling;
+                }
+            }
+        }
+
+        if (drawHandTarget)
+            handTarget.SetActive(true);
+        else
+            handTarget.SetActive(false);
+
+        switch (droneState)
+        {
+            case TAKING_OFF:
+                int i = 0;
+                foreach (GameObject drone in allDrones)
+                {
+                    Vector3 t_o = new Vector3(0.0f, take_off_height, 0.0f);
+                    droneTargets[i].transform.position += t_o;
+                    drone.GetComponent<PositionControl>().target = droneTargets[i].transform;
+                    i += 1;
+                }
+                droneState = REACHING_HEIGHT;
+                break;
+
+            case REACHING_HEIGHT:
+                print("The height error is " + Mathf.Abs(CenterOfMass.y - take_off_height));
+                if (Mathf.Abs(CenterOfMass.y - take_off_height) < 0.05)
+                {
+                    droneState = FLYING;
+                    experimentState = REACHING_HEIGHT;
+                    handTarget.transform.position = CenterOfMass;
+                    flying = true;
+                }
+                break;
+
+            case FLYING:
+                switch (experimentState)
+                {
+                    case REACHING_HEIGHT:
+                        heightError = Mathf.Abs(CenterOfMass.y - desiredHeight);
+                        print("The height error is " + heightError);
+                        if (heightError < 0.05) experimentState = GO_TO_FIRST_WAYPOINT;
+                        break;
+
+                    case GO_TO_FIRST_WAYPOINT:
+                        int index = 0;
+                        for (i = 0; i < allWaypoints.Length; i++)
+                        {
+                            if (allWaypoints[i].GetComponent<CreateWaypoint>().waypointNumber == currentWaypoint) index = i;
+                        }
+                        nextWaypoint = allWaypoints[index].transform.GetChild(0).transform.position;
+                        distanceToWaypoint = (nextWaypoint - CenterOfMass);
+                        print("The distance to next waypoint is " + distanceToWaypoint.magnitude);
+                        if (distanceToWaypoint.magnitude < marginFromCenterOfWaypoint)
+                        {
+                            currentWaypoint += 1;
+                            experimentState = EXTENSION;
+                        }
+                        break;
+
+                    case EXTENSION:
+                        float extension = AverageDistanceToNeighbour();
+                        extensionError = minExtensionForExp - extension;
+                        print("The extension is " + extension);
+                        if (extensionError < 0) experimentState = WAYPOINT_NAV;
+                        break;
+
+                    case WAYPOINT_NAV:
+                        if (currentWaypoint <= allWaypoints.Length)
+                        {
+                            index = 0;
                             for (i = 0; i < allWaypoints.Length; i++)
                             {
                                 if (allWaypoints[i].GetComponent<CreateWaypoint>().waypointNumber == currentWaypoint) index = i;
                             }
                             nextWaypoint = allWaypoints[index].transform.GetChild(0).transform.position;
-                            print("The distance to next waypoint is " + (nextWaypoint - CoG).magnitude);
-                            if ((nextWaypoint - CoG).magnitude < marginFromCenterOfWaypoint)
-                            {
-                                currentWaypoint += 1;
-                                experimentState = EXTENSION;
-                            }
-                            break;
-
-                        case EXTENSION:
-                            float extension = AverageDistanceToNeighbour();
-                            print("The extension is " + extension);
-                            if (extension >= minExtensionForExp) experimentState = WAYPOINT_NAV;
-                            break;
-
-                        case WAYPOINT_NAV:
-                            CoG = AveragePosition();
-                            if (currentWaypoint <= allWaypoints.Length)
-                            {
-                                index = 0;
-                                for (i = 0; i < allWaypoints.Length; i++)
-                                {
-                                    if (allWaypoints[i].GetComponent<CreateWaypoint>().waypointNumber == currentWaypoint) index = i;
-                                }
-                                nextWaypoint = allWaypoints[index].transform.GetChild(0).transform.position;
-                                print("The distance to next waypoint is " + (nextWaypoint - CoG).magnitude);
-                                if ((nextWaypoint - CoG).magnitude < marginFromCenterOfWaypoint) currentWaypoint += 1;
-                            }
-                            else experimentState = CONTRACTION;
-                            break;
-
-                        case CONTRACTION:
-                            print("MaxRadius is " + maxRadiusOfSwarm());
-                            if (maxRadiusOfSwarm() < maxLandingRadius) experimentState = LANDING;
-                            break;
-                    }
-            
-
-                    //Flocking behavior
-                    foreach (GameObject drone in allDrones)
-                    {
-                        if (!drone.GetComponent<VelocityControl>().isSlave)
-                        {
-                            //position control for the master
-                            if (experimentState != LANDING) drone.GetComponent<PositionControl>().target = handTarget.transform;
-                            else drone.GetComponent<PositionControl>().target.position = AveragePosition();
+                            distanceToWaypoint = (nextWaypoint - CenterOfMass);
+                            print("The distance to next waypoint is " + distanceToWaypoint.magnitude);
+                            if (distanceToWaypoint.magnitude < marginFromCenterOfWaypoint) currentWaypoint += 1;
                         }
-                        else
-                        {
-                            //The combination of the reynolds elements is an acceleration
-                            var dt = Time.fixedDeltaTime;
-                            var accelerationReynolds = K_coh * Cohesion(drone) + K_sep * Separation(drone) + K_align * Alignement(drone);
-                            var velocityReynolds = accelerationReynolds / dt;
-                            desiredVelocity += velocityReynolds;
+                        else experimentState = CONTRACTION;
+                        break;
 
-                            //Velocity control for the slaves (P D controller)
-                            drone.GetComponent<VelocityControl>().desiredVelocity = P * desiredVelocity + D * accelerationReynolds;
-                            Debug.DrawLine(drone.transform.position, (drone.transform.position + 5.0f * drone.transform.TransformDirection(accelerationReynolds)));
-                        }
-                    }
-                    break;
+                    case CONTRACTION:
+                        print("MaxRadius is " + MaxRadiusOfSwarm());
+                        contractionError = maxLandingRadius - MaxRadiusOfSwarm();
+                        if (contractionError > 0) experimentState = LANDING;
+                        break;
+                }
 
-                case LANDING:
-                    flying = false;
-                    int j = 0;
-                    foreach (GameObject drone in allDrones)
+                //Flocking behavior
+                foreach (GameObject drone in allDrones)
+                {
+                    if (!drone.GetComponent<VelocityControl>().isSlave)
                     {
-                        droneTargets[j].transform.position = drone.transform.position;
-                        Vector3 landPosition = droneTargets[j].transform.position;
-                        landPosition.y = 0.0f;
-                        droneTargets[j].transform.position = landPosition;
-                        drone.GetComponent<PositionControl>().target = droneTargets[j].transform;
-                        j += 1;
+                        //position control for the master
+                        if (experimentState != LANDING) drone.GetComponent<PositionControl>().target = handTarget.transform;
+                        else drone.GetComponent<PositionControl>().target.position = AveragePosition();
                     }
-                    droneState = LANDED;
-                    break;
-            }
+                    else
+                    {
+                        //The combination of the reynolds elements is an acceleration
+                        var dt = Time.fixedDeltaTime;
+                        var accelerationReynolds = K_coh * Cohesion(drone) + K_sep * Separation(drone) + K_align * Alignement(drone);
+                        var velocityReynolds = accelerationReynolds / dt;
+                        desiredVelocity += velocityReynolds;
+
+                        //Velocity control for the slaves (P D controller)
+                        drone.GetComponent<VelocityControl>().desiredVelocity = P * desiredVelocity + D * accelerationReynolds;
+                        Debug.DrawLine(drone.transform.position, (drone.transform.position + 5.0f * drone.transform.TransformDirection(accelerationReynolds)));
+                    }
+                }
+                break;
+
+            case LANDING:
+                flying = false;
+                int j = 0;
+                foreach (GameObject drone in allDrones)
+                {
+                    droneTargets[j].transform.position = drone.transform.position;
+                    Vector3 landPosition = droneTargets[j].transform.position;
+                    landPosition.y = 0.0f;
+                    droneTargets[j].transform.position = landPosition;
+                    drone.GetComponent<PositionControl>().target = droneTargets[j].transform;
+                    j += 1;
+                }
+                droneState = LANDED;
+                break;
         }
 
         if (Input.GetAxis("Mouse ScrollWheel") > 0f) K_coh += delta_K_coh;// forward
@@ -306,7 +396,7 @@ public class UpdateHandTarget : MonoBehaviour
         return averageExtension;
     }
 
-    float maxRadiusOfSwarm()
+    float MaxRadiusOfSwarm()
     {
         float maxRadius = 0.0f;
         
