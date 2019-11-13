@@ -46,10 +46,10 @@ public class UpdateHandTarget : MonoBehaviour
 
 
     //Value to be send to the user for feedback
-    public float heightError = 0.0f;
-    public Vector3 distanceToWaypoint = new Vector3(0.0f, 0.0f, 0.0f);
-    public float extensionError = 0.0f;
-    public float contractionError = 0.0f;
+    public float heightError = SimulationData.heightError;
+    public Vector3 distanceToWaypoint = SimulationData.distanceToWaypoint;
+    public float extensionError = SimulationData.extensionError;
+    public float contractionError = SimulationData.contractionError;
 
     const int LANDED = 0;
     const int TAKING_OFF = 1;
