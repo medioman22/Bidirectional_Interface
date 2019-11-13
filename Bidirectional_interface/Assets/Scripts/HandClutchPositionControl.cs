@@ -34,7 +34,6 @@ public class HandClutchPositionControl : MonoBehaviour
 
     public GameObject swarm;
     public GameObject handTarget;
-
     private float cameraViewRotation = 0.0f;
     private float oldCameraViewRotation = 0.0f;
 
@@ -67,6 +66,8 @@ public class HandClutchPositionControl : MonoBehaviour
     {
         dronePositionControl = GetComponent<PositionControl>();
         droneVelocityControl = GetComponent<VelocityControl>();
+        handTarget.AddComponent<OptitrackRigidBody>();
+
 
         // This one is optional, thus cameraPosition can be null
         cameraPosition = GetComponent<DroneCamera>();
@@ -91,7 +92,6 @@ public class HandClutchPositionControl : MonoBehaviour
         handTarget = GameObject.Find("Hand target");
         //handTarget.transform.localScale = 2.0f * SimulationData.DroneSize * Vector3.one;
         //handTarget.transform.position = dronePositionControl.transform.position;
-
         streamingClient = OptitrackStreamingClient.FindDefaultClient();
 
         // If we still couldn't find one, disable this component.

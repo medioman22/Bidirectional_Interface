@@ -94,17 +94,17 @@ public class SocketSender : MonoBehaviour
         int j = 0;
         //Difference between real and desired height
         currentByte = System.BitConverter.GetBytes(heightError());
-        print(heightError());
+        //print(heightError());
         floatToByte(j, currentByte);
         j++;
         //Max distance between an element and the Center Of Gravity of the swarm
         currentByte = System.BitConverter.GetBytes(maxRadius());
-        print(maxRadius());
+        //print(maxRadius());
         floatToByte(j, currentByte);
         j++;
         //Distance to next waypoint
         j = vector3toByte(distanceToWaypoint(new Vector3(0.0f, 0.0f, 0.0f)), j);
-        print(distanceToWaypoint(new Vector3(0.0f, 0.0f, 0.0f)));
+        //print(distanceToWaypoint(new Vector3(0.0f, 0.0f, 0.0f)));
 
         //Distance from pilote
         j = vector3toByte(distanceToWaypoint(new Vector3(1.0f, 1.0f, 1.0f)), j);
@@ -135,7 +135,7 @@ public class SocketSender : MonoBehaviour
         j++;
         //Distance to next waypoint
         j = vector3toByte(swarm.distanceToWaypoint, j);
-        print(distanceToWaypoint(new Vector3(0.0f, 0.0f, 0.0f)));
+        //print(distanceToWaypoint(new Vector3(0.0f, 0.0f, 0.0f)));
 
         //Max distance between an element and the Center Of Gravity of the swarm
         currentByte = System.BitConverter.GetBytes(Convert.ToSingle(swarm.experimentState));
