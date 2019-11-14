@@ -11,6 +11,7 @@ TagManager:
   - Master
   - Slave
   - Waypoint
+  - UI
   layers:
   - Default
   - TransparentFX
@@ -45,6 +46,9 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: Front Layer
+    uniqueID: 38357143
+    locked: 0
   - name: Default
     uniqueID: 0
     locked: 0

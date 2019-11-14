@@ -46,10 +46,10 @@ public class UpdateHandTarget : MonoBehaviour
 
 
     //Value to be send to the user for feedback
-    public float heightError = 0.0f;
-    public Vector3 distanceToWaypoint = new Vector3(0.0f, 0.0f, 0.0f);
-    public float extensionError = 0.0f;
-    public float contractionError = 0.0f;
+    public float heightError = SimulationData.heightError;
+    public Vector3 distanceToWaypoint = SimulationData.distanceToWaypoint;
+    public float extensionError = SimulationData.extensionError;
+    public float contractionError = SimulationData.contractionError;
 
     const int LANDED = 0;
     const int TAKING_OFF = 1;
@@ -107,6 +107,14 @@ public class UpdateHandTarget : MonoBehaviour
             }
         }
         allWaypoints = GameObject.FindGameObjectsWithTag("Waypoint");
+
+        streamingClient = OptitrackStreamingClient.FindDefaultClient();
+
+        // If we still couldn't find one, disable this component.
+        if (streamingClient == null)
+        {
+            Debug.LogError("Streaming client not found, place a streaming client in the scene.");
+        }
     }
 
 
@@ -128,6 +136,10 @@ public class UpdateHandTarget : MonoBehaviour
         else // Mocap inputs
         {
             OptitrackRigidBodyState rgbdOptitrack = streamingClient.GetLatestRigidBodyState(handRigidbodyID);
+            if (rgbdOptitrack == null)
+            {
+                Debug.LogError("Rigidbody not found...");
+            }
 
             if (rgbdOptitrack != null)
             {
@@ -142,6 +154,8 @@ public class UpdateHandTarget : MonoBehaviour
                 if (deltaHandPosition.magnitude > 1.0f)
                     return;
 
+                //print("Raw hand position : " + rawHandPosition);
+
                 // Update observation input rotation if FPS mode
                 if (cameraPosition != null && cameraPosition.FPS)
                 {
@@ -149,8 +163,8 @@ public class UpdateHandTarget : MonoBehaviour
                 }
 
                 // Clutch triggered, set reference yaw
-                if (OVRInput.GetUp(OVRInput.RawButton.RIndexTrigger))
-                //if (Input.GetKeyDown(KeyCode.Mouse0))
+                //if (OVRInput.GetUp(OVRInput.RawButton.RIndexTrigger))
+                if (Input.GetKeyDown(KeyCode.Mouse0))
                 {
                     referenceYaw = handYaw;
                 }
@@ -164,14 +178,14 @@ public class UpdateHandTarget : MonoBehaviour
                 // Clutch activated
                 //if (OVRInput.Get(OVRInput.Axis1D.PrimaryIndexTrigger) < 0.5)
 
-                if (!OVRInput.Get(OVRInput.RawButton.RIndexTrigger))
-                //if (!Input.GetKey(KeyCode.Mouse0))
+                //if (!OVRInput.Get(OVRInput.RawButton.RIndexTrigger))
+                if (!Input.GetKey(KeyCode.Mouse0))
                 {
                     clutchActivated = true;
                     //if (cameraPosition != null && cameraPosition.FPS)
                     //    droneVelocityControl.desiredYawRate = Mathf.DeltaAngle(referenceYaw, handYaw) * rotationSpeedScaling;
 
-                    handTarget.transform.position = transform.position;
+                    //handTarget.transform.position = transform.position;
                 }
                 else
                 {
@@ -181,6 +195,7 @@ public class UpdateHandTarget : MonoBehaviour
                     //if (cameraPosition != null && cameraPosition.FPS)
                     //    droneVelocityControl.desiredYawRate = 0.0f;
 
+                    print("Delta hand position : " + deltaHandPosition);
                     handTarget.transform.position += Quaternion.Euler(0, observationInputRotation + mocapInputRotation, 0) * deltaHandPosition * handRoomScaling;
                 }
             }
@@ -206,7 +221,7 @@ public class UpdateHandTarget : MonoBehaviour
                 break;
 
             case REACHING_HEIGHT:
-                print("The height error is " + Mathf.Abs(CenterOfMass.y - take_off_height));
+                //print("The height error is " + Mathf.Abs(CenterOfMass.y - take_off_height));
                 if (Mathf.Abs(CenterOfMass.y - take_off_height) < 0.05)
                 {
                     droneState = FLYING;
@@ -221,7 +236,7 @@ public class UpdateHandTarget : MonoBehaviour
                 {
                     case REACHING_HEIGHT:
                         heightError = Mathf.Abs(CenterOfMass.y - desiredHeight);
-                        print("The height error is " + heightError);
+                        //print("The height error is " + heightError);
                         if (heightError < 0.05) experimentState = GO_TO_FIRST_WAYPOINT;
                         break;
 
@@ -233,7 +248,7 @@ public class UpdateHandTarget : MonoBehaviour
                         }
                         nextWaypoint = allWaypoints[index].transform.GetChild(0).transform.position;
                         distanceToWaypoint = (nextWaypoint - CenterOfMass);
-                        print("The distance to next waypoint is " + distanceToWaypoint.magnitude);
+                        //print("The distance to next waypoint is " + distanceToWaypoint.magnitude);
                         if (distanceToWaypoint.magnitude < marginFromCenterOfWaypoint)
                         {
                             currentWaypoint += 1;
@@ -244,7 +259,7 @@ public class UpdateHandTarget : MonoBehaviour
                     case EXTENSION:
                         float extension = AverageDistanceToNeighbour();
                         extensionError = minExtensionForExp - extension;
-                        print("The extension is " + extension);
+                        //print("The extension is " + extension);
                         if (extensionError < 0) experimentState = WAYPOINT_NAV;
                         break;
 
@@ -258,14 +273,14 @@ public class UpdateHandTarget : MonoBehaviour
                             }
                             nextWaypoint = allWaypoints[index].transform.GetChild(0).transform.position;
                             distanceToWaypoint = (nextWaypoint - CenterOfMass);
-                            print("The distance to next waypoint is " + distanceToWaypoint.magnitude);
+                            //print("The distance to next waypoint is " + distanceToWaypoint.magnitude);
                             if (distanceToWaypoint.magnitude < marginFromCenterOfWaypoint) currentWaypoint += 1;
                         }
                         else experimentState = CONTRACTION;
                         break;
 
                     case CONTRACTION:
-                        print("MaxRadius is " + MaxRadiusOfSwarm());
+                        //print("MaxRadius is " + MaxRadiusOfSwarm());
                         contractionError = maxLandingRadius - MaxRadiusOfSwarm();
                         if (contractionError > 0) experimentState = LANDING;
                         break;

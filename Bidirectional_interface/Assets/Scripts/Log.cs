@@ -107,11 +107,8 @@ public class Log : MonoBehaviour
         
         string[][] output = new string[LogList.Count][];
 
-        for (int i = 0; i < output.Length; i++)
-        {
-            output[i] = LogList[i];
-        }
-        print(output[0][0]);
+        for (int i = 0; i < output.Length; i++) output[i] = LogList[i];
+
         int length = output.GetLength(0);
         string delimiter = ",";
 
