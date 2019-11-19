@@ -22,7 +22,7 @@ public static class SimulationData
     public const float startUpControlDelay = 1.5f; // s
 
     // This variable is incremented every time the simulation path is reloaded
-    public static int runNumber = 0; 
+    public static int runNumber = 0;
 
     // This variable is used to store the name of the current subject
     public static string subjectName = "";
@@ -31,12 +31,4 @@ public static class SimulationData
     public static bool useController = false;
 
     public static float takeoffHeight = 0.5f;
-
-
-    //Value to be send to the user for feedback
-    public static float heightError = 0.0f;
-    public static Vector3 distanceToWaypoint = new Vector3(0.0f, 0.0f, 0.0f);
-    public static float extensionError = 0.0f;
-    public static float contractionError = 0.0f;
 }
-

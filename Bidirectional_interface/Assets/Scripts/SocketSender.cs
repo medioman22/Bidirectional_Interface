@@ -51,8 +51,7 @@ public class SocketSender : MonoBehaviour
     {
         //fillPositionsArray();
         //sendDistancesToPython();
-        //sendInformationToPython();
-        sendInformationToPython2();
+        sendInformationToPython();
     }
 
     private void fillPositionsArray()
@@ -90,30 +89,6 @@ public class SocketSender : MonoBehaviour
 
     private void sendInformationToPython()
     {
-        byte[] currentByte = new byte[4];
-        int j = 0;
-        //Difference between real and desired height
-        currentByte = System.BitConverter.GetBytes(heightError());
-        //print(heightError());
-        floatToByte(j, currentByte);
-        j++;
-        //Max distance between an element and the Center Of Gravity of the swarm
-        currentByte = System.BitConverter.GetBytes(maxRadius());
-        //print(maxRadius());
-        floatToByte(j, currentByte);
-        j++;
-        //Distance to next waypoint
-        j = vector3toByte(distanceToWaypoint(new Vector3(0.0f, 0.0f, 0.0f)), j);
-        //print(distanceToWaypoint(new Vector3(0.0f, 0.0f, 0.0f)));
-
-        //Distance from pilote
-        j = vector3toByte(distanceToWaypoint(new Vector3(1.0f, 1.0f, 1.0f)), j);
-
-        client.Send(data, data.Length, ipEndPoint);
-    }
-
-    private void sendInformationToPython2()
-    {
         UpdateHandTarget swarm = GetComponent<UpdateHandTarget>();
         byte[] currentByte = new byte[4];
         int j = 0;
@@ -149,7 +124,6 @@ public class SocketSender : MonoBehaviour
         for (int i = 0; i < 4; i++)
         {
             data[(j * 4 + i)] = currentByte[i];
- //           print(j*4+i);
         }
        
     }

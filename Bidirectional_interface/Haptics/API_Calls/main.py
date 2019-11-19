@@ -6,7 +6,9 @@ import time
 import json
 import sys
 import os
+import serial
 import numpy as np
+
 
 
 DISTANCE_THRESHOLD = 0.5
@@ -15,8 +17,12 @@ with_connection = True
 NB_OF_DRONES = 5
 NB_OF_INFORMATION = 7
 DESIRED_HEIGHT = 1.0
-LOWEST_INTENSITY = 40
-HIGHEST_INTENSITY = 99
+LOWEST_INTENSITY_GLOVE = 40
+HIGHEST_INTENSITY_GLOVE = 99
+
+LOWEST_INTENSITY_BRACELET = 32
+HIGHEST_INTENSITY_BRACELET = 255
+
 MAX_ERROR = DESIRED_HEIGHT
 MAX_DISTANCE = 4.0
 MAX_EXTENSION_ERROR = 1.0
@@ -28,27 +34,40 @@ EXTENSION = 6;
 WAYPOINT_NAV = 7;
 CONTRACTION = 8;
 
+GLOVE = 10
+BRACELET = 20
+
+
 emergency_stop = False;
+#
+haptic_device = BRACELET
 
-if with_connection:
-    print("Establishing the connection to the BBG device...")
-else:
-    print("Ignoring the connection...")
+##Setup communication with glove (and BBGW)
+if (haptic_device == GLOVE) :
+    if with_connection:
+        print("Establishing the connection to the BBG device...")
+    else:
+        print("Ignoring the connection...")
+    
+    
+    if with_connection:
+        sys.path.insert(1, os.path.join(sys.path[0], '../Interface/src'))
+        from connections.beagleboneGreenWirelessConnection import BeagleboneGreenWirelessConnection
+    
+        ######## Setup BBG connection #######
+        c = BeagleboneGreenWirelessConnection()
+        I2C_interface = "PCA9685@I2C[1]"
+        c.connect()
+        print('Status: {}'.format(c.getState()))
+        c.sendMessages([json.dumps({"type": "Settings", "name": I2C_interface, "dutyFrequency": '50 Hz'})])
+        time.sleep(3)
+        c.sendMessages([json.dumps({"type": "Settings", "name": I2C_interface, "scan": False})])
+        #####################################
 
+# configure the bluetooth serial connections 
+if haptic_device == BRACELET : 
+    ser = serial.Serial('COM9', 9600) #COMx correspond to the bluetooth port that is used by the RN42 bluetooth transmitter
 
-if with_connection:
-    sys.path.insert(1, os.path.join(sys.path[0], '../Interface/src'))
-    from connections.beagleboneGreenWirelessConnection import BeagleboneGreenWirelessConnection
-
-    ######## Setup BBG connection #######
-    c = BeagleboneGreenWirelessConnection()
-    I2C_interface = "PCA9685@I2C[1]"
-    c.connect()
-    print('Status: {}'.format(c.getState()))
-    c.sendMessages([json.dumps({"type": "Settings", "name": I2C_interface, "dutyFrequency": '50 Hz'})])
-    time.sleep(3)
-    c.sendMessages([json.dumps({"type": "Settings", "name": I2C_interface, "scan": False})])
-    #####################################
 
 ############# setup UDP communication #############
 # function to get the data from Unity
@@ -86,53 +105,23 @@ motorsIndexes = {  "up" : 4,
                     "down" : 8,
                     "left" : 9 }
 
-def sendHeightFeedback(current_height):
-    height_error = current_height - DESIRED_HEIGHT
-    intensity = abs(height_error * (HIGHEST_INTENSITY-LOWEST_INTENSITY)/MAX_ERROR)+LOWEST_INTENSITY
-    if intensity < LOWEST_INTENSITY: intensity = 0
-    if intensity > HIGHEST_INTENSITY: intensity = HIGHEST_INTENSITY
-    
-    if height_error < -MARGIN :
-        if height_error < -DESIRED_HEIGHT/2:
-            c.sendMessages([json.dumps({"dim":  motorsIndexes["up"], "value": intensity, "type": "Set", "name": I2C_interface})])
-            c.sendMessages([json.dumps({"dim":  motorsIndexes["upfront"], "value": intensity, "type": "Set", "name": I2C_interface})])
-        else : 
-            c.sendMessages([json.dumps({"dim":  motorsIndexes["up"], "value": intensity, "type": "Set", "name": I2C_interface})])
-            c.sendMessages([json.dumps({"dim":  motorsIndexes["upfront"], "value": 0, "type": "Set", "name": I2C_interface})])
-    elif height_error > MARGIN :
-        if height_error > DESIRED_HEIGHT/2:
-            c.sendMessages([json.dumps({"dim":  motorsIndexes["down"], "value": intensity, "type": "Set", "name": I2C_interface})])
-            c.sendMessages([json.dumps({"dim":  motorsIndexes["downback"], "value": intensity, "type": "Set", "name": I2C_interface})])
-        else : 
-            c.sendMessages([json.dumps({"dim":  motorsIndexes["down"], "value": intensity, "type": "Set", "name": I2C_interface})])
-            c.sendMessages([json.dumps({"dim":  motorsIndexes["downback"], "value": 0, "type": "Set", "name": I2C_interface})])
-    else :
-        c.sendMessages([json.dumps({"dim":  motorsIndexes["down"], "value": 0, "type": "Set", "name": I2C_interface})])
-        c.sendMessages([json.dumps({"dim":  motorsIndexes["up"], "value": 0, "type": "Set", "name": I2C_interface})])
-        
+##Haptic feedback with glove :
 
-def sendHeightCue(error):
-    max_error = MAX_DISTANCE
-    motor_intensity = abs(error*(HIGHEST_INTENSITY - LOWEST_INTENSITY)/max_error) + LOWEST_INTENSITY
-    if motor_intensity < LOWEST_INTENSITY: motor_intensity = 0
-    if motor_intensity > HIGHEST_INTENSITY: motor_intensity = HIGHEST_INTENSITY
+def sendHeightCue(error, type_of_device):
+    motor_intensity = getMotorIntensity(haptic_device, error, MAX_DISTANCE)
     
     if error < 0 :
-        turnOnMotors(["down"], motor_intensity)
+        turnOnGloveMotors(["down"], motor_intensity)
     else :
-        turnOnMotors(["up"], motor_intensity)
-
+        turnOnGloveMotors(["up"], motor_intensity)
 
 def sendExtensionCue(error):
-    max_error = MAX_EXTENSION_ERROR
-    motor_intensity = abs(error*(HIGHEST_INTENSITY - LOWEST_INTENSITY)/max_error) + LOWEST_INTENSITY
-    if motor_intensity < LOWEST_INTENSITY: motor_intensity = 0
-    if motor_intensity > HIGHEST_INTENSITY: motor_intensity = HIGHEST_INTENSITY
-    
+    motor_intensity = getMotorIntensity(haptic_device, error, MAX_EXTENSION_ERROR)
+
     if error < 0 :
-        turnOnMotors(["left", "right"], motor_intensity)
+        turnOnGloveMotors(["left", "right"], motor_intensity)
     else :
-        turnOnMotors(["up", "down"], motor_intensity)          
+        turnOnGloveMotors(["up", "down"], motor_intensity)          
 
 def sendDirectionalCue(distanceToWaypoint):
     x_distance = distanceToWaypoint[0]
@@ -141,13 +130,12 @@ def sendDirectionalCue(distanceToWaypoint):
     send1DirectionalCue(y_distance, "upfront", "downback")    
     
 def send1DirectionalCue(distance, direction, negative_direction):
-    motor_intensity = abs(distance*(HIGHEST_INTENSITY - LOWEST_INTENSITY)/MAX_DISTANCE)+LOWEST_INTENSITY
-    if motor_intensity < LOWEST_INTENSITY: motor_intensity = 0
-    if motor_intensity > HIGHEST_INTENSITY: motor_intensity = HIGHEST_INTENSITY
+    motor_intensity = getMotorIntensity(haptic_device, distance, MAX_DISTANCE)
+  
     if distance < - MARGIN:
-        turnOnMotors([negative_direction], motor_intensity)
+        turnOnGloveMotors([negative_direction], motor_intensity)
     elif distance > MARGIN :
-        turnOnMotors([direction], motor_intensity)
+        turnOnGloveMotors([direction], motor_intensity)
     else:
        shutDownAllMotors()
 
@@ -155,12 +143,36 @@ def shutDownAllMotors():
     for key, motor in motorsIndexes.items() :
         c.sendMessages([json.dumps({"dim":  motor, "value": 0, "type": "Set", "name": I2C_interface})])
              
-def turnOnMotors(list_of_motors, intensity):
+def turnOnGloveMotors(list_of_motors, intensity):
     for key in motorsIndexes:
         if key in list_of_motors:
             c.sendMessages([json.dumps({"dim":  motorsIndexes[key], "value": intensity, "type": "Set", "name": I2C_interface})])
         else:
-            c.sendMessages([json.dumps({"dim":  motorsIndexes[key], "value": 0, "type": "Set", "name": I2C_interface})])            
+            c.sendMessages([json.dumps({"dim":  motorsIndexes[key], "value": 0, "type": "Set", "name": I2C_interface})])
+        
+
+def turnOnBraceletMotors()
+
+                
+def getMotorIntensity(haptic_device, error, max_error):
+    if haptic_device == BRACELET : 
+        highest_intensity = HIGHEST_INTENSITY_BRACELET
+        lowest_intensity = LOWEST_INTENSITY_BRACELET
+    elif haptic_device == GLOVE :
+        highest_intensity = HIGHEST_INTENSITY_GLOVE
+        lowest_intensity = LOWEST_INTENSITY_GLOVE
+        motor_intensity = abs(error*(highest_intensity - lowest_intensity)/max_error) + lowest_intensity
+    if motor_intensity < lowest_intensity: motor_intensity = 0
+    if motor_intensity > highest_intensity: motor_intensity = highest_intensity
+    return motor_intensity
+
+
+##Haptic feedback with bracelet 
+def sendIntensitiesToBracelet(intens1, intens2, intens3, intens4):
+    intensityValues = bytearray([ord('S'), intens1, intens2, intens3, intens4, ord('E')])
+    ser.write(intensityValues)
+
+
 
 
 def calculateMaxRadius(positionList):

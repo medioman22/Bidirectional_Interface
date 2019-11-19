@@ -46,10 +46,10 @@ public class UpdateHandTarget : MonoBehaviour
 
 
     //Value to be send to the user for feedback
-    public float heightError = SimulationData.heightError;
-    public Vector3 distanceToWaypoint = SimulationData.distanceToWaypoint;
-    public float extensionError = SimulationData.extensionError;
-    public float contractionError = SimulationData.contractionError;
+    public float heightError = 0.0f;
+    public Vector3 distanceToWaypoint = new Vector3(0.0f, 0.0f, 0.0f);
+    public float extensionError = 0.0f;
+    public float contractionError = 0.0f;
 
     const int LANDED = 0;
     const int TAKING_OFF = 1;
@@ -232,12 +232,12 @@ public class UpdateHandTarget : MonoBehaviour
                 break;
 
             case FLYING:
+                heightError = CenterOfMass.y - desiredHeight;
                 switch (experimentState)
                 {
                     case REACHING_HEIGHT:
-                        heightError = Mathf.Abs(CenterOfMass.y - desiredHeight);
                         //print("The height error is " + heightError);
-                        if (heightError < 0.05) experimentState = GO_TO_FIRST_WAYPOINT;
+                        if (Mathf.Abs(heightError) < 0.05) experimentState = GO_TO_FIRST_WAYPOINT;
                         break;
 
                     case GO_TO_FIRST_WAYPOINT:
@@ -334,6 +334,8 @@ public class UpdateHandTarget : MonoBehaviour
             if (droneState == LANDED || droneState == TAKING_OFF) droneState = TAKING_OFF;
             else if ((droneState == FLYING && experimentState ==LANDING) || droneState == LANDING) droneState = LANDING;
         }
+        print(heightError);
+
     }
 
     Vector3 Cohesion(GameObject Drone)
