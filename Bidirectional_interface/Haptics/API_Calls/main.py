@@ -15,7 +15,7 @@ DISTANCE_THRESHOLD = 0.5
 MAXIMUM_MOTOR_INPUT = 99
 with_connection = True
 NB_OF_DRONES = 5
-NB_OF_INFORMATION = 7
+NB_OF_INFORMATION = 11
 DESIRED_HEIGHT = 1.0
 LOWEST_INTENSITY_GLOVE = 40
 HIGHEST_INTENSITY_GLOVE = 99
@@ -23,9 +23,7 @@ HIGHEST_INTENSITY_GLOVE = 99
 LOWEST_INTENSITY_BRACELET = 32
 HIGHEST_INTENSITY_BRACELET = 255
 
-MAX_ERROR = DESIRED_HEIGHT
-MAX_DISTANCE = 4.0
-MAX_EXTENSION_ERROR = 1.0
+
 MARGIN = 0.1
 
 REACHING_HEIGHT = 2;
@@ -151,7 +149,7 @@ def turnOnGloveMotors(list_of_motors, intensity):
             c.sendMessages([json.dumps({"dim":  motorsIndexes[key], "value": 0, "type": "Set", "name": I2C_interface})])
         
 
-def turnOnBraceletMotors()
+#def turnOnBraceletMotors()
 
                 
 def getMotorIntensity(haptic_device, error, max_error):
@@ -203,6 +201,14 @@ def fillInfoDict(current_data):
     information_dict["next_waypoint_direction"] = [current_data[i], current_data[i+1], current_data[i+2]]
     i+=3
     information_dict["experiment_state"] = round(current_data[i])
+    i+=1
+    information_dict["max_distance_error"] = round(current_data[i])
+    i+=1
+    information_dict["max_height_error"] = round(current_data[i])
+    i+=1
+    information_dict["emax_extension_error"] = round(current_data[i])
+    i+=1
+    information_dict["distance_margin"] = round(current_data[i])
 
     
     

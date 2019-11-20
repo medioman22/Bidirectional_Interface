@@ -31,4 +31,9 @@ public static class SimulationData
     public static bool useController = false;
 
     public static float takeoffHeight = 0.5f;
+
+    public static float max_distance_error = 4.0f;
+    public static float max_height_error = max_distance_error/2;
+    public static float max_extension_error = 1.0f;
+    public static float distance_margin = 1.0f;
 }
