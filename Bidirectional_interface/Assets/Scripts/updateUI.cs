@@ -116,6 +116,7 @@ public class updateUI : MonoBehaviour
                 lengthExtensionArrow = 0;
                 lengthhorizArrow = 0;
                 lengthvertArrow = 0;
+                information.text = "LAND";
                 break;
         }
 

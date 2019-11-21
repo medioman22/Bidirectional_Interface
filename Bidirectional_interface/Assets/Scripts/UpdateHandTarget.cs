@@ -74,8 +74,8 @@ public class UpdateHandTarget : MonoBehaviour
     private float take_off_height = 0.50f;
     private GameObject[] droneTargets = new GameObject[5];
     private GameObject[] allWaypoints;
-
-    private float stabilizationTime = 2.0f;
+    private static float fullTime = 3.0f;
+    private float stabilizationTime = fullTime;
 
     private Vector3 rawHandPosition = Vector3.zero;
     private Quaternion rawHandRotation = Quaternion.identity;
@@ -123,7 +123,6 @@ public class UpdateHandTarget : MonoBehaviour
             Debug.LogError("Streaming client not found, place a streaming client in the scene.");
         }
     }
-
 
     // Update is called once per frame
     void FixedUpdate()
@@ -251,12 +250,17 @@ public class UpdateHandTarget : MonoBehaviour
                         }
                         nextWaypoint = allWaypoints[index].transform.GetChild(0).transform.position;
                         distanceToWaypoint = (nextWaypoint - CenterOfMass);
-                        //print("The distance to next waypoint is " + distanceToWaypoint.magnitude);
-                        if (distanceToWaypoint.magnitude < marginFromCenterOfWaypoint)
+                        if (distanceToWaypoint.magnitude < 0.1*SimulationData.max_distance_error)
                         {
-                            currentWaypoint += 1;
-                            experimentState = EXTENSION;
+                            stabilizationTime -= Time.deltaTime;
+                            if (stabilizationTime < 0)
+                            {
+                                currentWaypoint += 1;
+                                experimentState = EXTENSION;
+                                stabilizationTime = fullTime;
+                            }
                         }
+                        else stabilizationTime = fullTime;
                         break;
 
                     case EXTENSION:
@@ -267,7 +271,7 @@ public class UpdateHandTarget : MonoBehaviour
                             stabilizationTime -= Time.deltaTime;
                             if (stabilizationTime < 0) experimentState = WAYPOINT_NAV;
                         }
-                        else stabilizationTime = 2.0f;
+                        else stabilizationTime = fullTime;
                         break;
 
                     case WAYPOINT_NAV:
@@ -286,7 +290,7 @@ public class UpdateHandTarget : MonoBehaviour
                         }
                         else
                         {
-                            stabilizationTime = 2.0f;
+                            stabilizationTime = fullTime;
                             experimentState = CONTRACTION;
                         }
                         break;
@@ -301,7 +305,7 @@ public class UpdateHandTarget : MonoBehaviour
                             stabilizationTime -= Time.deltaTime;
                             if (stabilizationTime < 0) experimentState = LANDING;
                         }
-                        else stabilizationTime = 2.0f;
+                        else stabilizationTime = fullTime;
                         break;
                 }
                 //Flocking behavior
