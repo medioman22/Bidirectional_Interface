@@ -29,6 +29,7 @@ public class updateUI : MonoBehaviour
     private string vertDirection = "up";
     private IDictionary<string, Vector3> arrowDirection = new Dictionary<string, Vector3>();
 
+
     const int LANDED = 0;
     const int TAKING_OFF = 1;
     const int REACHING_HEIGHT = 2;
@@ -76,20 +77,17 @@ public class updateUI : MonoBehaviour
 
         switch (experimentState)
         {
-
-            case REACHING_HEIGHT:
             case GO_TO_FIRST_WAYPOINT:
+            case WAYPOINT_NAV:
                 lengthContractionArrow = 0;
                 lengthExtensionArrow = 0;
-                lengthhorizArrow = lengthOfDistArrow();
                 lengthvertArrow = lengthOfHeightArrow();
-                print("length height arrow " + lengthvertArrow);
+                if (Mathf.Abs(lengthvertArrow) > 0) lengthhorizArrow = 0;
+                else lengthhorizArrow = lengthOfDistArrow();
                 break;
 
             case EXTENSION:
             case CONTRACTION:
-                print("Contraction arrow = " + lengthContractionArrow);
-                print("Extension arrow = " + lengthExtensionArrow);
                 if (Mathf.Abs(contraction_error) > 0.1 * SimulationData.max_contraction_error)
                 {
                     if (contraction_error < 0)
@@ -103,35 +101,16 @@ public class updateUI : MonoBehaviour
                         lengthExtensionArrow = lengthOfContractionArrow();
                     }
                 }
+                else
+                {
+                    lengthContractionArrow = 0;
+                    lengthExtensionArrow = 0;
+                }
                 
                 lengthhorizArrow = 0;
                 lengthvertArrow = 0;
                 break;
 
-            case WAYPOINT_NAV:
-                //if (Mathf.Abs(contraction_error) < 0.1 * SimulationData.max_contraction_error)
-                //{
-                    lengthContractionArrow = 0;
-                    lengthExtensionArrow = 0;
-                    lengthhorizArrow = lengthOfDistArrow();
-                    lengthvertArrow = lengthOfHeightArrow();
-                //}
-                //else 
-                //{
-                //    if (contraction_error < 0)
-                //    {
-                //        lengthContractionArrow = lengthOfContractionArrow();
-                //        lengthExtensionArrow = 0;
-                //    }
-                //    if (contraction_error > 0)
-                //    {
-                //        lengthContractionArrow = 0;
-                //        lengthExtensionArrow = lengthOfContractionArrow();
-                //    }
-                //    lengthhorizArrow = 0;
-                //    lengthvertArrow = 0;
-                //}
-                break;
             case LANDING:
                 lengthContractionArrow = 0;
                 lengthExtensionArrow = 0;

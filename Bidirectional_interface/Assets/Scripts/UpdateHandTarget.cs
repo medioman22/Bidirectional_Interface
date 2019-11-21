@@ -75,7 +75,7 @@ public class UpdateHandTarget : MonoBehaviour
     private GameObject[] droneTargets = new GameObject[5];
     private GameObject[] allWaypoints;
 
-
+    private float stabilizationTime = 2.0f;
 
     private Vector3 rawHandPosition = Vector3.zero;
     private Quaternion rawHandRotation = Quaternion.identity;
@@ -232,7 +232,7 @@ public class UpdateHandTarget : MonoBehaviour
                 if (Mathf.Abs(CenterOfMass.y - take_off_height) < 0.05)
                 {
                     droneState = FLYING;
-                    experimentState = REACHING_HEIGHT;
+                    experimentState = GO_TO_FIRST_WAYPOINT;
                     handTarget.transform.position = CenterOfMass;
                     flying = true;
                 }
@@ -243,11 +243,6 @@ public class UpdateHandTarget : MonoBehaviour
                 heightError = CenterOfMass.y - targetHeight;
                 switch (experimentState)
                 {
-                    case REACHING_HEIGHT:
-                        //print("The height error is " + heightError);
-                        if (Mathf.Abs(heightError) < 0.05) experimentState = GO_TO_FIRST_WAYPOINT;
-                        break;
-
                     case GO_TO_FIRST_WAYPOINT:
                         int index = 0;
                         for (i = 0; i < allWaypoints.Length; i++)
@@ -265,8 +260,14 @@ public class UpdateHandTarget : MonoBehaviour
                         break;
 
                     case EXTENSION:
+                        
                         contractionError = targetExtension - MaxRadiusOfSwarm();
-                        if (Mathf.Abs(contractionError )< 0.1f*SimulationData.max_contraction_error) experimentState = WAYPOINT_NAV;
+                        if (Mathf.Abs(contractionError) < 0.1f * SimulationData.max_contraction_error)
+                        {
+                            stabilizationTime -= Time.deltaTime;
+                            if (stabilizationTime < 0) experimentState = WAYPOINT_NAV;
+                        }
+                        else stabilizationTime = 2.0f;
                         break;
 
                     case WAYPOINT_NAV:
@@ -283,7 +284,11 @@ public class UpdateHandTarget : MonoBehaviour
                             distanceToWaypoint = (nextWaypoint - CenterOfMass);
                             if (distanceToWaypoint.magnitude < marginFromCenterOfWaypoint) currentWaypoint += 1;
                         }
-                        else experimentState = CONTRACTION;
+                        else
+                        {
+                            stabilizationTime = 2.0f;
+                            experimentState = CONTRACTION;
+                        }
                         break;
 
                     case CONTRACTION:
@@ -291,7 +296,12 @@ public class UpdateHandTarget : MonoBehaviour
                         preLandingPosition.y = targetHeight;
                         master.GetComponent<PositionControl>().target.position = preLandingPosition;
                         contractionError = maxLandingRadius - MaxRadiusOfSwarm();
-                        if (Mathf.Abs(contractionError) < 0.1*SimulationData.max_contraction_error) experimentState = LANDING;
+                        if (Mathf.Abs(contractionError) < 0.1 * SimulationData.max_contraction_error)
+                        {
+                            stabilizationTime -= Time.deltaTime;
+                            if (stabilizationTime < 0) experimentState = LANDING;
+                        }
+                        else stabilizationTime = 2.0f;
                         break;
                 }
                 //Flocking behavior
