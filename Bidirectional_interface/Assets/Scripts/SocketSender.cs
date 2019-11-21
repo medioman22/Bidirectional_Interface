@@ -61,7 +61,7 @@ public class SocketSender : MonoBehaviour
         j++;
 
         //Average distance between the element and its neighbours
-        currentByte = System.BitConverter.GetBytes(swarm.extensionError);
+        currentByte = System.BitConverter.GetBytes(swarm.contractionError);
         //print(maxRadius());
         floatToByte(j, currentByte);
         j++;
@@ -87,7 +87,7 @@ public class SocketSender : MonoBehaviour
         floatToByte(j, currentByte);
         j++;
 
-        currentByte = System.BitConverter.GetBytes(Convert.ToSingle(SimulationData.max_extension_error));
+        currentByte = System.BitConverter.GetBytes(Convert.ToSingle(SimulationData.max_contraction_error));
         floatToByte(j, currentByte);
         j++;
 

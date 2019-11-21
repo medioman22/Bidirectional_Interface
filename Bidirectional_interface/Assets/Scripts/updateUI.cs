@@ -10,10 +10,18 @@ public class updateUI : MonoBehaviour
     public Image horizontal_arrow;
     public Image vertical_arrow;
     public Image contract_arrow;
-    public Image extract_arrow1;
-    public Image extract_arrow2;
+    public Image extens_arrow1;
+    public Image extens_arrow2;
+
     private Vector2 distToWaypoint;
     private float heightError;
+    private float contraction_error;
+
+    private float lengthContractionArrow;
+    private float lengthExtensionArrow;
+    private float lengthhorizArrow;
+    private float lengthvertArrow;
+
     private float angle;
     private GameObject swarm;
     private float displayedValue;
@@ -41,16 +49,16 @@ public class updateUI : MonoBehaviour
         horizontal_arrow = GameObject.Find("Horizontal arrow").GetComponent<Image>();
         vertical_arrow = GameObject.Find("Vertical arrow").GetComponent<Image>();
         contract_arrow = GameObject.Find("Contract").GetComponent<Image>();
-        extract_arrow1 = GameObject.Find("Extract1").GetComponent<Image>();
-        extract_arrow2 = GameObject.Find("Extract2").GetComponent<Image>();
+        extens_arrow1 = GameObject.Find("Extract1").GetComponent<Image>();
+        extens_arrow2 = GameObject.Find("Extract2").GetComponent<Image>();
+
+        extens_arrow1.enabled = true;
+        extens_arrow2.enabled = true;
+        contract_arrow.enabled = true;
+
         swarm = GameObject.Find("Swarm");
         arrowDirection.Add("up", new Vector3(0f, 90f, 0f));
         arrowDirection.Add("down", new Vector3(0f, 90f, 180.0f));
-
-        arrowDirection.Add("left", new Vector3(0.0f, 0.0f, 0.0f));
-        arrowDirection.Add("back", new Vector3(0.0f, 270.0f, 0.0f));
-        arrowDirection.Add("right", new Vector3(0.0f, 0f, 0.0f));
-        arrowDirection.Add("front", new Vector3(0.0f, 90.0f, 0f));
     }
 
     // Update is called once per frame
@@ -61,53 +69,94 @@ public class updateUI : MonoBehaviour
 
         distToWaypoint = new Vector2(updHandTarget.distanceToWaypoint.x, updHandTarget.distanceToWaypoint.z);
         heightError = updHandTarget.heightError;
+        contraction_error = updHandTarget.contractionError;
 
         if (heightError <= 0) vertDirection = "up";
         else vertDirection = "down";
 
         switch (experimentState)
         {
-            case REACHING_HEIGHT:
-                displayedValue = heightError;
-                break;
 
+            case REACHING_HEIGHT:
             case GO_TO_FIRST_WAYPOINT:
-                //displayedValue = updHandTarget.distanceToWaypoint;
-                //displayedValue = 2.0f;
+                lengthContractionArrow = 0;
+                lengthExtensionArrow = 0;
+                lengthhorizArrow = lengthOfDistArrow();
+                lengthvertArrow = lengthOfHeightArrow();
+                print("length height arrow " + lengthvertArrow);
                 break;
 
             case EXTENSION:
-                displayedValue = updHandTarget.extensionError;
+            case CONTRACTION:
+                print("Contraction arrow = " + lengthContractionArrow);
+                print("Extension arrow = " + lengthExtensionArrow);
+                if (Mathf.Abs(contraction_error) > 0.1 * SimulationData.max_contraction_error)
+                {
+                    if (contraction_error < 0)
+                    {
+                        lengthContractionArrow = lengthOfContractionArrow();
+                        lengthExtensionArrow = 0;
+                    }
+                    else if (contraction_error > 0)
+                    {
+                        lengthContractionArrow = 0;
+                        lengthExtensionArrow = lengthOfContractionArrow();
+                    }
+                }
+                
+                lengthhorizArrow = 0;
+                lengthvertArrow = 0;
                 break;
 
             case WAYPOINT_NAV:
-                //displayedValue = updHandTarget.distanceToWaypoint;
+                //if (Mathf.Abs(contraction_error) < 0.1 * SimulationData.max_contraction_error)
+                //{
+                    lengthContractionArrow = 0;
+                    lengthExtensionArrow = 0;
+                    lengthhorizArrow = lengthOfDistArrow();
+                    lengthvertArrow = lengthOfHeightArrow();
+                //}
+                //else 
+                //{
+                //    if (contraction_error < 0)
+                //    {
+                //        lengthContractionArrow = lengthOfContractionArrow();
+                //        lengthExtensionArrow = 0;
+                //    }
+                //    if (contraction_error > 0)
+                //    {
+                //        lengthContractionArrow = 0;
+                //        lengthExtensionArrow = lengthOfContractionArrow();
+                //    }
+                //    lengthhorizArrow = 0;
+                //    lengthvertArrow = 0;
+                //}
                 break;
-
-            case CONTRACTION:
-                displayedValue = updHandTarget.contractionError;
+            case LANDING:
+                lengthContractionArrow = 0;
+                lengthExtensionArrow = 0;
+                lengthhorizArrow = 0;
+                lengthvertArrow = 0;
                 break;
         }
 
-
-        vertical_arrow.rectTransform.localScale = new Vector3(1.0f, lengthOfHeightArrow(), 1.0f);
+        vertical_arrow.rectTransform.localScale = new Vector3(1.0f, lengthvertArrow, 1.0f);
         vertical_arrow.rectTransform.rotation = Quaternion.Euler(arrowDirection[vertDirection]);
-        contract_arrow.enabled = false;
+
         angle = 90.0f + Vector2.SignedAngle(distToWaypoint, new Vector2(10.0f, 0.0f));
         horizontal_arrow.rectTransform.rotation = Quaternion.Euler(new Vector3(90.0f, angle, 0.0f));
-        horizontal_arrow.rectTransform.localScale = new Vector3 (1.0f, lengthOfDistArrow(),1.0f);
+        horizontal_arrow.rectTransform.localScale = new Vector3(1.0f, lengthhorizArrow, 1.0f);
 
-        //information.text = displayedValue.ToString();
-
-        print("Distance to waypoint :" + distToWaypoint);
-        print("Rotation :" +angle);
+        extens_arrow1.rectTransform.localScale = new Vector3(lengthExtensionArrow, lengthExtensionArrow, 1.0f);
+        extens_arrow2.rectTransform.localScale = new Vector3(lengthExtensionArrow, lengthExtensionArrow, 1.0f);
+        contract_arrow.rectTransform.localScale = new Vector3(lengthContractionArrow, lengthContractionArrow, 1.0f);
     }
 
     float lengthOfDistArrow()
     {
         float length = 0.0f;
         float distance = distToWaypoint.magnitude;
-        length = distance / SimulationData.max_distance_error *1;
+        length = distance / SimulationData.max_distance_error * 1;
         if (length > 1) length = 1;
         if (distance < 0.1 * SimulationData.max_distance_error) length = 0;
         return length;
@@ -118,6 +167,15 @@ public class updateUI : MonoBehaviour
         length = Mathf.Abs(heightError) / SimulationData.max_height_error * 1;
         if (length > 1) length = 1;
         if (Mathf.Abs(heightError) < 0.1 * SimulationData.max_height_error) length = 0;
+        return length;
+    }
+
+    float lengthOfContractionArrow()
+    {
+        float length = 0.0f;
+        length = contraction_error / SimulationData.max_contraction_error * 1;
+        if (length > 1) length = 1;
+        if (Mathf.Abs(contraction_error) < 0.1 * SimulationData.max_contraction_error) length = 0;
         return length;
     }
 }
