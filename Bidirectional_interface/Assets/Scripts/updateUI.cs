@@ -75,61 +75,79 @@ public class updateUI : MonoBehaviour
         if (heightError <= 0) vertDirection = "up";
         else vertDirection = "down";
 
-        switch (experimentState)
+        if (updHandTarget.experiment)
         {
-            case GO_TO_FIRST_WAYPOINT:
-            case WAYPOINT_NAV:
-                lengthContractionArrow = 0;
-                lengthExtensionArrow = 0;
-                lengthvertArrow = lengthOfHeightArrow();
-                if (Mathf.Abs(lengthvertArrow) > 0) lengthhorizArrow = 0;
-                else lengthhorizArrow = lengthOfDistArrow();
-                break;
-
-            case EXTENSION:
-            case CONTRACTION:
-                if (Mathf.Abs(contraction_error) > 0.1 * SimulationData.max_contraction_error)
-                {
-                    if (contraction_error < 0)
-                    {
-                        lengthContractionArrow = lengthOfContractionArrow();
-                        lengthExtensionArrow = 0;
-                    }
-                    else if (contraction_error > 0)
-                    {
-                        lengthContractionArrow = 0;
-                        lengthExtensionArrow = lengthOfContractionArrow();
-                    }
-                }
-                else
-                {
+            switch (experimentState)
+            {
+                case GO_TO_FIRST_WAYPOINT:
+                case WAYPOINT_NAV:
                     lengthContractionArrow = 0;
                     lengthExtensionArrow = 0;
-                }
-                
-                lengthhorizArrow = 0;
-                lengthvertArrow = 0;
-                break;
+                    lengthvertArrow = lengthOfHeightArrow();
+                    if (Mathf.Abs(lengthvertArrow) > 0) lengthhorizArrow = 0;
+                    else lengthhorizArrow = lengthOfDistArrow();
+                    break;
 
-            case LANDING:
-                lengthContractionArrow = 0;
-                lengthExtensionArrow = 0;
-                lengthhorizArrow = 0;
-                lengthvertArrow = 0;
-                information.text = "LAND";
-                break;
+                case EXTENSION:
+                case CONTRACTION:
+                    if (Mathf.Abs(contraction_error) > 0.1 * SimulationData.max_contraction_error)
+                    {
+                        if (contraction_error < 0)
+                        {
+                            lengthContractionArrow = lengthOfContractionArrow();
+                            lengthExtensionArrow = 0;
+                        }
+                        else if (contraction_error > 0)
+                        {
+                            lengthContractionArrow = 0;
+                            lengthExtensionArrow = lengthOfContractionArrow();
+                        }
+                    }
+                    else
+                    {
+                        lengthContractionArrow = 0;
+                        lengthExtensionArrow = 0;
+                    }
+
+                    lengthhorizArrow = 0;
+                    lengthvertArrow = 0;
+                    break;
+
+                case LANDING:
+                    lengthContractionArrow = 0;
+                    lengthExtensionArrow = 0;
+                    lengthhorizArrow = 0;
+                    lengthvertArrow = 0;
+                    information.text = "LAND";
+                    break;
+            }
+
+
+            vertical_arrow.rectTransform.localScale = new Vector3(1.0f, lengthvertArrow, 1.0f);
+            vertical_arrow.rectTransform.rotation = Quaternion.Euler(arrowDirection[vertDirection]);
+
+            angle = 90.0f + Vector2.SignedAngle(distToWaypoint, new Vector2(10.0f, 0.0f));
+            horizontal_arrow.rectTransform.rotation = Quaternion.Euler(new Vector3(90.0f, angle, 0.0f));
+            horizontal_arrow.rectTransform.localScale = new Vector3(1.0f, lengthhorizArrow, 1.0f);
+
+            extens_arrow1.rectTransform.localScale = new Vector3(lengthExtensionArrow, lengthExtensionArrow, 1.0f);
+            extens_arrow2.rectTransform.localScale = new Vector3(lengthExtensionArrow, lengthExtensionArrow, 1.0f);
+            contract_arrow.rectTransform.localScale = new Vector3(lengthContractionArrow, lengthContractionArrow, 1.0f);
         }
-
-        vertical_arrow.rectTransform.localScale = new Vector3(1.0f, lengthvertArrow, 1.0f);
-        vertical_arrow.rectTransform.rotation = Quaternion.Euler(arrowDirection[vertDirection]);
-
-        angle = 90.0f + Vector2.SignedAngle(distToWaypoint, new Vector2(10.0f, 0.0f));
-        horizontal_arrow.rectTransform.rotation = Quaternion.Euler(new Vector3(90.0f, angle, 0.0f));
-        horizontal_arrow.rectTransform.localScale = new Vector3(1.0f, lengthhorizArrow, 1.0f);
-
-        extens_arrow1.rectTransform.localScale = new Vector3(lengthExtensionArrow, lengthExtensionArrow, 1.0f);
-        extens_arrow2.rectTransform.localScale = new Vector3(lengthExtensionArrow, lengthExtensionArrow, 1.0f);
-        contract_arrow.rectTransform.localScale = new Vector3(lengthContractionArrow, lengthContractionArrow, 1.0f);
+        else
+        {
+            horizontal_arrow.enabled = false;
+            vertical_arrow.enabled = false;
+            extens_arrow1.enabled = false;
+            extens_arrow2.enabled = false;
+            contract_arrow.enabled = false;
+            float timeRemaining = 60 - Time.time;
+            if (timeRemaining <= 0)
+            {
+                timeRemaining = 0;
+            }
+            information.text = "Time remaining :" + timeRemaining.ToString("F2") + " s";
+        }
     }
 
     float lengthOfDistArrow()

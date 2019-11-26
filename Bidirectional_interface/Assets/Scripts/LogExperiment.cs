@@ -78,7 +78,6 @@ public class LogExperiment : MonoBehaviour
             LogList.Add(LogArray);
         }
 
-        for (int i = 0; i < LogList.Count; i++) print(LogList[i][0]);
         if (saveLog) printCSV();
 
     }

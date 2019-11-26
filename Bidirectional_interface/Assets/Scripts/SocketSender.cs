@@ -31,7 +31,7 @@ public class SocketSender : MonoBehaviour
         }
         
         //10 different float to send to python script
-        data = new byte[11*4];
+        data = new byte[9*4];
 
         localIP = "127.0.0.1"; // local IP
         sendingPort = 8051; //port used to send the distances to python
@@ -60,13 +60,10 @@ public class SocketSender : MonoBehaviour
         floatToByte(j, currentByte);
         j++;
 
-        //Average distance between the element and its neighbours
-        currentByte = System.BitConverter.GetBytes(swarm.extensionError);
-        //print(maxRadius());
-        floatToByte(j, currentByte);
-        j++;
 
-        //Max distance between an element and the Center Of Gravity of the swarm
+        //Max distance between an element and the Center Of Gravity of the 
+
+
         currentByte = System.BitConverter.GetBytes(swarm.extensionError);
         floatToByte(j, currentByte);
         j++;
@@ -90,9 +87,6 @@ public class SocketSender : MonoBehaviour
         currentByte = System.BitConverter.GetBytes(Convert.ToSingle(SimulationData.max_contraction_error));
         floatToByte(j, currentByte);
         j++;
-
-        currentByte = System.BitConverter.GetBytes(Convert.ToSingle(SimulationData.distance_margin));
-        floatToByte(j, currentByte);
 
         client.Send(data, data.Length, ipEndPoint);
     }
