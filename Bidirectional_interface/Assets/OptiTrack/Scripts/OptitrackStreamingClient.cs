@@ -256,7 +256,6 @@ public class OptitrackStreamingClient : MonoBehaviour
         {
             Debug.LogWarning( "Multiple " + typeof( OptitrackStreamingClient ).FullName + " components found in scene; defaulting to first available." );
         }
-        print(allClients[0]);
         return allClients[0];
     }
 

@@ -70,7 +70,7 @@ public class updateUI : MonoBehaviour
 
         distToWaypoint = new Vector2(updHandTarget.distanceToWaypoint.x, updHandTarget.distanceToWaypoint.z);
         heightError = updHandTarget.heightError;
-        contraction_error = updHandTarget.contractionError;
+        contraction_error = updHandTarget.extensionError;
 
         if (heightError <= 0) vertDirection = "up";
         else vertDirection = "down";

@@ -61,13 +61,13 @@ public class SocketSender : MonoBehaviour
         j++;
 
         //Average distance between the element and its neighbours
-        currentByte = System.BitConverter.GetBytes(swarm.contractionError);
+        currentByte = System.BitConverter.GetBytes(swarm.extensionError);
         //print(maxRadius());
         floatToByte(j, currentByte);
         j++;
 
         //Max distance between an element and the Center Of Gravity of the swarm
-        currentByte = System.BitConverter.GetBytes(swarm.contractionError);
+        currentByte = System.BitConverter.GetBytes(swarm.extensionError);
         floatToByte(j, currentByte);
         j++;
 

@@ -8,7 +8,7 @@ using UnityEngine;
 public class Log : MonoBehaviour
 {
     public bool saveLog = true;
-
+    private float master;
     private List<string[]> LogList = new List<string[]>();
 
     //Saving positions to export them in a csv
@@ -20,6 +20,7 @@ public class Log : MonoBehaviour
     private List<Vector3> LogTargetTheta = new List<Vector3>();
     private List<Vector3> LogTargetAcceleration = new List<Vector3>();
     private string LogSlave;
+    private string droneName;
 
     // Start is called before the first frame update
     void Start()
@@ -42,6 +43,7 @@ public class Log : MonoBehaviour
         LogTargetAcceleration.Add(vc.desiredAcceleration);
         if (vc.isSlave) LogSlave = "Slave";
         else LogSlave = "Master";
+        droneName =gameObject.name;
 
     }
 
@@ -93,7 +95,7 @@ public class Log : MonoBehaviour
     private string getPath(string subjectName)
     {
 #if UNITY_EDITOR
-        return Application.dataPath + "/Logs/" + subjectName + "_" + DateTime.Now.ToString("h_mm_ss") + ".csv";
+        return Application.dataPath + "/Logs/" + subjectName + "_" + droneName + "_" + DateTime.Now.ToString("h_mm_ss") + ".csv";
 #elif UNITY_ANDROID
             return Application.persistentDataPath+"Saved_data.csv";
 #elif UNITY_IPHONE

@@ -1,9 +1,6 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
 using System.Linq;
-using System.Text;
-using System.IO;
-using System;
+using UnityEngine;
 
 
 public class UpdateHandTarget : MonoBehaviour
@@ -45,15 +42,16 @@ public class UpdateHandTarget : MonoBehaviour
     //Value to be send to the user for feedback
     public float heightError = 0.0f;
     public Vector3 distanceToWaypoint = new Vector3(0.0f, 0.0f, 0.0f);
-    public float contractionError = 0.0f;
+    public float extensionError = 0.0f;
+    public float extension;
 
     //This is the target to be reached during the experiment
     private float targetHeight = SimulationData.target_height;
 
     private float maxLandingRadius = 0.75f;
     private float marginFromCenterOfWaypoint = 0.5f;
-    private float targetExtension = 1.5f;
-    private Vector3 nextWaypoint;
+    public float targetExtension = 1.5f;
+    public Vector3 nextWaypoint;
     private int currentWaypoint = 1;
 
     const int LANDED = 0;
@@ -67,7 +65,7 @@ public class UpdateHandTarget : MonoBehaviour
     const int WAYPOINT_NAV = 7;
     const int CONTRACTION = 8;
 
-    private Vector3 CenterOfMass;
+    public Vector3 CenterOfMass;
     private float AccelerationMax = 0.5f;
     private bool masterExist = false;
     private float delta_K_coh = 0.005f;
@@ -76,6 +74,13 @@ public class UpdateHandTarget : MonoBehaviour
     private GameObject[] allWaypoints;
     private static float fullTime = 3.0f;
     private float stabilizationTime = fullTime;
+
+    public float experimentTime = 0.0f;
+    public float firstWaypointTime = 0.0f;
+    public float extensionTime = 0.0f;
+    public float secondWaypointTime = 0.0f;
+    public float thirdWaypointTime = 0.0f;
+    public float contractionTime = 0.0f;
 
     private Vector3 rawHandPosition = Vector3.zero;
     private Quaternion rawHandRotation = Quaternion.identity;
@@ -127,6 +132,7 @@ public class UpdateHandTarget : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
+        experimentTime += Time.deltaTime;
         Vector3 desiredVelocity = new Vector3(0.0f, 0.0f, 0.0f);
         CenterOfMass = AveragePosition();
 
@@ -240,6 +246,7 @@ public class UpdateHandTarget : MonoBehaviour
             case FLYING:
                 
                 heightError = CenterOfMass.y - targetHeight;
+                extension = MaxRadiusOfSwarm();
                 switch (experimentState)
                 {
                     case GO_TO_FIRST_WAYPOINT:
@@ -258,6 +265,7 @@ public class UpdateHandTarget : MonoBehaviour
                                 currentWaypoint += 1;
                                 experimentState = EXTENSION;
                                 stabilizationTime = fullTime;
+                                firstWaypointTime = experimentTime;
                             }
                         }
                         else stabilizationTime = fullTime;
@@ -265,11 +273,15 @@ public class UpdateHandTarget : MonoBehaviour
 
                     case EXTENSION:
                         
-                        contractionError = targetExtension - MaxRadiusOfSwarm();
-                        if (Mathf.Abs(contractionError) < 0.1f * SimulationData.max_contraction_error)
+                        extensionError = targetExtension - MaxRadiusOfSwarm();
+                        if (Mathf.Abs(extensionError) < 0.1f * SimulationData.max_contraction_error)
                         {
                             stabilizationTime -= Time.deltaTime;
-                            if (stabilizationTime < 0) experimentState = WAYPOINT_NAV;
+                            if (stabilizationTime < 0)
+                            {
+                                experimentState = WAYPOINT_NAV;
+                                extensionTime += experimentTime;
+                            }
                         }
                         else stabilizationTime = fullTime;
                         break;
@@ -299,8 +311,9 @@ public class UpdateHandTarget : MonoBehaviour
                         Vector3 preLandingPosition = nextWaypoint;
                         preLandingPosition.y = targetHeight;
                         master.GetComponent<PositionControl>().target.position = preLandingPosition;
-                        contractionError = maxLandingRadius - MaxRadiusOfSwarm();
-                        if (Mathf.Abs(contractionError) < 0.1 * SimulationData.max_contraction_error)
+                        targetExtension = maxLandingRadius;
+                        extensionError = targetExtension - MaxRadiusOfSwarm();
+                        if (Mathf.Abs(extensionError) < 0.1 * SimulationData.max_contraction_error)
                         {
                             stabilizationTime -= Time.deltaTime;
                             if (stabilizationTime < 0) experimentState = LANDING;
