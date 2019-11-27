@@ -7,11 +7,14 @@ public class updateUI : MonoBehaviour
 {
     public int test = 0;
     public Text information;
-    public Image horizontal_arrow;
-    public Image vertical_arrow;
+
     public Image contract_arrow;
     public Image extens_arrow1;
     public Image extens_arrow2;
+    private GameObject arrow3d_horiz_object;
+    private GameObject arrow3d_vert_object;
+    private Transform arrow3d_horiz;
+    private Transform arrow3d_vert;
 
     private Vector2 distToWaypoint;
     private float heightError;
@@ -28,6 +31,13 @@ public class updateUI : MonoBehaviour
     private int experimentState;
     private string vertDirection = "up";
     private IDictionary<string, Vector3> arrowDirection = new Dictionary<string, Vector3>();
+
+    private float init_x_scale = 0.0f;
+    private float init_y_scale = 0.0f;
+    private float init_z_scale = 0.0f;
+    private float x_scale = 0.0f;
+    private float y_scale = 0.0f;
+    private float z_scale = 0.0f;
 
 
     const int LANDED = 0;
@@ -47,19 +57,25 @@ public class updateUI : MonoBehaviour
     void Start()
     {
         information = gameObject.GetComponentInChildren<Text>();
-        horizontal_arrow = GameObject.Find("Horizontal arrow").GetComponent<Image>();
-        vertical_arrow = GameObject.Find("Vertical arrow").GetComponent<Image>();
+
         contract_arrow = GameObject.Find("Contract").GetComponent<Image>();
         extens_arrow1 = GameObject.Find("Extract1").GetComponent<Image>();
         extens_arrow2 = GameObject.Find("Extract2").GetComponent<Image>();
+        arrow3d_vert_object = GameObject.Find("arrow3d_vert");
+        arrow3d_vert = arrow3d_vert_object.transform.Find("arrow").transform.Find("Arrow");
+        arrow3d_horiz_object = GameObject.Find("arrow3d_horiz");
+        arrow3d_horiz = arrow3d_horiz_object.transform.Find("arrow").transform.Find("Arrow");
+        init_x_scale = arrow3d_horiz.localScale.x;
+        init_y_scale = arrow3d_horiz.localScale.x;
+        init_z_scale = arrow3d_horiz.localScale.z;
 
         extens_arrow1.enabled = true;
         extens_arrow2.enabled = true;
         contract_arrow.enabled = true;
 
         swarm = GameObject.Find("Swarm");
-        arrowDirection.Add("up", new Vector3(0f, 90f, 0f));
-        arrowDirection.Add("down", new Vector3(0f, 90f, 180.0f));
+        arrowDirection.Add("up", new Vector3(-90f, 0f, 90f));
+        arrowDirection.Add("down", new Vector3(90f, 0f, 90.0f));
     }
 
     // Update is called once per frame
@@ -86,6 +102,7 @@ public class updateUI : MonoBehaviour
                     lengthvertArrow = lengthOfHeightArrow();
                     if (Mathf.Abs(lengthvertArrow) > 0) lengthhorizArrow = 0;
                     else lengthhorizArrow = lengthOfDistArrow();
+                    print(lengthhorizArrow);
                     break;
 
                 case EXTENSION:
@@ -123,12 +140,17 @@ public class updateUI : MonoBehaviour
             }
 
 
-            vertical_arrow.rectTransform.localScale = new Vector3(1.0f, lengthvertArrow, 1.0f);
-            vertical_arrow.rectTransform.rotation = Quaternion.Euler(arrowDirection[vertDirection]);
+            //vertical_arrow.rectTransform.localScale = new Vector3(1.0f, lengthvertArrow, 1.0f);
+            //vertical_arrow.rectTransform.rotation = Quaternion.Euler(arrowDirection[vertDirection]);
 
-            angle = Vector2.SignedAngle(distToWaypoint, new Vector2(10.0f, 0.0f));
-            horizontal_arrow.rectTransform.rotation = Quaternion.Euler(new Vector3(90.0f, angle, -90.0f));
-            horizontal_arrow.rectTransform.localScale = new Vector3(1.0f, lengthhorizArrow, 1.0f);
+            angle = 90.0f +Vector2.SignedAngle(distToWaypoint, new Vector2(10.0f, 0.0f));
+            //horizontal_arrow.rectTransform.rotation = Quaternion.Euler(new Vector3(90.0f, angle, -90.0f));
+            //horizontal_arrow.rectTransform.localScale = new Vector3(1.0f, lengthhorizArrow, 1.0f);
+
+            arrow3d_horiz.rotation = Quaternion.Euler(new Vector3(0.0f, angle, 90.0f));
+            arrow3d_vert.rotation = Quaternion.Euler(arrowDirection[vertDirection]);
+            arrow3d_horiz.localScale = new Vector3(init_x_scale* lengthhorizArrow, init_y_scale, init_z_scale* lengthhorizArrow);
+            arrow3d_vert.localScale = new Vector3(init_x_scale* lengthvertArrow, init_y_scale, init_z_scale* lengthvertArrow);
 
             extens_arrow1.rectTransform.localScale = new Vector3(lengthExtensionArrow, lengthExtensionArrow, 1.0f);
             extens_arrow2.rectTransform.localScale = new Vector3(lengthExtensionArrow, lengthExtensionArrow, 1.0f);
@@ -136,8 +158,9 @@ public class updateUI : MonoBehaviour
         }
         else
         {
-            horizontal_arrow.enabled = false;
-            vertical_arrow.enabled = false;
+            arrow3d_horiz_object.SetActive(false);
+            arrow3d_vert_object.SetActive(false);
+            extens_arrow1.enabled = false;
             extens_arrow1.enabled = false;
             extens_arrow2.enabled = false;
             contract_arrow.enabled = false;
@@ -154,11 +177,12 @@ public class updateUI : MonoBehaviour
     {
         float length = 0.0f;
         float distance = 0.0f;
+        print("waypoint :" + distToWaypoint);
 
         if (Mathf.Abs(distToWaypoint.x) > 0.1 * SimulationData.max_distance_error || Mathf.Abs(distToWaypoint.y) > 0.1 * SimulationData.max_distance_error)
         {
             distance = distToWaypoint.magnitude;
-            length = distance / SimulationData.max_distance_error * 1;
+            length = distance / SimulationData.max_distance_error ;
             if (length > 1) length = 1;
         }
         else length = 0.0f;

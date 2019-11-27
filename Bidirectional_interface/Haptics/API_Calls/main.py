@@ -7,7 +7,7 @@ import json
 import sys
 import os
 import serial
-
+import threading
 
 DISTANCE_THRESHOLD = 0.5
 MAXIMUM_MOTOR_INPUT = 99
@@ -55,7 +55,7 @@ if (haptic_device == GLOVE) :
         I2C_interface = "PCA9685@I2C[1]"
         c.connect()
         print('Status: {}'.format(c.getState()))
-        c.sendMessages([json.dumps({"type": "Settings", "name": I2C_interface, "dutyFrequency": '50 Hz'})])
+        c.sendMessages([json.dumps({"type": "Settings", "name": I2C_interface, "dutyFrequency": '100 Hz'})])
         time.sleep(3)
         c.sendMessages([json.dumps({"type": "Settings", "name": I2C_interface, "scan": False})])
         #####################################
@@ -89,6 +89,8 @@ positions_socket = socket.socket(socket.AF_INET, # Internet
 positions_socket.bind((UDP_IP, UDP_PORT_DISTANCES))
 ##################################################
 
+thread_started = False
+
 positions_dict = {}
 
 information_dict = {}
@@ -99,9 +101,18 @@ motorsIndexes = {  "up" : 4,
                     "front" : 6,
                     "right" : 7,
                     "down" : 8,
-                    "left" : 9 }
+                    "left" : 9, 
+                    "extension" : [7,9]}
 
-motorsIndexesBracelet = {
+#The first number defines the bracelet, the second the motor(s)
+motorsIndexesBracelet = {"up" : [2,2],
+                    "back" : [1,4],
+                    "front" : [1,2],
+                    "right" : [1,3],
+                    "down" : [2,4],
+                    "left" : [1,1],
+                    "extension" : [2,1,3]
+                    
         }
 
 ##Haptic feedback with glove :
@@ -118,16 +129,40 @@ def sendHeightCue(error):
     turnOnMotors(["front","back"],0)
     turnOnMotors(["left", "right"], 0)   
 
+def extensionThread():
+    while True:#(experiment_state == EXTENSION) or (experiment_state == CONTRACTION):
+        sendExtensionCue(1)#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        
+        time.sleep(0.5)
+
 def sendExtensionCue(error):
     motor_intensity = getMotorIntensity(error, information_dict["max_extension_error"])
+    up_time = 0.2
+    waiting_time = 0.1
     if error > 0 :
+        turnOnMotors(["up", "down"], motor_intensity)
+        time.sleep(up_time)
+        turnOnMotors(["up", "down"], 0)
+        time.sleep(waiting_time)
         turnOnMotors(["left", "right"], motor_intensity)
-        turnOnMotors(["up", "down"], 0)   
+        time.sleep(up_time)
+        turnOnMotors(["left", "right"], 0)
+        time.sleep(waiting_time)
 
     else :
-        turnOnMotors(["left", "right"], 0)        
-        turnOnMotors(["up", "down"], motor_intensity)   
+        
+        turnOnMotors(["left", "right"], motor_intensity)
+        time.sleep(up_time)
+        turnOnMotors(["left", "right"], 0)
+        time.sleep(waiting_time)
+        turnOnMotors(["up", "down"], motor_intensity)
+        time.sleep(up_time)
+        turnOnMotors(["up", "down"], 0)
+        time.sleep(waiting_time)
+        
     
+    
+        
     turnOnMotors(["front","back"],0)
 
 
@@ -140,7 +175,6 @@ def sendDirectionalCue(distanceToWaypoint):
 
 def send1DirectionalCue(distance, direction, negative_direction):
     motor_intensity = getMotorIntensity(distance, information_dict["max_distance_error"])
-    print(motor_intensity)
     if distance < 0:
         turnOnMotors([negative_direction], motor_intensity)
         turnOnMotors([direction], 0)
@@ -225,15 +259,26 @@ while(True):
         fillInfoDict(infoUnpacked)
 
 #        print(information_dict)
-               
+  
         if information_dict["emergency_stop"] == 0:
             experiment_state = information_dict["experiment_state"]
+            
             if experiment_state == EXTENSION or experiment_state == CONTRACTION:
-                sendExtensionCue(information_dict["extension_error"])
+                if not thread_started:
+                    extensionThread = x = threading.Thread(target=extensionThread)
+                    extensionThread.start()
+                    thread_started = True
+                #                sendExtensionCue(information_dict["extension_error"])
             elif experiment_state == GO_TO_FIRST_WAYPOINT or experiment_state == WAYPOINT_NAV:
-                if abs( information_dict["height_error"]) > 0.1*information_dict["max_height_error"] : 
-                    sendHeightCue(information_dict["height_error"])
-                else:
-                    sendDirectionalCue(information_dict["next_waypoint_direction"])
+                if not thread_started:
+                    print("coucou")
+                    teub =  threading.Thread(target=extensionThread, args= ())
+                    teub.start()
+                    thread_started = True
+#                thread_started = False
+#                if abs( information_dict["height_error"]) > 0.1*information_dict["max_height_error"] : 
+#                    sendHeightCue(information_dict["height_error"])
+#                else:
+#                    sendDirectionalCue(information_dict["next_waypoint_direction"])
         else :
             shutDownAllMotors()

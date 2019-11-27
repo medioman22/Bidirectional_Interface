@@ -49,7 +49,7 @@ public class UpdateHandTarget : MonoBehaviour
     //This is the target to be reached during the experiment
     private float targetHeight = SimulationData.target_height;
 
-    private float maxLandingRadius = 0.75f;
+    private float maxLandingRadius = 0.9f;
     public float targetExtension = 1.5f;
     public Vector3 nextWaypoint;
     private int currentWaypoint = 1;
@@ -143,7 +143,7 @@ public class UpdateHandTarget : MonoBehaviour
             float v = Input.GetAxis("Vertical");
             float a = Input.GetAxis("Altitude");
             float r = Input.GetAxis("Rotation");
-            Vector3 direction = new Vector3(h, a, v);
+            Vector3 direction = new Vector3(v, a, -h);
             handTarget.transform.position += Quaternion.Euler(0, observationInputRotation, 0) * direction * controllerSpeed;
         }
         else // Mocap inputs
@@ -398,7 +398,7 @@ public class UpdateHandTarget : MonoBehaviour
             else if ((droneState == FLYING && experimentState == LANDING) || droneState == LANDING) droneState = LANDING;
         }
 
-        if (Input.GetKeyDown(KeyCode.R))
+        if (Input.GetKey(KeyCode.R))
         {
             int i = 0;
             foreach (GameObject drone in allDrones)
