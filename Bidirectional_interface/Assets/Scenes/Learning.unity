@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 170076734}
-  m_IndirectSpecularColor: {r: 0.4370464, g: 0.48474503, b: 0.5650065, a: 1}
+  m_IndirectSpecularColor: {r: 0.43704656, g: 0.4847455, b: 0.56500673, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -6749,6 +6749,7 @@ MonoBehaviour:
   handRigidbodyID: 1
   drawHandTarget: 1
   clutchActivated: 0
+  stopAllMotors: 0
   mocapInputRotation: 90
   Flatness: 1
   heightError: 0
@@ -6757,7 +6758,7 @@ MonoBehaviour:
   extension: 0
   targetExtension: 1.5
   nextWaypoint: {x: 0, y: 0, z: 0}
-  experiment: 0
+  experiment: 1
   CenterOfMass: {x: 0, y: 0, z: 0}
   experimentTime: 0
   firstWaypointTime: 0

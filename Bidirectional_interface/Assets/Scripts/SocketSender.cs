@@ -31,7 +31,7 @@ public class SocketSender : MonoBehaviour
         }
         
         //10 different float to send to python script
-        data = new byte[9*4];
+        data = new byte[10*4];
 
         localIP = "127.0.0.1"; // local IP
         sendingPort = 8051; //port used to send the distances to python
@@ -85,6 +85,10 @@ public class SocketSender : MonoBehaviour
         j++;
 
         currentByte = System.BitConverter.GetBytes(Convert.ToSingle(SimulationData.max_contraction_error));
+        floatToByte(j, currentByte);
+        j++;
+
+        currentByte = System.BitConverter.GetBytes(Convert.ToSingle(swarm.stopAllMotors));
         floatToByte(j, currentByte);
         j++;
 

@@ -30,6 +30,7 @@ public class UpdateHandTarget : MonoBehaviour
 
     public bool clutchActivated = false;
 
+    public int stopAllMotors = 0;
     public float mocapInputRotation = 90.0f;
 
     [Range(0.0f, 1.0f)]
@@ -49,7 +50,6 @@ public class UpdateHandTarget : MonoBehaviour
     private float targetHeight = SimulationData.target_height;
 
     private float maxLandingRadius = 0.75f;
-    private float marginFromCenterOfWaypoint = 0.5f;
     public float targetExtension = 1.5f;
     public Vector3 nextWaypoint;
     private int currentWaypoint = 1;
@@ -177,7 +177,7 @@ public class UpdateHandTarget : MonoBehaviour
 
                 // Clutch triggered, set reference yaw
                 //if (OVRInput.GetUp(OVRInput.RawButton.RIndexTrigger))
-                if (Input.GetKeyDown(KeyCode.Mouse0))
+                if (Input.GetMouseButton(0))
                 {
                     referenceYaw = handYaw;
                 }
@@ -192,7 +192,7 @@ public class UpdateHandTarget : MonoBehaviour
                 //if (OVRInput.Get(OVRInput.Axis1D.PrimaryIndexTrigger) < 0.5)
 
                 //if (!OVRInput.Get(OVRInput.RawButton.RIndexTrigger))
-                if (!Input.GetKey(KeyCode.Mouse0))
+                if (!Input.GetMouseButton(0))
                 {
                     clutchActivated = true;
                     //if (cameraPosition != null && cameraPosition.FPS)
@@ -260,7 +260,7 @@ public class UpdateHandTarget : MonoBehaviour
                             }
                             nextWaypoint = allWaypoints[index].transform.GetChild(0).transform.position;
                             distanceToWaypoint = (nextWaypoint - CenterOfMass);
-                            if (distanceToWaypoint.magnitude < 0.1 * SimulationData.max_distance_error)
+                            if (distanceToWaypoint.x > 0.1 * SimulationData.max_distance_error || distanceToWaypoint.z > 0.1 * SimulationData.max_distance_error)
                             {
                                 stabilizationTime -= Time.deltaTime;
                                 if (stabilizationTime < 0)
@@ -300,7 +300,7 @@ public class UpdateHandTarget : MonoBehaviour
                                 nextWaypoint = allWaypoints[index].transform.GetChild(0).transform.position;
                                 targetHeight = nextWaypoint.y;
                                 distanceToWaypoint = (nextWaypoint - CenterOfMass);
-                                if (distanceToWaypoint.magnitude < marginFromCenterOfWaypoint) currentWaypoint += 1;
+                                if (distanceToWaypoint.x > 0.1 * SimulationData.max_distance_error || distanceToWaypoint.z > 0.1 * SimulationData.max_distance_error) currentWaypoint += 1;
                             }
                             else
                             {
@@ -370,10 +370,14 @@ public class UpdateHandTarget : MonoBehaviour
         if (K_coh < K_coh_lower_bound) K_coh = K_coh_lower_bound;
         else if (K_coh > K_coh_upper_bound) K_coh = K_coh_upper_bound;
 
-        if (Input.GetKeyDown(KeyCode.Mouse1))
+        if (Input.GetMouseButton(1))
         {
-            if (droneState == LANDED || droneState == TAKING_OFF) droneState = TAKING_OFF;
-            else if ((droneState == FLYING && experimentState ==LANDING) || droneState == LANDING) droneState = LANDING;
+            if (droneState == LANDED || droneState == TAKING_OFF)
+            {
+                droneState = TAKING_OFF;
+                stopAllMotors = 0;
+            }
+            else if ((droneState == FLYING && experimentState == LANDING) || droneState == LANDING) droneState = LANDING;
         }
 
         if (Input.GetKeyDown(KeyCode.R))
@@ -388,6 +392,7 @@ public class UpdateHandTarget : MonoBehaviour
                 flying = false;
                 experimentState = LANDED;
                 droneState = LANDED;
+                stopAllMotors = 1;
                 i++;
             }
         }

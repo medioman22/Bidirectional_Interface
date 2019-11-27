@@ -13,9 +13,9 @@ DISTANCE_THRESHOLD = 0.5
 MAXIMUM_MOTOR_INPUT = 99
 with_connection = True
 NB_OF_DRONES = 5
-NB_OF_INFORMATION = 9
+NB_OF_INFORMATION = 10
 DESIRED_HEIGHT = 1.0
-LOWEST_INTENSITY_GLOVE = 40
+LOWEST_INTENSITY_GLOVE = 30
 HIGHEST_INTENSITY_GLOVE = 99
 
 LOWEST_INTENSITY_BRACELET = 32
@@ -92,6 +92,7 @@ positions_socket.bind((UDP_IP, UDP_PORT_DISTANCES))
 positions_dict = {}
 
 information_dict = {}
+allIndexes = ["up", "back", "right", "front", "left", "down"]
 
 motorsIndexes = {  "up" : 4,
                     "back" : 5,
@@ -107,7 +108,6 @@ motorsIndexesBracelet = {
 
 def sendHeightCue(error):
     motor_intensity = getMotorIntensity(error, information_dict["max_height_error"])
-    
     if error < 0 :
         turnOnMotors(["up"], motor_intensity)
         turnOnMotors(["down"], 0)
@@ -120,8 +120,7 @@ def sendHeightCue(error):
 
 def sendExtensionCue(error):
     motor_intensity = getMotorIntensity(error, information_dict["max_extension_error"])
-
-    if error < 0 :
+    if error > 0 :
         turnOnMotors(["left", "right"], motor_intensity)
         turnOnMotors(["up", "down"], 0)   
 
@@ -141,7 +140,7 @@ def sendDirectionalCue(distanceToWaypoint):
 
 def send1DirectionalCue(distance, direction, negative_direction):
     motor_intensity = getMotorIntensity(distance, information_dict["max_distance_error"])
-  
+    print(motor_intensity)
     if distance < 0:
         turnOnMotors([negative_direction], motor_intensity)
         turnOnMotors([direction], 0)
@@ -151,7 +150,7 @@ def send1DirectionalCue(distance, direction, negative_direction):
 
 
 def shutDownAllMotors():
-    turnOnMotors([],0)
+    turnOnMotors(allIndexes,0)
     
 def turnOnMotors(list_of_motors, intensity):
     for key in motorsIndexes:
@@ -164,6 +163,7 @@ def turnOnMotors(list_of_motors, intensity):
             
             
 def getMotorIntensity( error, max_error):
+    if abs(error) < 0.1*max_error : error = 0
     if haptic_device == BRACELET : 
         highest_intensity = HIGHEST_INTENSITY_BRACELET
         lowest_intensity = LOWEST_INTENSITY_BRACELET
@@ -171,8 +171,8 @@ def getMotorIntensity( error, max_error):
         highest_intensity = HIGHEST_INTENSITY_GLOVE
         lowest_intensity = LOWEST_INTENSITY_GLOVE
     motor_intensity = abs(error*(highest_intensity - lowest_intensity)/max_error) + lowest_intensity
-    if motor_intensity < lowest_intensity: motor_intensity = 0
-    if motor_intensity > highest_intensity: motor_intensity = highest_intensity
+    if motor_intensity <= lowest_intensity: motor_intensity = 0
+    if motor_intensity >= highest_intensity: motor_intensity = highest_intensity
     return motor_intensity
 
 
@@ -192,13 +192,14 @@ def fillInfoDict(current_data):
     i+=3
     information_dict["experiment_state"] = round(current_data[i])
     i+=1
-    information_dict["max_distance_error"] = round(current_data[i])
+    information_dict["max_distance_error"] = current_data[i]
     i+=1
-    information_dict["max_height_error"] = round(current_data[i])
+    information_dict["max_height_error"] = current_data[i]
     i+=1
-    information_dict["max_extension_error"] = round(current_data[i])
+    information_dict["max_extension_error"] = current_data[i]
+    i+=1
+    information_dict["emergency_stop"] = round(current_data[i])
     
-
 # MAIN LOOP
 while(True):
     positions = get_data(positions_socket)
@@ -222,40 +223,16 @@ while(True):
         #positionList = list(positions_dict.values())
         fillInfoDict(infoUnpacked)
 
-#        print(information_dict)
-        
-        
-        
-        experiment_state = information_dict["experiment_state"]
-        if experiment_state == EXTENSION or experiment_state == CONTRACTION:
-            sendExtensionCue(information_dict["extension_error"])
-        elif experiment_state == GO_TO_FIRST_WAYPOINT or experiment_state == WAYPOINT_NAV:
-            if abs( information_dict["height_error"]) > 0.1*information_dict["max_height_error"] : 
-                sendHeightCue(information_dict["height_error"])
-            else:
-                sendDirectionalCue(information_dict["next_waypoint_direction"])
+        print(information_dict)
+               
+        if information_dict["emergency_stop"] == 0:
+            experiment_state = information_dict["experiment_state"]
+            if experiment_state == EXTENSION or experiment_state == CONTRACTION:
+                sendExtensionCue(information_dict["extension_error"])
+            elif experiment_state == GO_TO_FIRST_WAYPOINT or experiment_state == WAYPOINT_NAV:
+                if abs( information_dict["height_error"]) > 0.1*information_dict["max_height_error"] : 
+                    sendHeightCue(information_dict["height_error"])
+                else:
+                    sendDirectionalCue(information_dict["next_waypoint_direction"])
         else :
             shutDownAllMotors()
-
-    
-#        for orientation in positions_dict.keys():
-#            if with_connection:
-#                # if close enough to a wall
-#                if (positions_dict[orientation] < DISTANCE_THRESHOLD):
-#                    if(positions_dict[opposites[orientation]] < DISTANCE_THRESHOLD):
-#
-#                        # take difference. Ignore if negative
-#                        value = (positions_dict[orientation] * (-MAXIMUM_MOTOR_INPUT/DISTANCE_THRESHOLD) + MAXIMUM_MOTOR_INPUT) \
-#                                    - (positions_dict[opposites[orientation]] * (-MAXIMUM_MOTOR_INPUT/DISTANCE_THRESHOLD) + MAXIMUM_MOTOR_INPUT)
-#                        if (value < 0):
-#                            continue
-#                        else:
-#                            c.sendMessages([json.dumps({"dim":  motorsIndexes[orientation], "value": value, "type": "Set", "name": I2C_interface})])
-#
-#                    else:
-#                        # make the motors vibrate
-#                        value = positions_dict[orientation] * (-MAXIMUM_MOTOR_INPUT/DISTANCE_THRESHOLD) + MAXIMUM_MOTOR_INPUT # affine transformation
-#                        c.sendMessages([json.dumps({"dim":  motorsIndexes[orientation], "value": value, "type": "Set", "name": I2C_interface})])
-#                else:
-#                    # reset motors
-#                    c.sendMessages([json.dumps({"dim":  motorsIndexes[orientation], "value": 0, "type": "Set", "name": I2C_interface})])

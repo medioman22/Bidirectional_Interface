@@ -153,10 +153,15 @@ public class updateUI : MonoBehaviour
     float lengthOfDistArrow()
     {
         float length = 0.0f;
-        float distance = distToWaypoint.magnitude;
-        length = distance / SimulationData.max_distance_error * 1;
-        if (length > 1) length = 1;
-        if (distance < 0.1 * SimulationData.max_distance_error) length = 0;
+        float distance = 0.0f;
+
+        if (distToWaypoint.x > 0.1 * SimulationData.max_distance_error || distToWaypoint.y > 0.1 * SimulationData.max_distance_error)
+        {
+            distance = distToWaypoint.magnitude;
+            length = distance / SimulationData.max_distance_error * 1;
+            if (length > 1) length = 1;
+        }
+        else length = 0.0f;
         return length;
     }
     float lengthOfHeightArrow()
