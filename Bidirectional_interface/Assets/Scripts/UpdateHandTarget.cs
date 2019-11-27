@@ -69,7 +69,7 @@ public class UpdateHandTarget : MonoBehaviour
     public Vector3 CenterOfMass;
     private float AccelerationMax = 0.5f;
     private bool masterExist = false;
-    private float delta_K_coh = 0.005f;
+    private float delta_K_coh = 0.008f;
     private float take_off_height = 0.50f;
     private GameObject[] droneTargets = new GameObject[5];
     private GameObject[] allWaypoints;
@@ -260,7 +260,7 @@ public class UpdateHandTarget : MonoBehaviour
                             }
                             nextWaypoint = allWaypoints[index].transform.GetChild(0).transform.position;
                             distanceToWaypoint = (nextWaypoint - CenterOfMass);
-                            if (distanceToWaypoint.x > 0.1 * SimulationData.max_distance_error || distanceToWaypoint.z > 0.1 * SimulationData.max_distance_error)
+                            if (Mathf.Abs(distanceToWaypoint.x) < 0.1 * SimulationData.max_distance_error && Mathf.Abs(distanceToWaypoint.z) < 0.1 * SimulationData.max_distance_error)
                             {
                                 stabilizationTime -= Time.deltaTime;
                                 if (stabilizationTime < 0)
@@ -284,6 +284,7 @@ public class UpdateHandTarget : MonoBehaviour
                                 {
                                     experimentState = WAYPOINT_NAV;
                                     extensionTime += experimentTime;
+                                    stabilizationTime = fullTime;
                                 }
                             }
                             else stabilizationTime = fullTime;
@@ -300,7 +301,24 @@ public class UpdateHandTarget : MonoBehaviour
                                 nextWaypoint = allWaypoints[index].transform.GetChild(0).transform.position;
                                 targetHeight = nextWaypoint.y;
                                 distanceToWaypoint = (nextWaypoint - CenterOfMass);
-                                if (distanceToWaypoint.x > 0.1 * SimulationData.max_distance_error || distanceToWaypoint.z > 0.1 * SimulationData.max_distance_error) currentWaypoint += 1;
+                                if (Mathf.Abs(distanceToWaypoint.x) < 0.1 * SimulationData.max_distance_error && Mathf.Abs(distanceToWaypoint.z) < 0.1 * SimulationData.max_distance_error)
+                                {
+                                    stabilizationTime -= Time.deltaTime;
+                                    if (stabilizationTime < 0)
+                                    {
+                                        currentWaypoint += 1;
+                                        switch (currentWaypoint)
+                                        {
+                                            case 2:
+                                                secondWaypointTime = experimentTime;
+                                                break;
+                                            case 3:
+                                                thirdWaypointTime = experimentTime;
+                                                break;                                            
+                                        }
+                                        stabilizationTime = fullTime;
+                                    }
+                                }
                             }
                             else
                             {
@@ -356,7 +374,7 @@ public class UpdateHandTarget : MonoBehaviour
                     {
                         droneTargets[j].transform.position = drone.transform.position;
                         Vector3 landPosition = droneTargets[j].transform.position;
-                        landPosition.y = 0.0f;
+                        landPosition.y = -1.0f;
                         droneTargets[j].transform.position = landPosition;
                         drone.GetComponent<PositionControl>().target = droneTargets[j].transform;
                         j += 1;

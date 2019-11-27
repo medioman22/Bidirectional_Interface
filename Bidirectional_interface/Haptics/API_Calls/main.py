@@ -173,6 +173,7 @@ def getMotorIntensity( error, max_error):
     motor_intensity = abs(error*(highest_intensity - lowest_intensity)/max_error) + lowest_intensity
     if motor_intensity <= lowest_intensity: motor_intensity = 0
     if motor_intensity >= highest_intensity: motor_intensity = highest_intensity
+    print(motor_intensity)
     return motor_intensity
 
 
@@ -223,7 +224,7 @@ while(True):
         #positionList = list(positions_dict.values())
         fillInfoDict(infoUnpacked)
 
-        print(information_dict)
+#        print(information_dict)
                
         if information_dict["emergency_stop"] == 0:
             experiment_state = information_dict["experiment_state"]

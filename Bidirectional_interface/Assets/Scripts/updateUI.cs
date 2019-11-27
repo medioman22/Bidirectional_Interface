@@ -126,8 +126,8 @@ public class updateUI : MonoBehaviour
             vertical_arrow.rectTransform.localScale = new Vector3(1.0f, lengthvertArrow, 1.0f);
             vertical_arrow.rectTransform.rotation = Quaternion.Euler(arrowDirection[vertDirection]);
 
-            angle = 90.0f + Vector2.SignedAngle(distToWaypoint, new Vector2(10.0f, 0.0f));
-            horizontal_arrow.rectTransform.rotation = Quaternion.Euler(new Vector3(90.0f, angle, 0.0f));
+            angle = Vector2.SignedAngle(distToWaypoint, new Vector2(10.0f, 0.0f));
+            horizontal_arrow.rectTransform.rotation = Quaternion.Euler(new Vector3(90.0f, angle, -90.0f));
             horizontal_arrow.rectTransform.localScale = new Vector3(1.0f, lengthhorizArrow, 1.0f);
 
             extens_arrow1.rectTransform.localScale = new Vector3(lengthExtensionArrow, lengthExtensionArrow, 1.0f);
@@ -155,7 +155,7 @@ public class updateUI : MonoBehaviour
         float length = 0.0f;
         float distance = 0.0f;
 
-        if (distToWaypoint.x > 0.1 * SimulationData.max_distance_error || distToWaypoint.y > 0.1 * SimulationData.max_distance_error)
+        if (Mathf.Abs(distToWaypoint.x) > 0.1 * SimulationData.max_distance_error || Mathf.Abs(distToWaypoint.y) > 0.1 * SimulationData.max_distance_error)
         {
             distance = distToWaypoint.magnitude;
             length = distance / SimulationData.max_distance_error * 1;
