@@ -130,8 +130,8 @@ def sendHeightCue(error):
     turnOnMotors(["left", "right"], 0)   
 
 def extensionThread():
-    while True:#(experiment_state == EXTENSION) or (experiment_state == CONTRACTION):
-        sendExtensionCue(1)#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    while (experiment_state == EXTENSION) or (experiment_state == CONTRACTION):
+        sendExtensionCue(information_dict["next_waypoint_direction"])
         
         time.sleep(0.5)
 
@@ -270,15 +270,15 @@ while(True):
                     thread_started = True
                 #                sendExtensionCue(information_dict["extension_error"])
             elif experiment_state == GO_TO_FIRST_WAYPOINT or experiment_state == WAYPOINT_NAV:
-                if not thread_started:
-                    print("coucou")
-                    teub =  threading.Thread(target=extensionThread, args= ())
-                    teub.start()
-                    thread_started = True
-#                thread_started = False
-#                if abs( information_dict["height_error"]) > 0.1*information_dict["max_height_error"] : 
-#                    sendHeightCue(information_dict["height_error"])
-#                else:
-#                    sendDirectionalCue(information_dict["next_waypoint_direction"])
+#                if not thread_started:
+#                    print("coucou")
+#                    teub =  threading.Thread(target=extensionThread, args= ())
+#                    teub.start()
+#                    thread_started = True
+                thread_started = False
+                if abs( information_dict["height_error"]) > 0.1*information_dict["max_height_error"] : 
+                    sendHeightCue(information_dict["height_error"])
+                else:
+                    sendDirectionalCue(information_dict["next_waypoint_direction"])
         else :
             shutDownAllMotors()
