@@ -20,8 +20,8 @@ DESIRED_HEIGHT = 1.0
 LOWEST_INTENSITY_GLOVE = 30
 HIGHEST_INTENSITY_GLOVE = 99
 
-LOWEST_INTENSITY_BRACELET = 32
-HIGHEST_INTENSITY_BRACELET = 255
+LOWEST_INTENSITY_BRACELET = 25
+HIGHEST_INTENSITY_BRACELET = 220
 
 
 MARGIN = 0.1
@@ -66,7 +66,7 @@ if (haptic_device == GLOVE) :
         #####################################
 # configure the bluetooth serial connections 
 elif haptic_device == BRACELET : 
-    ser = [0,serial.Serial('COM8', 9600)]#, serial.Serial('COM16', 9600)] #COMx correspond to the bluetooth port that is used by the RN42 bluetooth transmitter
+    ser = [serial.Serial('COM15', 9600) ,serial.Serial('COM16', 9600)]#, serial.Serial('COM16', 9600)] #COMx correspond to the bluetooth port that is used by the RN42 bluetooth transmitter
 
 
 ############# setup UDP communication #############
@@ -137,48 +137,7 @@ def sendHeightCue(error):
     
     turnOnMotors(["front","back"],0)
     turnOnMotors(["left", "right"], 0)   
-
-def extensionThread():
-    while (experiment_state == EXTENSION) or (experiment_state == CONTRACTION):
-        sendExtensionCue(information_dict["extension_error"])
-
-def sendExtensionCue(error):
-    motor_intensity = getMotorIntensity(error, information_dict["max_extension_error"])
-    up_time = 3/10
-    waiting_time = 2/10
-    if error > 0 :
-        turnOnMotors(["up", "down"], motor_intensity)
-        time.sleep(up_time)
-        turnOnMotors(["up", "down"], 0)
-#        time.sleep(waiting_time)
-        turnOnMotors(["extensionLeft", "extensionRight"], motor_intensity)
-        time.sleep(up_time)
-        turnOnMotors(["extensionLeft", "extensionRight"], 0)
-#        time.sleep(waiting_time)
-
-#        turnOnMotors(["down"], motor_intensity)
-#        time.sleep(up_time)
-#        turnOnMotors(["down"], 0)
-##        time.sleep(waiting_time)
-#        turnOnMotors(["extensionLeft"], motor_intensity)
-#        time.sleep(up_time)
-#        turnOnMotors(["extensionLeft"], 0)
-##        time.sleep(waiting_time)
-
-    else :
         
-        turnOnMotors(["extensionLeft", "extensionRight"], motor_intensity)
-        time.sleep(up_time)
-        turnOnMotors(["extensionLeft", "extensionRight"], 0)
-#        time.sleep(waiting_time)
-        turnOnMotors(["up", "down"], motor_intensity)
-        time.sleep(up_time)
-        turnOnMotors(["up", "down"], 0)
-#        time.sleep(waiting_time)
-        
-#    turnOnMotors(["front","back"],0)
-    time.sleep(3/10)
-
 
 def sendDirectionalCue(distanceToWaypoint):
     x_distance = distanceToWaypoint[0]
@@ -205,9 +164,9 @@ def turnOnMotors(list_of_motors, intensity):
         if key in list_of_motors:
             
             if haptic_device == GLOVE: 
-                if motorsIndexes[key] == 6 :  intensity *=0.8
+                if motorsIndexes[key] == 6 :  intensity *=0.65
                 c.sendMessages([json.dumps({"dim":  motorsIndexes[key], "value": intensity, "type": "Set", "name": I2C_interface})])
-                time.sleep(0.01)
+#                time.sleep(0.005)
             elif haptic_device == BRACELET: 
                 intensitiesMotorsBracelet[motorsIndexesBracelet[key][0]] [motorsIndexesBracelet[key][1]] = intensity
     if haptic_device == BRACELET:
@@ -230,9 +189,9 @@ def getMotorIntensity( error, max_error):
 
 ##Haptic feedback with bracelet 
 def sendIntensitiesToBracelet():
-#    intensityValues1 = bytearray([ord('S'), intensitiesMotorsBracelet[1][0], intensitiesMotorsBracelet[1][1], intensitiesMotorsBracelet[1][2], intensitiesMotorsBracelet[1][3], ord('E')])
+    intensityValues1 = bytearray([ord('S'), intensitiesMotorsBracelet[1][0], intensitiesMotorsBracelet[1][1], intensitiesMotorsBracelet[1][2], intensitiesMotorsBracelet[1][3], ord('E')])
     intensityValues2 = bytearray([ord('S'), intensitiesMotorsBracelet[2][0], intensitiesMotorsBracelet[2][1], intensitiesMotorsBracelet[2][2], intensitiesMotorsBracelet[2][3], ord('E')])
-#    ser[0].write(intensityValues1)
+    ser[0].write(intensityValues1)
     ser[1].write(intensityValues2)
 
 
@@ -285,16 +244,25 @@ while(True):
             experiment_state = information_dict["experiment_state"]
             
             if experiment_state == EXTENSION or experiment_state == CONTRACTION:
-                if not thread_started:
-                    if experiment_state == EXTENSION :
-                        extensionThread = threading.Thread(target=extensionThread)
-                        extensionThread.start()
-                    elif experiment_state == CONTRACTION :
-                        contractionThread = threading.Thread(target=extensionThread)                        
-                        contractionThread.start()
-                    thread_started = True
+                error = information_dict["extension_error"]
+                motor_intensity = getMotorIntensity(error, information_dict["max_extension_error"])
+                up_time = 3/10
+                if error > 0 :
+                    turnOnMotors(["up"], motor_intensity)
+                    time.sleep(up_time)
+                    turnOnMotors(["up"], 0)
+                    turnOnMotors(["extensionLeft", "extensionRight"], motor_intensity)
+                    time.sleep(up_time)
+                    turnOnMotors(["extensionLeft", "extensionRight"], 0)
+                else :
+                    turnOnMotors(["extensionLeft", "extensionRight"], motor_intensity)
+                    time.sleep(up_time)
+                    turnOnMotors(["extensionLeft", "extensionRight"], 0)
+                    turnOnMotors(["up"], motor_intensity)
+                    time.sleep(up_time)
+                    turnOnMotors(["up"], 0)
+                time.sleep(up_time)
             elif experiment_state == GO_TO_FIRST_WAYPOINT or experiment_state == WAYPOINT_NAV:
-                thread_started = False
                 if abs( information_dict["height_error"]) > 0.1*information_dict["max_height_error"] : 
                     sendHeightCue(information_dict["height_error"])
                 else:
