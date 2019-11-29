@@ -12,6 +12,9 @@ unsigned int received_data = 0; // it becomes 1 if the 'S' and 'E' chars are rec
 static byte input[4] = {0,0,0,0};      //Buffer to read from serial
 unsigned int motor_to_activate = 0;
 
+//timer to see how long it takes to read a serial message
+unsigned long StartTime;
+unsigned long CurrentTime;
 
 
 
@@ -20,8 +23,8 @@ void setup() {
   // put your setup code here, to run once:
     pinMode(rxPin,INPUT);
     pinMode(txPin, OUTPUT);
-    Serial.begin(9600);
     newSerial.begin(9600);
+    Serial.begin(115200);
 
     pinMode(9,OUTPUT);
     pinMode(6,OUTPUT);
@@ -31,10 +34,10 @@ void setup() {
     digitalWrite(2,HIGH); // led
     
     // test motors
-    analogWrite(6,200);
-    analogWrite(9,200);
-    analogWrite(5,200);
-    analogWrite(3,200);
+    analogWrite(6,100);
+    analogWrite(9,100);
+    analogWrite(5,100);
+    analogWrite(3,100);
     delay(200);
         
     analogWrite(6,0);
@@ -52,24 +55,31 @@ void loop() {
 
   if(newSerial.available())
   {
-    Serial.print("Recieving data\n");
     // get incoming byte
     tmp_input = newSerial.read();
     if (tmp_input == 83) // S start packet
     {
       counter = 0;
-      Serial.print("Beginning\n");
+      //Serial.print("Beginning\n");
+      //StartTime = millis();
     }
     else if(tmp_input == 69) // E end packet
     {
-      counter++;
-      received_data = 1;
-      Serial.print("Ending\n");
-
+      if (counter==4)
+      {
+        received_data = 1;
+      }
+      else
+      {
+        received_data = 0;
+      }
+      //Serial.print("Ending\n");
+      //CurrentTime = millis();
+      //unsigned long ElapsedTime = CurrentTime - StartTime;
     }
     else
     {
-      Serial.println(tmp_input);
+      //Serial.println(tmp_input);
       input[counter] = tmp_input; // save the received bytes in this array
       counter++;
     }
@@ -95,14 +105,14 @@ void loop() {
           break;
       }
         
-      if (input[i] > 32)
-      {
-        analogWrite(motor_to_activate, input[i]);
-      }
-      else
-      {
-        analogWrite(motor_to_activate, 0);
-      } 
+//      if (input[i] > 32)
+//      {
+       analogWrite(motor_to_activate, input[i]);
+//      }
+//      else
+//      {
+//        analogWrite(motor_to_activate, 0);
+//      } 
       received_data = 0;
     }
   }
