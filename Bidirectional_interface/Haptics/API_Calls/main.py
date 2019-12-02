@@ -7,7 +7,6 @@ import json
 import sys
 import os
 import serial
-import threading
 
 
 
@@ -15,12 +14,12 @@ DISTANCE_THRESHOLD = 0.5
 MAXIMUM_MOTOR_INPUT = 99
 with_connection = True
 NB_OF_DRONES = 5
-NB_OF_INFORMATION = 10
+NB_OF_INFORMATION = 11
 DESIRED_HEIGHT = 1.0
 LOWEST_INTENSITY_GLOVE = 30
 HIGHEST_INTENSITY_GLOVE = 99
 
-LOWEST_INTENSITY_BRACELET = 25
+LOWEST_INTENSITY_BRACELET = 40
 HIGHEST_INTENSITY_BRACELET = 220
 
 
@@ -32,42 +31,11 @@ EXTENSION = 6;
 WAYPOINT_NAV = 7;
 CONTRACTION = 8;
 
-GLOVE = 10
-BRACELET = 20
+GLOVE ="glove"
+BRACELETS = "bracelets"
 
 
 emergency_stop = False;
-#
-haptic_device = GLOVE
-    
-
-##Setup communication with glove (and BBGW)
-if (haptic_device == GLOVE) :
-    if with_connection:
-        print("Establishing the connection to the BBG device...")
-    else:
-        print("Ignoring the connection...")
-    
-    
-    if with_connection:
-        sys.path.insert(1, os.path.join(sys.path[0], '../Interface/src'))
-        from connections.beagleboneGreenWirelessConnection import BeagleboneGreenWirelessConnection
-    
-        ######## Setup BBG connection #######
-        c = BeagleboneGreenWirelessConnection()
-        I2C_interface = "PCA9685@I2C[1]"
-        c.connect()
-        print('Status: {}'.format(c.getState()))
-
-        time.sleep(3)
-        c.sendMessages([json.dumps({"type": "Settings", "name": I2C_interface, "scan": False})])
-        c.sendMessages([json.dumps({"type": "Settings", "name": I2C_interface, "dutyFrequency": '50 Hz'})])
-#        c.sendMessages([json.dumps({"type": "Settings", "name": I2C_interface, "Frequency": '100 Hz'})])
-        #####################################
-# configure the bluetooth serial connections 
-elif haptic_device == BRACELET : 
-    ser = [serial.Serial('COM15', 9600) ,serial.Serial('COM16', 9600)]#, serial.Serial('COM16', 9600)] #COMx correspond to the bluetooth port that is used by the RN42 bluetooth transmitter
-
 
 ############# setup UDP communication #############
 # function to get the data from Unity
@@ -89,14 +57,11 @@ UDP_IP = "127.0.0.1"
 # socket to which data is being received
 UDP_PORT_DISTANCES = 8051
 # open the receiving socket
-positions_socket = socket.socket(socket.AF_INET, # Internet
+information_socket = socket.socket(socket.AF_INET, # Internet
                      socket.SOCK_DGRAM) # UDP
-positions_socket.bind((UDP_IP, UDP_PORT_DISTANCES))
+information_socket.bind((UDP_IP, UDP_PORT_DISTANCES))
 ##################################################
-
-thread_started = False
-
-positions_dict = {}
+haptic_device = ''
 
 information_dict = {}
 allIndexes = ["up", "back", "right", "front", "left", "down"]
@@ -121,10 +86,7 @@ motorsIndexesBracelet = {"up" : [2,2],
                     "extensionRight" : [2,3]
         }
 
-
 intensitiesMotorsBracelet = {1 : [0,0,0,0], 2 : [0,0,0,0]}
-
-##Haptic feedback with glove :
 
 def sendHeightCue(error):
     motor_intensity = getMotorIntensity(error, information_dict["max_height_error"])
@@ -137,7 +99,6 @@ def sendHeightCue(error):
     
     turnOnMotors(["front","back"],0)
     turnOnMotors(["left", "right"], 0)   
-        
 
 def sendDirectionalCue(distanceToWaypoint):
     x_distance = distanceToWaypoint[0]
@@ -155,7 +116,6 @@ def send1DirectionalCue(distance, direction, negative_direction):
         turnOnMotors([direction], motor_intensity)
         turnOnMotors([negative_direction], 0)
 
-
 def shutDownAllMotors():
     turnOnMotors(allIndexes,0)
     
@@ -167,15 +127,15 @@ def turnOnMotors(list_of_motors, intensity):
                 if motorsIndexes[key] == 6 :  intensity *=0.65
                 c.sendMessages([json.dumps({"dim":  motorsIndexes[key], "value": intensity, "type": "Set", "name": I2C_interface})])
 #                time.sleep(0.005)
-            elif haptic_device == BRACELET: 
+            elif haptic_device == BRACELETS: 
                 intensitiesMotorsBracelet[motorsIndexesBracelet[key][0]] [motorsIndexesBracelet[key][1]] = intensity
-    if haptic_device == BRACELET:
+    if haptic_device == BRACELETS:
         print("sending intensity")
         sendIntensitiesToBracelet()
             
 def getMotorIntensity( error, max_error):
     if abs(error) < 0.1*max_error : error = 0
-    if haptic_device == BRACELET : 
+    if haptic_device == BRACELETS : 
         highest_intensity = HIGHEST_INTENSITY_BRACELET
         lowest_intensity = LOWEST_INTENSITY_BRACELET
     elif haptic_device == GLOVE :
@@ -189,7 +149,9 @@ def getMotorIntensity( error, max_error):
 
 ##Haptic feedback with bracelet 
 def sendIntensitiesToBracelet():
-    intensityValues1 = bytearray([ord('S'), intensitiesMotorsBracelet[1][0], intensitiesMotorsBracelet[1][1], intensitiesMotorsBracelet[1][2], intensitiesMotorsBracelet[1][3], ord('E')])
+    
+    correction_factor = 0.7#reduce the power of all the motors, except the one on the biceps (less sensitive)
+    intensityValues1 = bytearray([ord('S'), intensitiesMotorsBracelet[1][0]*correction_factor, intensitiesMotorsBracelet[1][1]*correction_factor, intensitiesMotorsBracelet[1][2], intensitiesMotorsBracelet[1][3]*correction_factor, ord('E')])
     intensityValues2 = bytearray([ord('S'), intensitiesMotorsBracelet[2][0], intensitiesMotorsBracelet[2][1], intensitiesMotorsBracelet[2][2], intensitiesMotorsBracelet[2][3], ord('E')])
     ser[0].write(intensityValues1)
     ser[1].write(intensityValues2)
@@ -212,32 +174,85 @@ def fillInfoDict(current_data):
     information_dict["max_extension_error"] = current_data[i]
     i+=1
     information_dict["emergency_stop"] = round(current_data[i])
+    i+=1
+    print(current_data[i])
+    if round(current_data[i] == 0): device = "bracelets"
+    else: device = "glove"
+    
+    information_dict["haptic_device"] = device
     
 print("Start scanning for information")
+
+
+information = get_data(information_socket)
+while not len(information):
+    information = get_data(information_socket)
+    time.sleep(0.1)
+    
+if len(information):
+    # send only the last packet otherwise too many packets sent too fast
+    packet = information[-1]    
+    strs = ''
+    for i in range(0, NB_OF_INFORMATION):
+        strs += 'f'
+    # unpack.
+    infoUnpacked = struct.unpack(strs, packet)
+    # parse the data
+    fillInfoDict(infoUnpacked)
+
+print(information_dict)
+haptic_device = information_dict["haptic_device"]
+##Setup communication with glove (and BBGW)
+if (haptic_device == GLOVE) :
+    if with_connection:
+        print("Establishing the connection to the BBG device...")
+    else:
+        print("Ignoring the connection...")
+    
+    
+    if with_connection:
+        sys.path.insert(1, os.path.join(sys.path[0], '../Interface/src'))
+        from connections.beagleboneGreenWirelessConnection import BeagleboneGreenWirelessConnection
+    
+        ######## Setup BBG connection #######
+        c = BeagleboneGreenWirelessConnection()
+        I2C_interface = "PCA9685@I2C[1]"
+        c.connect()
+        print('Status: {}'.format(c.getState()))
+
+        time.sleep(3)
+        c.sendMessages([json.dumps({"type": "Settings", "name": I2C_interface, "scan": False})])
+        c.sendMessages([json.dumps({"type": "Settings", "name": I2C_interface, "dutyFrequency": '50 Hz'})])
+#        c.sendMessages([json.dumps({"type": "Settings", "name": I2C_interface, "Frequency": '100 Hz'})])
+        #####################################
+# configure the bluetooth serial connections 
+elif(haptic_device == BRACELETS) : 
+    ser = [serial.Serial('COM15', 9600) , serial.Serial('COM17', 9600)]#COMx correspond to the bluetooth port that is used by the RN42 bluetooth transmitter
+
+
 # MAIN LOOP
 while(True):
-    positions = get_data(positions_socket)
+    information = get_data(information_socket)
     # had to sleep otherwise hardware overwhelmed
     time.sleep(0.05)
-    if len(positions):
-#        print("acquired positions, total number = ", len(positions))
-
+    if len(information):
+        
         # send only the last packet otherwise too many packets sent too fast
-        packet = positions[-1]
+        packet = information[-1]
         
         strs = ''
-        # 15 floats (5 drones and 3 positions each) + 1 for dronestate
+        # 15 floats (5 drones and 3 information each) + 1 for dronestate
 
         for i in range(0, NB_OF_INFORMATION):
             strs += 'f'
         # unpack.
         infoUnpacked = struct.unpack(strs, packet)
         # parse the data
-        #fillPositionsDict(posUnpacked)
-        #positionList = list(positions_dict.values())
+        #fillinformationDict(posUnpacked)
+        #positionList = list(information_dict.values())
         fillInfoDict(infoUnpacked)
 
-#        print(information_dict)
+        print(information_dict)
   
         if information_dict["emergency_stop"] == 0:
 
@@ -261,7 +276,7 @@ while(True):
                     turnOnMotors(["up"], motor_intensity)
                     time.sleep(up_time)
                     turnOnMotors(["up"], 0)
-                time.sleep(up_time)
+                time.sleep(0.5)
             elif experiment_state == GO_TO_FIRST_WAYPOINT or experiment_state == WAYPOINT_NAV:
                 if abs( information_dict["height_error"]) > 0.1*information_dict["max_height_error"] : 
                     sendHeightCue(information_dict["height_error"])

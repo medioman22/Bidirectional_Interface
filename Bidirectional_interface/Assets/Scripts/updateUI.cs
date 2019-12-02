@@ -83,7 +83,7 @@ public class updateUI : MonoBehaviour
     {
         UpdateHandTarget updHandTarget = swarm.GetComponent<UpdateHandTarget>();
         experimentState = swarm.GetComponent<UpdateHandTarget>().experimentState;
-
+        string feedbackDevice = updHandTarget.feedback.ToString();
         distToWaypoint = new Vector2(updHandTarget.distanceToWaypoint.x, updHandTarget.distanceToWaypoint.z);
         heightError = updHandTarget.heightError;
         contraction_error = updHandTarget.extensionError;
@@ -91,7 +91,7 @@ public class updateUI : MonoBehaviour
         if (heightError <= 0) vertDirection = "up";
         else vertDirection = "down";
 
-        if (updHandTarget.experiment)
+        if (updHandTarget.runningExperiment && feedbackDevice != "Visual")
         {
             switch (experimentState)
             {
@@ -139,14 +139,7 @@ public class updateUI : MonoBehaviour
                     break;
             }
 
-
-            //vertical_arrow.rectTransform.localScale = new Vector3(1.0f, lengthvertArrow, 1.0f);
-            //vertical_arrow.rectTransform.rotation = Quaternion.Euler(arrowDirection[vertDirection]);
-
             angle = 90.0f +Vector2.SignedAngle(distToWaypoint, new Vector2(10.0f, 0.0f));
-            //horizontal_arrow.rectTransform.rotation = Quaternion.Euler(new Vector3(90.0f, angle, -90.0f));
-            //horizontal_arrow.rectTransform.localScale = new Vector3(1.0f, lengthhorizArrow, 1.0f);
-
             arrow3d_horiz.rotation = Quaternion.Euler(new Vector3(0.0f, angle, 90.0f));
             arrow3d_vert.rotation = Quaternion.Euler(arrowDirection[vertDirection]);
             arrow3d_horiz.localScale = new Vector3(init_x_scale* lengthhorizArrow, init_y_scale, init_z_scale* lengthhorizArrow);
@@ -155,6 +148,7 @@ public class updateUI : MonoBehaviour
             extens_arrow1.rectTransform.localScale = new Vector3(lengthExtensionArrow, lengthExtensionArrow, 1.0f);
             extens_arrow2.rectTransform.localScale = new Vector3(lengthExtensionArrow, lengthExtensionArrow, 1.0f);
             contract_arrow.rectTransform.localScale = new Vector3(lengthContractionArrow, lengthContractionArrow, 1.0f);
+            information.enabled = false;
         }
         else
         {
@@ -164,12 +158,12 @@ public class updateUI : MonoBehaviour
             extens_arrow1.enabled = false;
             extens_arrow2.enabled = false;
             contract_arrow.enabled = false;
-            float timeRemaining = 60 - Time.time;
+            float timeRemaining = 120 - Time.time;
             if (timeRemaining <= 0)
             {
                 timeRemaining = 0;
             }
-            information.text = "Time remaining :" + timeRemaining.ToString("F2") + " s";
+            information.text = "Time left:\n" + timeRemaining.ToString("F2") + " s";
         }
     }
 

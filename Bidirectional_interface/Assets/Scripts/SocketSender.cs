@@ -15,6 +15,7 @@ public class SocketSender : MonoBehaviour
     private LaserSensors sensorValues;
     private float[] distances = new float[SimulationData.nbDistanceSensors];
     private List<Vector3> positions = new List<Vector3>();
+    private float device;
     byte[] data;
 
     //UDP
@@ -30,8 +31,8 @@ public class SocketSender : MonoBehaviour
             if (child.gameObject.tag == "Drone") allDrones.Add(child.gameObject);
         }
         
-        //10 different float to send to python script
-        data = new byte[10*4];
+        //11 different float to send to python script
+        data = new byte[11*4];
 
         localIP = "127.0.0.1"; // local IP
         sendingPort = 8051; //port used to send the distances to python
@@ -89,6 +90,13 @@ public class SocketSender : MonoBehaviour
         j++;
 
         currentByte = System.BitConverter.GetBytes(Convert.ToSingle(swarm.stopAllMotors));
+        floatToByte(j, currentByte);
+        j++;
+        
+        if (swarm.feedback.ToString() == "Glove") device = 1.0f;
+        else if (swarm.feedback.ToString() == "Bracelets") device = 0.0f;
+
+        currentByte = System.BitConverter.GetBytes(Convert.ToSingle(device));
         floatToByte(j, currentByte);
         j++;
 

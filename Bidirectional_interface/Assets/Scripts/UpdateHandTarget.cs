@@ -5,7 +5,13 @@ using UnityEngine;
 
 public class UpdateHandTarget : MonoBehaviour
 {
-    public float controllerSpeed = 0.025f;
+    public enum Feedback{Glove, Bracelets, Visual};
+
+    public Feedback feedback;
+    public bool runningExperiment = false;
+
+
+    public float controllerSpeed = 0.0025f;
     public float observationInputRotation = 0.0f;
     public bool useController = true;
     public GameObject handTarget;
@@ -20,6 +26,7 @@ public class UpdateHandTarget : MonoBehaviour
     public float K_align = 0.1f;
     public float P = 0.38f;
     public float D = 2.4f;
+
     public int droneState = LANDED;
     public int experimentState = LANDED;
 
@@ -64,12 +71,11 @@ public class UpdateHandTarget : MonoBehaviour
     const int EXTENSION = 6;
     const int WAYPOINT_NAV = 7;
     const int CONTRACTION = 8;
-    public bool experiment = false;
 
     public Vector3 CenterOfMass;
     private float AccelerationMax = 0.5f;
     private bool masterExist = false;
-    private float delta_K_coh = 0.008f;
+    private float delta_K_coh = 0.012f;
     private float take_off_height = 0.50f;
     private GameObject[] droneTargets = new GameObject[5];
     private GameObject[] allWaypoints;

@@ -48,7 +48,7 @@ BRACELET = 20
 
 emergency_stop = False;
 #
-haptic_device = GLOVE
+haptic_device = BRACELET
     
 
 ##Setup communication with glove (and BBGW)
@@ -76,7 +76,11 @@ if (haptic_device == GLOVE) :
         #####################################
 # configure the bluetooth serial connections 
 elif haptic_device == BRACELET : 
-    ser = [serial.Serial('COM15', 9600) ,serial.Serial('COM16', 9600)]#, serial.Serial('COM16', 9600)] #COMx correspond to the bluetooth port that is used by the RN42 bluetooth transmitter
+#    ser = [serial.Serial('COM17', 9600) , serial.Serial('COM16', 9600)] #COMx correspond to the bluetooth port that is used by the RN42 bluetooth transmitter
+    ser1 =  serial.Serial('COM15', 9600)
+    ser2 = serial.Serial('COM17', 9600)
+    print("hello")
+
 
 positions_dict = {}
 
@@ -143,9 +147,10 @@ def getMotorIntensity( error, max_error):
 def sendIntensitiesToBracelet():
     intensityValues1 = bytearray([ord('S'), intensitiesMotorsBracelet[1][0], intensitiesMotorsBracelet[1][1], intensitiesMotorsBracelet[1][2], intensitiesMotorsBracelet[1][3], ord('E')])
     intensityValues2 = bytearray([ord('S'), intensitiesMotorsBracelet[2][0], intensitiesMotorsBracelet[2][1], intensitiesMotorsBracelet[2][2], intensitiesMotorsBracelet[2][3], ord('E')])
-    ser[0].write(intensityValues1)
-    ser[1].write(intensityValues2)
-
+    print("start first bracelet vibration")
+    ser1.write(intensityValues1)
+    print("start second")
+    ser2.write(intensityValues2)
 
     
 print("Start scanning for information")
@@ -185,7 +190,7 @@ def sendCueThread():
     while(True):
         print(direction)
         shutDownAllMotors()
-        if direction != "extend" and direction != "contract" :
+        if direction != "extend" and direction != "contract" and direction !="" :
             turnOnMotors([direction], intensity)
             time.sleep(2)
             turnOnMotors([direction], 0)

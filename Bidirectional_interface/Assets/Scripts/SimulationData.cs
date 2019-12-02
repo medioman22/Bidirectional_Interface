@@ -30,7 +30,7 @@ public static class SimulationData
     // This variable is used to store if the drone is controlled via controller or mocap
     public static bool useController = false;
 
-    public static float target_height = 2.0f;
+    public static float target_height = 2.5f;
 
     public static float max_distance_error = 4.0f;
     public static float max_height_error = max_distance_error/2;

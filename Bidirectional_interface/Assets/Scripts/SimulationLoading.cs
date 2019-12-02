@@ -15,7 +15,7 @@ public class SimulationLoading : MonoBehaviour
     void Start()
     {
         GameObject swarm = GameObject.Find("Swarm");
-        bool experiment = swarm.GetComponent<UpdateHandTarget>().experiment;
+        bool experiment = swarm.GetComponent<UpdateHandTarget>().runningExperiment;
         if (experiment)
         {
             // Show Name selection UI
