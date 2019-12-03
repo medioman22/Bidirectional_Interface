@@ -9,11 +9,10 @@ public class UpdateHandTarget : MonoBehaviour
 
     public Feedback feedback;
     public bool runningExperiment = false;
-
+    public bool useController = true;
 
     public float controllerSpeed = 0.0025f;
-    public float observationInputRotation = 0.0f;
-    public bool useController = true;
+       
     public GameObject handTarget;
     public List<GameObject> allDrones;
     public List<GameObject> slaves;
@@ -27,7 +26,9 @@ public class UpdateHandTarget : MonoBehaviour
     public float P = 0.38f;
     public float D = 2.4f;
 
+    [HideInInspector]
     public int droneState = LANDED;
+    [HideInInspector]
     public int experimentState = LANDED;
 
     public float handRoomScaling = 8.0f;
@@ -37,40 +38,46 @@ public class UpdateHandTarget : MonoBehaviour
 
     public bool clutchActivated = false;
 
+    [HideInInspector]
     public int stopAllMotors = 0;
     public float mocapInputRotation = 90.0f;
 
+    [HideInInspector]
     [Range(0.0f, 1.0f)]
     public float Flatness =1.0f;
 
     [System.NonSerialized]
     public bool flying = false;
-
+    [HideInInspector]
+    public float observationInputRotation = 0.0f;
 
     //Value to be send to the user for feedback
+    [HideInInspector]
     public float heightError = 0.0f;
+    [HideInInspector]
     public Vector3 distanceToWaypoint = new Vector3(0.0f, 0.0f, 0.0f);
+    [HideInInspector]
     public float extensionError = 0.0f;
+    [HideInInspector]
     public float extension;
+
+    [HideInInspector]
+    public float targetExtension = 1.5f;
+    [HideInInspector]
+    public Vector3 nextWaypoint;
+
+    public float experimentTime = 0.0f;
+    public float firstWaypointTime = 0.0f;
+    public float extensionTime = 0.0f;
+    public float secondWaypointTime = 0.0f;
+    public float thirdWaypointTime = 0.0f;
+    public float contractionTime = 0.0f;
+    public float reachingHeightTime = 0.0f;
 
     //This is the target to be reached during the experiment
     private float targetHeight = SimulationData.target_height;
-
     private float maxLandingRadius = 0.9f;
-    public float targetExtension = 1.5f;
-    public Vector3 nextWaypoint;
     private int currentWaypoint = 1;
-
-    const int LANDED = 0;
-    const int TAKING_OFF = 1;
-    const int REACHING_HEIGHT = 2;
-    const int FLYING = 3;
-    const int LANDING = 4;
-
-    const int GO_TO_FIRST_WAYPOINT = 5;
-    const int EXTENSION = 6;
-    const int WAYPOINT_NAV = 7;
-    const int CONTRACTION = 8;
 
     public Vector3 CenterOfMass;
     private float AccelerationMax = 0.5f;
@@ -82,13 +89,6 @@ public class UpdateHandTarget : MonoBehaviour
     private static float fullTime = 3.0f;
     private float stabilizationTime = fullTime;
 
-    public float experimentTime = 0.0f;
-    public float firstWaypointTime = 0.0f;
-    public float extensionTime = 0.0f;
-    public float secondWaypointTime = 0.0f;
-    public float thirdWaypointTime = 0.0f;
-    public float contractionTime = 0.0f;
-
     private Vector3 rawHandPosition = Vector3.zero;
     private Quaternion rawHandRotation = Quaternion.identity;
     private Vector3 oldRawHandPosition;
@@ -99,6 +99,16 @@ public class UpdateHandTarget : MonoBehaviour
 
     private float fixedYaw = 0.0f;
 
+    const int LANDED = 0;
+    const int TAKING_OFF = 1;
+    const int REACHING_HEIGHT = 2;
+    const int FLYING = 3;
+    const int LANDING = 4;
+
+    const int GO_TO_FIRST_WAYPOINT = 5;
+    const int EXTENSION = 6;
+    const int WAYPOINT_NAV = 7;
+    const int CONTRACTION = 8;
     // Start is called before the first frame update
     void Start()
     {
@@ -250,6 +260,7 @@ public class UpdateHandTarget : MonoBehaviour
                         handTarget.transform.position = CenterOfMass;
                         flying = true;
                     }
+                    experimentTime = 0;
                     break;
 
                 case FLYING:
@@ -259,6 +270,7 @@ public class UpdateHandTarget : MonoBehaviour
                     switch (experimentState)
                     {
                         case GO_TO_FIRST_WAYPOINT:
+                            if (Mathf.Abs(heightError) > 0.1 * SimulationData.max_height_error) reachingHeightTime += Time.deltaTime;
                             int index = 0;
                             for (i = 0; i < allWaypoints.Length; i++)
                             {
@@ -281,7 +293,6 @@ public class UpdateHandTarget : MonoBehaviour
                             break;
 
                         case EXTENSION:
-
                             extensionError = targetExtension - MaxRadiusOfSwarm();
                             if (Mathf.Abs(extensionError) < 0.1f * SimulationData.max_contraction_error)
                             {
@@ -289,7 +300,7 @@ public class UpdateHandTarget : MonoBehaviour
                                 if (stabilizationTime < 0)
                                 {
                                     experimentState = WAYPOINT_NAV;
-                                    extensionTime += experimentTime;
+                                    extensionTime = experimentTime-firstWaypointTime;
                                     stabilizationTime = fullTime;
                                 }
                             }
@@ -297,7 +308,8 @@ public class UpdateHandTarget : MonoBehaviour
                             break;
 
                         case WAYPOINT_NAV:
-                            if (currentWaypoint <= allWaypoints.Length)
+                        if (Mathf.Abs(heightError) > 0.1 * SimulationData.max_height_error) reachingHeightTime += Time.deltaTime;
+                        if (currentWaypoint <= allWaypoints.Length)
                             {
                                 index = 0;
                                 for (i = 0; i < allWaypoints.Length; i++)
@@ -312,16 +324,16 @@ public class UpdateHandTarget : MonoBehaviour
                                     stabilizationTime -= Time.deltaTime;
                                     if (stabilizationTime < 0)
                                     {
-                                        currentWaypoint += 1;
                                         switch (currentWaypoint)
                                         {
                                             case 2:
-                                                secondWaypointTime = experimentTime;
+                                                secondWaypointTime = experimentTime-extensionTime;
                                                 break;
                                             case 3:
-                                                thirdWaypointTime = experimentTime;
+                                                thirdWaypointTime = experimentTime- secondWaypointTime;
                                                 break;                                            
                                         }
+                                        currentWaypoint += 1;
                                         stabilizationTime = fullTime;
                                     }
                                 }
@@ -342,7 +354,11 @@ public class UpdateHandTarget : MonoBehaviour
                             if (Mathf.Abs(extensionError) < 0.1 * SimulationData.max_contraction_error)
                             {
                                 stabilizationTime -= Time.deltaTime;
-                                if (stabilizationTime < 0) experimentState = LANDING;
+                            if (stabilizationTime < 0)
+                            {
+                                experimentState = LANDING;
+                                contractionTime = experimentTime - thirdWaypointTime;
+                            }
                             }
                             else stabilizationTime = fullTime;
                             break;

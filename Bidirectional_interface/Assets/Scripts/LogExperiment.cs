@@ -23,14 +23,15 @@ public class LogExperiment : MonoBehaviour
     private List<float> LogHeightError = new List<float>();
     private List<float> LogDistanceError = new List<float>();
     private List<float> LogExtensionError = new List<float>();
+    private List<float> LogHeightErrorTime = new List<float>();
     private List<string[]> LogList = new List<string[]>();
 
     // Start is called before the first frame update
     void Start()
     {
         updHandTrgt = gameObject.GetComponent<UpdateHandTarget>();
-        var title = new string[17]{"position_x", "position_y", "position_z", "target_position_x", "target_position_y", "target_position_z", "time", "extension", "target extension", "1st waypoint time", "extension time", "2nd waypoint time", "3rd waypoint time", "contraction time",
-            "height error", "distance to waypoint", "extension error"};
+        var title = new string[18]{"position_x", "position_y", "position_z", "target_position_x", "target_position_y", "target_position_z", "time", "extension", "target_extension", "1st_waypoint_time", "extension_time", "2nd_waypoint_time", "3rd_waypoint_time", "contraction_time",
+            "height_error", "distance_to_waypoint", "extension_error", "reaching_height_time"};
         LogList.Add(title);
     }
 
@@ -52,6 +53,8 @@ public class LogExperiment : MonoBehaviour
         Vector2 distance = new Vector2(updHandTrgt.distanceToWaypoint.x, updHandTrgt.distanceToWaypoint.z);
         LogDistanceError.Add(distance.magnitude);
         LogExtensionError.Add(updHandTrgt.extensionError);
+        LogHeightErrorTime.Add(updHandTrgt.reachingHeightTime);
+        print(updHandTrgt.experimentTime);
     }
 
 
@@ -75,6 +78,7 @@ public class LogExperiment : MonoBehaviour
             LogArray[14] = LogHeightError[i].ToString();
             LogArray[15] = LogDistanceError[i].ToString();
             LogArray[16] = LogExtensionError[i].ToString();
+            LogArray[17] = LogHeightErrorTime[i].ToString();
             LogList.Add(LogArray);
         }
 
@@ -84,7 +88,7 @@ public class LogExperiment : MonoBehaviour
     private string[] positionInto3DArray(List<Vector3> swarmMetrics)
     {
         var i = 0;
-        string[] LogArray = new string[17];
+        string[] LogArray = new string[18];
         foreach (Vector3 metric in swarmMetrics)
         {
             LogArray[0 + i] = metric.x.ToString();
@@ -98,7 +102,7 @@ public class LogExperiment : MonoBehaviour
     private string getPath(string subjectName)
     {
 #if UNITY_EDITOR
-        return Application.dataPath + "/Logs/" + subjectName + "_" + DateTime.Now.ToString("h_mm_ss") + ".csv";
+        return Application.dataPath + "/Logs/"  + DateTime.Now.ToString("h_mm_ss") + "_" + subjectName  + ".csv";
 #elif UNITY_ANDROID
             return Application.persistentDataPath+"Saved_data.csv";
 #elif UNITY_IPHONE

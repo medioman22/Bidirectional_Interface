@@ -128,7 +128,11 @@ def turnOnMotors(list_of_motors, intensity):
                 c.sendMessages([json.dumps({"dim":  motorsIndexes[key], "value": intensity, "type": "Set", "name": I2C_interface})])
 #                time.sleep(0.005)
             elif haptic_device == BRACELETS: 
-                intensitiesMotorsBracelet[motorsIndexesBracelet[key][0]] [motorsIndexesBracelet[key][1]] = intensity
+                correction_factor = 0.7
+                if key != "front":
+                    intensitiesMotorsBracelet[motorsIndexesBracelet[key][0]] [motorsIndexesBracelet[key][1]] = round(intensity*correction_factor)
+                else :
+                    intensitiesMotorsBracelet[motorsIndexesBracelet[key][0]] [motorsIndexesBracelet[key][1]] = round(intensity)
     if haptic_device == BRACELETS:
         print("sending intensity")
         sendIntensitiesToBracelet()
@@ -149,9 +153,7 @@ def getMotorIntensity( error, max_error):
 
 ##Haptic feedback with bracelet 
 def sendIntensitiesToBracelet():
-    
-    correction_factor = 0.7#reduce the power of all the motors, except the one on the biceps (less sensitive)
-    intensityValues1 = bytearray([ord('S'), intensitiesMotorsBracelet[1][0]*correction_factor, intensitiesMotorsBracelet[1][1]*correction_factor, intensitiesMotorsBracelet[1][2], intensitiesMotorsBracelet[1][3]*correction_factor, ord('E')])
+    intensityValues1 = bytearray([ord('S'), intensitiesMotorsBracelet[1][0], intensitiesMotorsBracelet[1][1], intensitiesMotorsBracelet[1][2], intensitiesMotorsBracelet[1][3], ord('E')])
     intensityValues2 = bytearray([ord('S'), intensitiesMotorsBracelet[2][0], intensitiesMotorsBracelet[2][1], intensitiesMotorsBracelet[2][2], intensitiesMotorsBracelet[2][3], ord('E')])
     ser[0].write(intensityValues1)
     ser[1].write(intensityValues2)
@@ -227,7 +229,7 @@ if (haptic_device == GLOVE) :
         #####################################
 # configure the bluetooth serial connections 
 elif(haptic_device == BRACELETS) : 
-    ser = [serial.Serial('COM15', 9600) , serial.Serial('COM17', 9600)]#COMx correspond to the bluetooth port that is used by the RN42 bluetooth transmitter
+    ser = [serial.Serial('COM26', 9600) , serial.Serial('COM24', 9600)]#COMx correspond to the bluetooth port that is used by the RN42 bluetooth transmitter
 
 
 # MAIN LOOP

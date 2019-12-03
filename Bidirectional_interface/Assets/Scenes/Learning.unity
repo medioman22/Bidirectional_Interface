@@ -7447,9 +7447,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1849123209}
   - component: {fileID: 1849123210}
+  - component: {fileID: 1849123213}
   - component: {fileID: 1849123211}
   - component: {fileID: 1849123212}
-  - component: {fileID: 1849123213}
   m_Layer: 0
   m_Name: Swarm
   m_TagString: Untagged
@@ -7490,9 +7490,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   feedback: 0
   runningExperiment: 1
-  controllerSpeed: 0.025
-  observationInputRotation: 0
   useController: 1
+  controllerSpeed: 0.025
   handTarget: {fileID: 0}
   allDrones: []
   slaves: []
@@ -7511,19 +7510,21 @@ MonoBehaviour:
   stopAllMotors: 0
   mocapInputRotation: 90
   Flatness: 1
+  observationInputRotation: 0
   heightError: 0
   distanceToWaypoint: {x: 0, y: 0, z: 0}
   extensionError: 0
   extension: 0
   targetExtension: 1.5
   nextWaypoint: {x: 0, y: 0, z: 0}
-  CenterOfMass: {x: 0, y: 0, z: 0}
   experimentTime: 0
   firstWaypointTime: 0
   extensionTime: 0
   secondWaypointTime: 0
   thirdWaypointTime: 0
   contractionTime: 0
+  reachingHeightTime: 0
+  CenterOfMass: {x: 0, y: 0, z: 0}
 --- !u!114 &1849123211
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7561,7 +7562,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e420fd276b654964cb09edacd5f11d35, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  saveLog: 0
+  saveLog: 1
 --- !u!1 &1859314717
 GameObject:
   m_ObjectHideFlags: 0

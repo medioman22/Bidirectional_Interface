@@ -95,7 +95,7 @@ public class Log : MonoBehaviour
     private string getPath(string subjectName)
     {
 #if UNITY_EDITOR
-        return Application.dataPath + "/Logs/" + subjectName + "_" + droneName + "_" + DateTime.Now.ToString("h_mm_ss") + ".csv";
+        return Application.dataPath + "/Logs/" + DateTime.Now.ToString("h_mm_ss")+ "_" + droneName+ "_" + subjectName+ ".csv";
 #elif UNITY_ANDROID
             return Application.persistentDataPath+"Saved_data.csv";
 #elif UNITY_IPHONE

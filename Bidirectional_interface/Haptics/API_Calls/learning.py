@@ -40,47 +40,8 @@ EXTENSION = 6;
 WAYPOINT_NAV = 7;
 CONTRACTION = 8;
 
-GLOVE = 10
-BRACELET = 20
-
-
-
-
-emergency_stop = False;
-#
-haptic_device = BRACELET
-    
-
-##Setup communication with glove (and BBGW)
-if (haptic_device == GLOVE) :
-    if with_connection:
-        print("Establishing the connection to the BBG device...")
-    else:
-        print("Ignoring the connection...")
-    
-    
-    if with_connection:
-        sys.path.insert(1, os.path.join(sys.path[0], '../Interface/src'))
-        from connections.beagleboneGreenWirelessConnection import BeagleboneGreenWirelessConnection
-    
-        ######## Setup BBG connection #######
-        c = BeagleboneGreenWirelessConnection()
-        I2C_interface = "PCA9685@I2C[1]"
-        c.connect()
-        print('Status: {}'.format(c.getState()))
-
-        time.sleep(3)
-        c.sendMessages([json.dumps({"type": "Settings", "name": I2C_interface, "scan": False})])
-        c.sendMessages([json.dumps({"type": "Settings", "name": I2C_interface, "dutyFrequency": '50 Hz'})])
-#        c.sendMessages([json.dumps({"type": "Settings", "name": I2C_interface, "Frequency": '100 Hz'})])
-        #####################################
-# configure the bluetooth serial connections 
-elif haptic_device == BRACELET : 
-#    ser = [serial.Serial('COM17', 9600) , serial.Serial('COM16', 9600)] #COMx correspond to the bluetooth port that is used by the RN42 bluetooth transmitter
-    ser1 =  serial.Serial('COM15', 9600)
-    ser2 = serial.Serial('COM17', 9600)
-    print("hello")
-
+GLOVE = "Glove"
+BRACELETS = "Bracelets"
 
 positions_dict = {}
 
@@ -110,12 +71,47 @@ motorsIndexesBracelet = {"up" : [2,2],
 
 
 intensitiesMotorsBracelet = {1 : [0,0,0,0], 2 : [0,0,0,0]}
+I2C_interface = ""
+
+#haptic_device = BRACELETS
+    
+
+##Setup communication with glove (and BBGW)
+def connect():
+    global ser, c, I2C_interface
+    if (haptic_device == GLOVE) :
+        if with_connection:
+            print("Establishing the connection to the BBG device...")
+        else:
+            print("Ignoring the connection...")
+        
+        
+        if with_connection:
+            sys.path.insert(1, os.path.join(sys.path[0], '../Interface/src'))
+            from connections.beagleboneGreenWirelessConnection import BeagleboneGreenWirelessConnection
+        
+            ######## Setup BBG connection #######
+            c = BeagleboneGreenWirelessConnection()
+            I2C_interface = "PCA9685@I2C[1]"
+            c.connect()
+            print('Status: {}'.format(c.getState()))
+    
+            time.sleep(3)
+            c.sendMessages([json.dumps({"type": "Settings", "name": I2C_interface, "scan": False})])
+            c.sendMessages([json.dumps({"type": "Settings", "name": I2C_interface, "dutyFrequency": '50 Hz'})])
+    #        c.sendMessages([json.dumps({"type": "Settings", "name": I2C_interface, "Frequency": '100 Hz'})])
+            #####################################
+    # configure the bluetooth serial connections 
+    elif haptic_device == BRACELETS : 
+        ser = [serial.Serial('COM24', 9600) , serial.Serial('COM26', 9600)] #COMx correspond to the bluetooth port that is used by the RN42 bluetooth transmitter
+        print("hello")
 
 
 def shutDownAllMotors():
     turnOnMotors(allIndexes,0)
     
 def turnOnMotors(list_of_motors, intensity):
+    global c, I2C_interface
     for key in motorsIndexes:
         if key in list_of_motors:
             
@@ -123,15 +119,15 @@ def turnOnMotors(list_of_motors, intensity):
                 if motorsIndexes[key] == 6 :  intensity *=0.65
                 c.sendMessages([json.dumps({"dim":  motorsIndexes[key], "value": intensity, "type": "Set", "name": I2C_interface})])
 #                time.sleep(0.005)
-            elif haptic_device == BRACELET: 
+            elif haptic_device == BRACELETS: 
                 intensitiesMotorsBracelet[motorsIndexesBracelet[key][0]] [motorsIndexesBracelet[key][1]] = intensity
-    if haptic_device == BRACELET:
+    if haptic_device == BRACELETS:
         print("sending intensity")
         sendIntensitiesToBracelet()
             
 def getMotorIntensity( error, max_error):
     if abs(error) < 0.1*max_error : error = 0
-    if haptic_device == BRACELET : 
+    if haptic_device == BRACELETS : 
         highest_intensity = HIGHEST_INTENSITY_BRACELET
         lowest_intensity = LOWEST_INTENSITY_BRACELET
     elif haptic_device == GLOVE :
@@ -145,45 +141,15 @@ def getMotorIntensity( error, max_error):
 
 ##Haptic feedback with bracelet 
 def sendIntensitiesToBracelet():
-    intensityValues1 = bytearray([ord('S'), intensitiesMotorsBracelet[1][0], intensitiesMotorsBracelet[1][1], intensitiesMotorsBracelet[1][2], intensitiesMotorsBracelet[1][3], ord('E')])
+    global ser
+    correction_factor = 0.7#reduce the power of all the motors, except the one on the biceps (less sensitive)
+    intensityValues1 = bytearray([ord('S'), round(intensitiesMotorsBracelet[1][0]*correction_factor), round(intensitiesMotorsBracelet[1][1]*correction_factor), intensitiesMotorsBracelet[1][2], round(intensitiesMotorsBracelet[1][3]*correction_factor), ord('E')])
     intensityValues2 = bytearray([ord('S'), intensitiesMotorsBracelet[2][0], intensitiesMotorsBracelet[2][1], intensitiesMotorsBracelet[2][2], intensitiesMotorsBracelet[2][3], ord('E')])
-    print("start first bracelet vibration")
-    ser1.write(intensityValues1)
-    print("start second")
-    ser2.write(intensityValues2)
+    ser[0].write(intensityValues1)
+    ser[1].write(intensityValues2)
 
     
-print("Start scanning for information")
-# MAIN LOOP
-
-direction_dict = {}
-
-if haptic_device == GLOVE:
-    direction_dict = motorsIndexes
-else :
-    direction_dict = motorsIndexesBracelet
-
-#for the training, the intensity is 2/3 of the max power
-
-
-win = tk.Tk()
-win.geometry('1000x1000')  # set window size
-win.resizable(0, 0)  # fix window
-
-panel = tk.Label(win)
-panel.pack()
-folder = "experiment_pictures/"
-images = ['up', 'down', 'left', 'right', 'front' , 'back', 'extend', 'contract']
-extension = '.png'
-images = iter(images)  # make an iterator
-
-direction = ""
-
-comboDevice = ttk.Combobox(win, 
-                            values=[
-                                    "Glove", 
-                                    "Bracelets"])
-
+    
 def sendCueThread():
     global direction
     intensity = getMotorIntensity(100,150)
@@ -214,18 +180,15 @@ def sendCueThread():
         time.sleep(1)
     
 def comboCallback(event):
-    print("Device chosen")
+    global haptic_device
+    haptic_device =str(comboDevice.get())
+    connect() #connect to the chosen haptic_device       
     next_img()
     comboDevice.destroy()
     btn.pack()
+
     t = threading.Thread(name = "sendCue", target = sendCueThread)
     t.start()
-    
-
-comboDevice.current()
-comboDevice.pack()
-comboDevice.bind("<<ComboboxSelected>>",comboCallback )
-
 
 def next_img():
     # load the image and display it
@@ -239,15 +202,57 @@ def next_img():
     img = ImageTk.PhotoImage(img)
     panel.img = img  
     # keep a reference so it's not garbage collected
-    panel['image'] = img
+    panel['image'] = img      
     
+def on_closing():
+    global ser
+    try :
+        ser[0].close()
+        ser[1].close()
+    except :
+        print("Connection not established")
+    win.destroy()
+
+
+#for the training, the intensity is 2/3 of the max power
+
+
+win = tk.Tk()
+win.geometry('1000x1000')  # set window size
+win.resizable(0, 0)  # fix window
+
+panel = tk.Label(win)
+panel.pack()
+folder = "experiment_pictures/"
+images = ['up', 'down', 'left', 'right', 'front' , 'back', 'extend', 'contract']
+extension = '.png'
+images = iter(images)  # make an iterator
+
+direction = ""
+
+comboDevice = ttk.Combobox(win, 
+                            values=[
+                                    GLOVE, 
+                                    BRACELETS])
     
+connect_to_device = False
+
+
+
+comboDevice.current()
+comboDevice.pack()
+comboDevice.bind("<<ComboboxSelected>>",comboCallback )
+
 
 btn = tk.Button(text='Next image', command=next_img)
+
+
+
 
 # show the first image
 #next_img()
 
 
-win.mainloop()
+win.protocol("WM_DELETE_WINDOW", on_closing)
 
+win.mainloop()
