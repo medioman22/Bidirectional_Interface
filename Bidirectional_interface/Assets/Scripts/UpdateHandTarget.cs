@@ -41,7 +41,7 @@ public class UpdateHandTarget : MonoBehaviour
 
     [HideInInspector]
     public int droneState = LANDED;
-    [HideInInspector]
+
     public int experimentState = TAKING_OFF;
 
     public float handRoomScaling = 8.0f;
@@ -116,6 +116,7 @@ public class UpdateHandTarget : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        experimentState = TAKING_OFF;
         handTarget = new GameObject("Hand target");
 
         int i = 0;
@@ -182,56 +183,27 @@ public class UpdateHandTarget : MonoBehaviour
 
                 Vector3 deltaHandPosition = rawHandPosition - oldRawHandPosition;
                 float handYaw = rawHandRotation.eulerAngles.y;
-
                 oldRawHandPosition = rawHandPosition;
-
                 if (deltaHandPosition.magnitude > 1.0f)
                     return;
 
-                //print("Raw hand position : " + rawHandPosition);
-
                 // Update observation input rotation if FPS mode
-                if (cameraPosition != null && cameraPosition.FPS)
-                {
-                    observationInputRotation = transform.eulerAngles.y;
-                }
+                if (cameraPosition != null && cameraPosition.FPS) observationInputRotation = transform.eulerAngles.y;
 
                 // Clutch triggered, set reference yaw
-                //if (OVRInput.GetUp(OVRInput.RawButton.RIndexTrigger))
                 if (Input.GetMouseButton(0))
                 {
                     referenceYaw = handYaw;
                 }
-
-                // In TPV, we keep the drone yaw fixed
-                //if (cameraPosition != null && !cameraPosition.FPS)
-                //{
-                //    dronePositionControl.targetYaw = fixedYaw;
-                //}
-
-                // Clutch activated
-                //if (OVRInput.Get(OVRInput.Axis1D.PrimaryIndexTrigger) < 0.5)
-
-                //if (!OVRInput.Get(OVRInput.RawButton.RIndexTrigger))
-                if (!Input.GetMouseButton(0))
-                {
-                    clutchActivated = true;
-                    //if (cameraPosition != null && cameraPosition.FPS)
-                    //    droneVelocityControl.desiredYawRate = Mathf.DeltaAngle(referenceYaw, handYaw) * rotationSpeedScaling;
-
-                    //handTarget.transform.position = transform.position;
-                }
+                if (!Input.GetMouseButton(0)) clutchActivated = true;
                 else
                 {
                     // Update drone target
                     clutchActivated = false;
-
-                    //if (cameraPosition != null && cameraPosition.FPS)
-                    //    droneVelocityControl.desiredYawRate = 0.0f;
-
                     print("Delta hand position : " + deltaHandPosition);
                     handTarget.transform.position += Quaternion.Euler(0, observationInputRotation + mocapInputRotation, 0) * deltaHandPosition * handRoomScaling;
                 }
+                
             }
         }
 
@@ -242,6 +214,7 @@ public class UpdateHandTarget : MonoBehaviour
 
         switch (droneState)
             {
+         
                 case TAKING_OFF:
                     int i = 0;
                     foreach (GameObject drone in allDrones)
@@ -362,6 +335,7 @@ public class UpdateHandTarget : MonoBehaviour
                             if (stabilizationTime < 0)
                             {
                                 experimentState = LANDING;
+                                droneState = LANDING; //automatic landing when the correct contraction is reached
                                 contractionTime = experimentTime - thirdWaypointTime;
                             }
                             }
@@ -374,7 +348,7 @@ public class UpdateHandTarget : MonoBehaviour
                         if (!drone.GetComponent<VelocityControl>().isSlave)
                         {
                             //position control for the master
-                            if (experimentState != LANDING || experimentState != CONTRACTION) drone.GetComponent<PositionControl>().target = handTarget.transform;
+                            if (experimentState != LANDING || experimentState != GAME_OVER || experimentState != CONTRACTION) drone.GetComponent<PositionControl>().target = handTarget.transform;
                         }
                         else
                         {

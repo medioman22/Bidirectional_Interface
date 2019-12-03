@@ -18,6 +18,8 @@ from tkinter import ttk
 from PIL import ImageTk, Image
 import threading
 import mouse
+import yaml
+import signal
 
 DISTANCE_THRESHOLD = 0.5
 MAXIMUM_MOTOR_INPUT = 99
@@ -28,8 +30,8 @@ DESIRED_HEIGHT = 1.0
 LOWEST_INTENSITY_GLOVE = 30
 HIGHEST_INTENSITY_GLOVE = 99
 
-LOWEST_INTENSITY_BRACELET = 25
-HIGHEST_INTENSITY_BRACELET = 220
+LOWEST_INTENSITY_BRACELET = 40
+HIGHEST_INTENSITY_BRACELET = 250
 
 
 MARGIN = 0.1
@@ -102,7 +104,9 @@ def connect():
             #####################################
     # configure the bluetooth serial connections 
     elif haptic_device == BRACELETS : 
-        ser = [serial.Serial('COM13', 9600) , serial.Serial('COM12', 9600)] #COMx correspond to the bluetooth port that is used by the RN42 bluetooth transmitter
+        with open(r'com_port.yaml') as file:
+            COM_number = yaml.load(file, Loader=yaml.FullLoader)
+        ser = [serial.Serial('COM' + str(COM_number['arm']), 9600) , serial.Serial('COM' +  str(COM_number['forearm']), 9600)] #COMx correspond to the bluetooth port that is used by the RN42 bluetooth transmitter
 
 
 
@@ -157,7 +161,7 @@ def sendCueThread():
         shutDownAllMotors()
         if direction != "extend" and direction != "contract" and direction !="" :
             turnOnMotors([direction], intensity)
-            time.sleep(2)
+            time.sleep(0.3)
             turnOnMotors([direction], 0)
         elif direction == 'extend':
             print("Tryng to send extend cue")
@@ -217,6 +221,18 @@ def on_closing():
     except :
         print("Connection not established")
     win.destroy()
+    
+def signal_handler(sig, frame):
+        print('You pressed Ctrl+C!')
+        try :
+            ser[0].close()
+            ser[1].close()
+            shutDownAllMotors()
+        except :
+            print("Connection not established")
+            sys.exit(0)
+        
+signal.signal(signal.SIGINT, signal_handler)    
 
 
 #for the training, the intensity is 2/3 of the max power

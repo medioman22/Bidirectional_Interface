@@ -7,8 +7,8 @@ import json
 import sys
 import os
 import serial
-
-
+import yaml
+import signal
 
 DISTANCE_THRESHOLD = 0.5
 MAXIMUM_MOTOR_INPUT = 99
@@ -128,11 +128,10 @@ def turnOnMotors(list_of_motors, intensity):
                 c.sendMessages([json.dumps({"dim":  motorsIndexes[key], "value": intensity, "type": "Set", "name": I2C_interface})])
 #                time.sleep(0.005)
             elif haptic_device == BRACELETS: 
-                correction_factor = 0.7
                 if key != "front":
-                    intensitiesMotorsBracelet[motorsIndexesBracelet[key][0]] [motorsIndexesBracelet[key][1]] = round(intensity*correction_factor)
-                else :
                     intensitiesMotorsBracelet[motorsIndexesBracelet[key][0]] [motorsIndexesBracelet[key][1]] = round(intensity)
+                else :
+                    intensitiesMotorsBracelet[motorsIndexesBracelet[key][0]] [motorsIndexesBracelet[key][1]] = round(intensity+0.3*(HIGHEST_INTENSITY_BRACELET-LOWEST_INTENSITY_BRACELET))
     if haptic_device == BRACELETS:
         print("sending intensity")
         sendIntensitiesToBracelet()
@@ -140,7 +139,7 @@ def turnOnMotors(list_of_motors, intensity):
 def getMotorIntensity( error, max_error):
     if abs(error) < 0.1*max_error : error = 0
     if haptic_device == BRACELETS : 
-        highest_intensity = HIGHEST_INTENSITY_BRACELET
+        highest_intensity = 0.7*HIGHEST_INTENSITY_BRACELET
         lowest_intensity = LOWEST_INTENSITY_BRACELET
     elif haptic_device == GLOVE :
         highest_intensity = HIGHEST_INTENSITY_GLOVE
@@ -182,6 +181,18 @@ def fillInfoDict(current_data):
     else: device = "glove"
     
     information_dict["haptic_device"] = device
+    
+def signal_handler(sig, frame):
+        print('You pressed Ctrl+C!')
+        try :
+            ser[0].close()
+            ser[1].close()
+            shutDownAllMotors()
+        except :
+            print("Connection not established")
+            sys.exit(0)
+        
+signal.signal(signal.SIGINT, signal_handler)     
     
 print("Start scanning for information")
 
@@ -229,8 +240,9 @@ if (haptic_device == GLOVE) :
         #####################################
 # configure the bluetooth serial connections 
 elif(haptic_device == BRACELETS) : 
-    ser = [serial.Serial('COM13', 9600) , serial.Serial('COM12', 9600)]#COMx correspond to the bluetooth port that is used by the RN42 bluetooth transmitter
-
+    with open(r'com_port.yaml') as file:
+        COM_number = yaml.load(file, Loader=yaml.FullLoader)
+    ser = [serial.Serial('COM' + str(COM_number['arm']), 9600) , serial.Serial('COM' +  str(COM_number['forearm']), 9600)]
 
 # MAIN LOOP
 while(True):

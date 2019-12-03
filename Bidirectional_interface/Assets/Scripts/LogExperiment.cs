@@ -40,9 +40,11 @@ public class LogExperiment : MonoBehaviour
     {
         LogCenterOfMass.Add(updHandTrgt.CenterOfMass);
         LogNextWaypoint.Add(updHandTrgt.nextWaypoint);
+
+        LogTime.Add(updHandTrgt.experimentTime);
         LogExtension.Add(updHandTrgt.extension);
         LogTargetExtension.Add(updHandTrgt.targetExtension);
-        LogTime.Add(updHandTrgt.experimentTime);
+        
         Log1stWaypointTime.Add(updHandTrgt.firstWaypointTime);
         LogExtensionTime.Add(updHandTrgt.extensionTime);
         Log2ndWaypointTime.Add(updHandTrgt.secondWaypointTime);

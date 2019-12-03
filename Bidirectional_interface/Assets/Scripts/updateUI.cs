@@ -168,8 +168,12 @@ public class updateUI : MonoBehaviour
             }
         }
         print(experimentState);
-        if(experimentState == TAKING_OFF) information.text = "Right click\nfor take of";
-        else if (experimentState == LANDING) information.text = "Right click\nto land";
+        if (experimentState == TAKING_OFF)
+        {
+            information.enabled = true;
+            information.text = "Right click\nto takeoff";
+        }
+        else information.enabled = false;
     }
 
     float lengthOfDistArrow()
@@ -199,8 +203,10 @@ public class updateUI : MonoBehaviour
     float lengthOfContractionArrow()
     {
         float length = 0.0f;
+        float minimal_scale = 0.2f;
         length = contraction_error / SimulationData.max_contraction_error * 1;
         if (length > 1) length = 1;
+        length = length * (1- minimal_scale )+ minimal_scale; // tuning to have a bigger mininmal length of arrow
         if (Mathf.Abs(contraction_error) < 0.1 * SimulationData.max_contraction_error) length = 0;
         return length;
     }

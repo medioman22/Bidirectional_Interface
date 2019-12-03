@@ -33,7 +33,7 @@ public static class SimulationData
     public static float target_height = 2.5f;
 
     public static float max_distance_error = 4.0f;
-    public static float max_height_error = max_distance_error/2;
+    public static float max_height_error = 3*max_distance_error/4;
     public static float max_contraction_error = 1.0f;
     public static float distance_margin = 1.0f;
 }
