@@ -91,7 +91,7 @@ public class updateUI : MonoBehaviour
         if (heightError <= 0) vertDirection = "up";
         else vertDirection = "down";
 
-        if (updHandTarget.runningExperiment && feedbackDevice != "Visual")
+        if (updHandTarget.runningExperiment && feedbackDevice == "Visual")
         {
             switch (experimentState)
             {
@@ -102,7 +102,6 @@ public class updateUI : MonoBehaviour
                     lengthvertArrow = lengthOfHeightArrow();
                     if (Mathf.Abs(lengthvertArrow) > 0) lengthhorizArrow = 0;
                     else lengthhorizArrow = lengthOfDistArrow();
-                    print(lengthhorizArrow);
                     break;
 
                 case EXTENSION:
@@ -135,7 +134,6 @@ public class updateUI : MonoBehaviour
                     lengthExtensionArrow = 0;
                     lengthhorizArrow = 0;
                     lengthvertArrow = 0;
-                    information.text = "LAND";
                     break;
             }
 
@@ -148,7 +146,7 @@ public class updateUI : MonoBehaviour
             extens_arrow1.rectTransform.localScale = new Vector3(lengthExtensionArrow, lengthExtensionArrow, 1.0f);
             extens_arrow2.rectTransform.localScale = new Vector3(lengthExtensionArrow, lengthExtensionArrow, 1.0f);
             contract_arrow.rectTransform.localScale = new Vector3(lengthContractionArrow, lengthContractionArrow, 1.0f);
-            information.enabled = false;
+            //information.enabled = false;
         }
         else
         {
@@ -158,13 +156,20 @@ public class updateUI : MonoBehaviour
             extens_arrow1.enabled = false;
             extens_arrow2.enabled = false;
             contract_arrow.enabled = false;
-            float timeRemaining = 120 - Time.time;
-            if (timeRemaining <= 0)
+            if (feedbackDevice != "Visual") information.enabled = false;
+            else
             {
-                timeRemaining = 0;
+                float timeRemaining = 120 - Time.time;
+                if (timeRemaining <= 0)
+                {
+                    timeRemaining = 0;
+                }
+                information.text = "Time left:\n" + timeRemaining.ToString("F2") + " s";
             }
-            information.text = "Time left:\n" + timeRemaining.ToString("F2") + " s";
         }
+        print(experimentState);
+        if(experimentState == TAKING_OFF) information.text = "Right click\nfor take of";
+        else if (experimentState == LANDING) information.text = "Right click\nto land";
     }
 
     float lengthOfDistArrow()

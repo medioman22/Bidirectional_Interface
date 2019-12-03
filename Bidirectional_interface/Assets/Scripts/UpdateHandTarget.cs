@@ -5,6 +5,19 @@ using UnityEngine;
 
 public class UpdateHandTarget : MonoBehaviour
 {
+
+    const int LANDED = 0;
+    const int TAKING_OFF = 1;
+    const int REACHING_HEIGHT = 2;
+    const int FLYING = 3;
+    const int LANDING = 4;
+    const int GAME_OVER = 9;
+
+    const int GO_TO_FIRST_WAYPOINT = 5;
+    const int EXTENSION = 6;
+    const int WAYPOINT_NAV = 7;
+    const int CONTRACTION = 8;
+
     public enum Feedback{Glove, Bracelets, Visual};
 
     public Feedback feedback;
@@ -29,7 +42,7 @@ public class UpdateHandTarget : MonoBehaviour
     [HideInInspector]
     public int droneState = LANDED;
     [HideInInspector]
-    public int experimentState = LANDED;
+    public int experimentState = TAKING_OFF;
 
     public float handRoomScaling = 8.0f;
 
@@ -82,7 +95,7 @@ public class UpdateHandTarget : MonoBehaviour
     public Vector3 CenterOfMass;
     private float AccelerationMax = 0.5f;
     private bool masterExist = false;
-    private float delta_K_coh = 0.012f;
+    private float delta_K_coh = 0.01f;
     private float take_off_height = 0.50f;
     private GameObject[] droneTargets = new GameObject[5];
     private GameObject[] allWaypoints;
@@ -99,16 +112,7 @@ public class UpdateHandTarget : MonoBehaviour
 
     private float fixedYaw = 0.0f;
 
-    const int LANDED = 0;
-    const int TAKING_OFF = 1;
-    const int REACHING_HEIGHT = 2;
-    const int FLYING = 3;
-    const int LANDING = 4;
 
-    const int GO_TO_FIRST_WAYPOINT = 5;
-    const int EXTENSION = 6;
-    const int WAYPOINT_NAV = 7;
-    const int CONTRACTION = 8;
     // Start is called before the first frame update
     void Start()
     {
@@ -149,7 +153,8 @@ public class UpdateHandTarget : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        experimentTime += Time.deltaTime;
+        experimentTime += Time.fixedDeltaTime;
+        print("real time (in updateHandTarget)" + experimentTime);
         Vector3 desiredVelocity = new Vector3(0.0f, 0.0f, 0.0f);
         CenterOfMass = AveragePosition();
 
@@ -317,11 +322,11 @@ public class UpdateHandTarget : MonoBehaviour
                                     if (allWaypoints[i].GetComponent<CreateWaypoint>().waypointNumber == currentWaypoint) index = i;
                                 }
                                 nextWaypoint = allWaypoints[index].transform.GetChild(0).transform.position;
-                                targetHeight = nextWaypoint.y;
+                                targetHeight = nextWaypoint.y + 0.5f;
                                 distanceToWaypoint = (nextWaypoint - CenterOfMass);
                                 if (Mathf.Abs(distanceToWaypoint.x) < 0.1 * SimulationData.max_distance_error && Mathf.Abs(distanceToWaypoint.z) < 0.1 * SimulationData.max_distance_error)
                                 {
-                                    stabilizationTime -= Time.deltaTime;
+                                    stabilizationTime -= Time.fixedDeltaTime;
                                     if (stabilizationTime < 0)
                                     {
                                         switch (currentWaypoint)
@@ -353,7 +358,7 @@ public class UpdateHandTarget : MonoBehaviour
                             extensionError = targetExtension - MaxRadiusOfSwarm();
                             if (Mathf.Abs(extensionError) < 0.1 * SimulationData.max_contraction_error)
                             {
-                                stabilizationTime -= Time.deltaTime;
+                                stabilizationTime -= Time.fixedDeltaTime;
                             if (stabilizationTime < 0)
                             {
                                 experimentState = LANDING;
@@ -390,6 +395,7 @@ public class UpdateHandTarget : MonoBehaviour
                     break;
 
                 case LANDING:
+                case GAME_OVER:
                     flying = false;
                     int j = 0;
                     foreach (GameObject drone in allDrones)
@@ -401,12 +407,14 @@ public class UpdateHandTarget : MonoBehaviour
                         drone.GetComponent<PositionControl>().target = droneTargets[j].transform;
                         j += 1;
                     }
-                    droneState = LANDED;
+                    droneState = GAME_OVER;
                     break;
+
+                
            
         }
-        if (Input.GetAxis("Mouse ScrollWheel") > 0f) K_coh += delta_K_coh;// forward
-        else if (Input.GetAxis("Mouse ScrollWheel") < 0f) K_coh -= delta_K_coh; // forward
+        if (Input.GetAxis("Mouse ScrollWheel") < 0f) K_coh += delta_K_coh;// forward
+        else if (Input.GetAxis("Mouse ScrollWheel") > 0f) K_coh -= delta_K_coh; // forward
         if (K_coh < K_coh_lower_bound) K_coh = K_coh_lower_bound;
         else if (K_coh > K_coh_upper_bound) K_coh = K_coh_upper_bound;
 
@@ -417,7 +425,7 @@ public class UpdateHandTarget : MonoBehaviour
                 droneState = TAKING_OFF;
                 stopAllMotors = 0;
             }
-            else if ((droneState == FLYING && experimentState == LANDING) || droneState == LANDING) droneState = LANDING;
+            else if ((droneState == FLYING && experimentState ==LANDING) || droneState == LANDING) droneState = LANDING;
         }
 
         if (Input.GetKey(KeyCode.R))

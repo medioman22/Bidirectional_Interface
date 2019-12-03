@@ -94,8 +94,10 @@ public class Log : MonoBehaviour
 
     private string getPath(string subjectName)
     {
+        string feedbackSystem = GameObject.Find("Swarm").GetComponent<UpdateHandTarget>().feedback.ToString();
+
 #if UNITY_EDITOR
-        return Application.dataPath + "/Logs/" + DateTime.Now.ToString("h_mm_ss")+ "_" + droneName+ "_" + subjectName+ ".csv";
+        return Application.dataPath + "/Logs/" + DateTime.Now.ToString("h_mm_ss")+ "_" + droneName+ "_" + subjectName + "_" + feedbackSystem + ".csv";
 #elif UNITY_ANDROID
             return Application.persistentDataPath+"Saved_data.csv";
 #elif UNITY_IPHONE

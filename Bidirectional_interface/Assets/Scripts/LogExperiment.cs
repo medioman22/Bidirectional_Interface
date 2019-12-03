@@ -43,7 +43,6 @@ public class LogExperiment : MonoBehaviour
         LogExtension.Add(updHandTrgt.extension);
         LogTargetExtension.Add(updHandTrgt.targetExtension);
         LogTime.Add(updHandTrgt.experimentTime);
-
         Log1stWaypointTime.Add(updHandTrgt.firstWaypointTime);
         LogExtensionTime.Add(updHandTrgt.extensionTime);
         Log2ndWaypointTime.Add(updHandTrgt.secondWaypointTime);
@@ -54,7 +53,6 @@ public class LogExperiment : MonoBehaviour
         LogDistanceError.Add(distance.magnitude);
         LogExtensionError.Add(updHandTrgt.extensionError);
         LogHeightErrorTime.Add(updHandTrgt.reachingHeightTime);
-        print(updHandTrgt.experimentTime);
     }
 
 
@@ -101,8 +99,9 @@ public class LogExperiment : MonoBehaviour
 
     private string getPath(string subjectName)
     {
+        string feedbackSystem = GameObject.Find("Swarm").GetComponent<UpdateHandTarget>().feedback.ToString();
 #if UNITY_EDITOR
-        return Application.dataPath + "/Logs/"  + DateTime.Now.ToString("h_mm_ss") + "_" + subjectName  + ".csv";
+        return Application.dataPath + "/Logs/"  + DateTime.Now.ToString("h_mm_ss") + "_" + subjectName + "_"+ feedbackSystem + ".csv";
 #elif UNITY_ANDROID
             return Application.persistentDataPath+"Saved_data.csv";
 #elif UNITY_IPHONE

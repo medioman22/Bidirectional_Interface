@@ -76,11 +76,11 @@ motorsIndexes = {  "up" : 4,
                     "extensionRight" : 7}
 
 #The first number defines the bracelet, the second the motor(s)
-motorsIndexesBracelet = {"up" : [2,2],
+motorsIndexesBracelet = {"up" : [2,0],
                     "back" : [1,0],
                     "front" : [1,2],
                     "right" : [1,3],
-                    "down" : [2,0],
+                    "down" : [2,2],
                     "left" : [1,1],
                     "extensionLeft" : [2,1],
                     "extensionRight" : [2,3]
@@ -229,7 +229,7 @@ if (haptic_device == GLOVE) :
         #####################################
 # configure the bluetooth serial connections 
 elif(haptic_device == BRACELETS) : 
-    ser = [serial.Serial('COM26', 9600) , serial.Serial('COM24', 9600)]#COMx correspond to the bluetooth port that is used by the RN42 bluetooth transmitter
+    ser = [serial.Serial('COM13', 9600) , serial.Serial('COM12', 9600)]#COMx correspond to the bluetooth port that is used by the RN42 bluetooth transmitter
 
 
 # MAIN LOOP

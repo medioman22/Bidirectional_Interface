@@ -17,7 +17,7 @@ import tkinter as tk
 from tkinter import ttk
 from PIL import ImageTk, Image
 import threading
-
+import mouse
 
 DISTANCE_THRESHOLD = 0.5
 MAXIMUM_MOTOR_INPUT = 99
@@ -59,8 +59,8 @@ motorsIndexes = {  "up" : 4,
                     }
 
 #The first number defines the bracelet, the second the motor(s)
-motorsIndexesBracelet = {"up" : [2,2],
-                    "down" : [2,0],
+motorsIndexesBracelet = {"up" : [2,0],
+                    "down" : [2,2],
                     "back" : [1,0],
                     "front" : [1,2],
                     "right" : [1,3],
@@ -75,7 +75,6 @@ I2C_interface = ""
 
 #haptic_device = BRACELETS
     
-
 ##Setup communication with glove (and BBGW)
 def connect():
     global ser, c, I2C_interface
@@ -103,8 +102,8 @@ def connect():
             #####################################
     # configure the bluetooth serial connections 
     elif haptic_device == BRACELETS : 
-        ser = [serial.Serial('COM24', 9600) , serial.Serial('COM26', 9600)] #COMx correspond to the bluetooth port that is used by the RN42 bluetooth transmitter
-        print("hello")
+        ser = [serial.Serial('COM13', 9600) , serial.Serial('COM12', 9600)] #COMx correspond to the bluetooth port that is used by the RN42 bluetooth transmitter
+
 
 
 def shutDownAllMotors():
@@ -151,7 +150,7 @@ def sendIntensitiesToBracelet():
     
     
 def sendCueThread():
-    global direction
+    global direction, intensity 
     intensity = getMotorIntensity(100,150)
     while(True):
         print(direction)
@@ -182,33 +181,39 @@ def sendCueThread():
 def comboCallback(event):
     global haptic_device
     haptic_device =str(comboDevice.get())
-    connect() #connect to the chosen haptic_device       
+     #connect to the chosen haptic_device       
     next_img()
     comboDevice.destroy()
-    btn.pack()
-
+    #btn.pack()
+    connect()
     t = threading.Thread(name = "sendCue", target = sendCueThread)
     t.start()
 
 def next_img():
+    global intensity
     # load the image and display it
     global direction
     try:
         img = next(images)  # get the next image from the iterator
+        direction = img
+        img = Image.open(folder + img+extension)
+        img = ImageTk.PhotoImage(img)
+        panel.img = img  
+        # keep a reference so it's not garbage collected
+        panel['image'] = img   
     except StopIteration:
+#        btn.destroy()
+        shutDownAllMotors()
+        intensity = 0;
         return  # if there are no more images, do nothing
-    direction = img
-    img = Image.open(folder + img+extension)
-    img = ImageTk.PhotoImage(img)
-    panel.img = img  
-    # keep a reference so it's not garbage collected
-    panel['image'] = img      
+       
     
 def on_closing():
     global ser
     try :
         ser[0].close()
         ser[1].close()
+        shutDownAllMotors()
     except :
         print("Connection not established")
     win.destroy()
@@ -244,8 +249,8 @@ comboDevice.pack()
 comboDevice.bind("<<ComboboxSelected>>",comboCallback )
 
 
-btn = tk.Button(text='Next image', command=next_img)
-
+#btn = tk.Button(text='Next image', command=next_img)
+mouse.on_right_click(next_img, args=())
 
 
 
