@@ -90,66 +90,67 @@ motorsIndexesBracelet = {"up" : [2,0],
 intensitiesMotorsBracelet = {1 : [0,0,0,0], 2 : [0,0,0,0]}
 
 def sendHeightCue(error):
-    motor_intensity = getMotorIntensity(error, information_dict["max_height_error"])
     if error < 0 :
-        turnOnMotors(["up"], motor_intensity)
-        turnOnMotors(["down"], 0)
+        turnOnMotors(["up"], error, information_dict["max_height_error"])
+        turnOnMotors(["down"], 0, information_dict["max_height_error"])
     else :
-        turnOnMotors(["down"], motor_intensity)
-        turnOnMotors(["up"], 0)
+        turnOnMotors(["down"], error, information_dict["max_height_error"])
+        turnOnMotors(["up"], 0, information_dict["max_height_error"])
     
-    turnOnMotors(["front","back"],0)
-    turnOnMotors(["left", "right"], 0)   
+#    turnOnMotors(["front","back"],0, information_dict["max_distance_error"])
+#    turnOnMotors(["left", "right"], 0, information_dict["max_distance_error"])  
 
 def sendDirectionalCue(distanceToWaypoint):
     x_distance = distanceToWaypoint[0]
     y_distance = distanceToWaypoint[2]
     send1DirectionalCue(x_distance, "front", "back")
     send1DirectionalCue(y_distance, "left", "right")    
-    turnOnMotors(["up","down"],0)
+#    turnOnMotors(["up","down"],0,information_dict["max_height_error"])
 
 def send1DirectionalCue(distance, direction, negative_direction):
-    motor_intensity = getMotorIntensity(distance, information_dict["max_distance_error"])
     if distance < 0:
-        turnOnMotors([negative_direction], motor_intensity)
-        turnOnMotors([direction], 0)
+        turnOnMotors([negative_direction], distance, information_dict["max_distance_error"])
+        turnOnMotors([direction], 0, information_dict["max_distance_error"])
     elif distance > 0:
-        turnOnMotors([direction], motor_intensity)
-        turnOnMotors([negative_direction], 0)
+        turnOnMotors([direction], distance, information_dict["max_distance_error"])
+        turnOnMotors([negative_direction], 0, information_dict["max_distance_error"])
 
 def shutDownAllMotors():
-    turnOnMotors(allIndexes,0)
+    turnOnMotors(allIndexes,0,1)
     
-def turnOnMotors(list_of_motors, intensity):
-    for key in motorsIndexes:
-        if key in list_of_motors:
-            
-            if haptic_device == GLOVE: 
-                if motorsIndexes[key] == 6 :  intensity *=0.65
-                c.sendMessages([json.dumps({"dim":  motorsIndexes[key], "value": intensity, "type": "Set", "name": I2C_interface})])
+       
+def turnOnMotors(list_of_motors, error, max_error):
+    global I2C_interface,c
+    for key in list_of_motors:
+        if haptic_device == GLOVE: 
+#                if motorsIndexes[key] == 6 :  intensity *=0.65
+            c.sendMessages([json.dumps({"dim":  motorsIndexes[key], "value": getMotorIntensity(error, max_error, ''), "type": "Set", "name": I2C_interface})])
 #                time.sleep(0.005)
-            elif haptic_device == BRACELETS: 
-                if key != "front":
-                    intensitiesMotorsBracelet[motorsIndexesBracelet[key][0]] [motorsIndexesBracelet[key][1]] = round(intensity)
-                else :
-                    intensitiesMotorsBracelet[motorsIndexesBracelet[key][0]] [motorsIndexesBracelet[key][1]] = round(intensity+0.3*(HIGHEST_INTENSITY_BRACELET-LOWEST_INTENSITY_BRACELET))
-    if haptic_device == BRACELETS:
-        print("sending intensity")
-        sendIntensitiesToBracelet()
+        elif haptic_device == BRACELETS:    
+            intensitiesMotorsBracelet[motorsIndexesBracelet[key][0]] [motorsIndexesBracelet[key][1]] = getMotorIntensity(error, max_error, key)
+    if haptic_device == BRACELETS: sendIntensitiesToBracelet()   
             
-def getMotorIntensity( error, max_error):
+
+def getMotorIntensity( error, max_error, key_motor):
     if abs(error) < 0.1*max_error : error = 0
     if haptic_device == BRACELETS : 
-        highest_intensity = 0.7*HIGHEST_INTENSITY_BRACELET
-        lowest_intensity = LOWEST_INTENSITY_BRACELET
+        if key_motor == "front" or key_motor == "back" :
+            highest_intensity = HIGHEST_INTENSITY_BRACELET
+            lowest_intensity = HIGHEST_INTENSITY_BRACELET- (1-correction_factor)*(HIGHEST_INTENSITY_BRACELET-LOWEST_INTENSITY_BRACELET)
+        elif key_motor == "left" or key_motor == "right":
+            highest_intensity = LOWEST_INTENSITY_BRACELET + correction_factor *  (HIGHEST_INTENSITY_BRACELET-LOWEST_INTENSITY_BRACELET)       
+            lowest_intensity = LOWEST_INTENSITY_BRACELET
+        else:
+            highest_intensity = HIGHEST_INTENSITY_BRACELET
+            lowest_intensity = LOWEST_INTENSITY_BRACELET
     elif haptic_device == GLOVE :
         highest_intensity = HIGHEST_INTENSITY_GLOVE
         lowest_intensity = LOWEST_INTENSITY_GLOVE
-    motor_intensity = round(abs(error*(highest_intensity - lowest_intensity)/max_error) + lowest_intensity)
+    
+    motor_intensity = abs(error*(highest_intensity - lowest_intensity)/max_error) + lowest_intensity
     if motor_intensity <= lowest_intensity: motor_intensity = 0
     if motor_intensity >= highest_intensity: motor_intensity = highest_intensity
-    return motor_intensity
-
+    return round(motor_intensity)    
 
 ##Haptic feedback with bracelet 
 def sendIntensitiesToBracelet():
@@ -183,11 +184,44 @@ def fillInfoDict(current_data):
     
     information_dict["haptic_device"] = device
     
+def connect_to_feedback_system():
+    global ser, correction_factor, I2C_interface, c
+    if (haptic_device == GLOVE) :
+        if with_connection:
+            print("Establishing the connection to the BBG device...")
+        else:
+            print("Ignoring the connection...")
+        
+        
+        if with_connection:
+            sys.path.insert(1, os.path.join(sys.path[0], '../Interface/src'))
+            from connections.beagleboneGreenWirelessConnection import BeagleboneGreenWirelessConnection
+        
+            ######## Setup BBG connection #######
+            c = BeagleboneGreenWirelessConnection()
+            I2C_interface = "PCA9685@I2C[1]"
+            c.connect()
+            print('Status: {}'.format(c.getState()))
+    
+            time.sleep(3)
+            c.sendMessages([json.dumps({"type": "Settings", "name": I2C_interface, "scan": False})])
+            c.sendMessages([json.dumps({"type": "Settings", "name": I2C_interface, "dutyFrequency": '50 Hz'})])
+    #        c.sendMessages([json.dumps({"type": "Settings", "name": I2C_interface, "Frequency": '100 Hz'})])
+            #####################################
+    # configure the bluetooth serial connections 
+    elif(haptic_device == BRACELETS) : 
+        with open(r'com_port.yaml') as file:
+            param_bracelets = yaml.load(file, Loader=yaml.FullLoader)
+            correction_factor = param_bracelets['correction_factor']
+        ser = [serial.Serial('COM' + str(param_bracelets['COM']['arm']), 9600) , serial.Serial('COM' +  str(param_bracelets['COM']['forearm']), 9600)]    
+    
+#Function to close the serial port if the application is shutdown
 def signal_handler(sig, frame):
         
         try :
-            print('You pressed Ctrl+C!')
+            print('Shutting down motors and exiting!')
             shutDownAllMotors()
+            time.sleep(0.5)
             ser[0].close()
             ser[1].close()
             sys.exit(0)
@@ -198,6 +232,7 @@ def signal_handler(sig, frame):
 signal.signal(signal.SIGINT, signal_handler)     
     
 print("Start scanning for information")
+
 
 
 information = get_data(information_socket)
@@ -217,48 +252,14 @@ if len(information):
     fillInfoDict(infoUnpacked)
 
 print(information_dict)
+
 haptic_device = information_dict["haptic_device"]
 ##Setup communication with glove (and BBGW)
-if (haptic_device == GLOVE) :
-    if with_connection:
-        print("Establishing the connection to the BBG device...")
-    else:
-        print("Ignoring the connection...")
-    
-    
-    if with_connection:
-        sys.path.insert(1, os.path.join(sys.path[0], '../Interface/src'))
-        from connections.beagleboneGreenWirelessConnection import BeagleboneGreenWirelessConnection
-    
-        ######## Setup BBG connection #######
-        c = BeagleboneGreenWirelessConnection()
-        I2C_interface = "PCA9685@I2C[1]"
-        c.connect()
-        print('Status: {}'.format(c.getState()))
 
-        time.sleep(3)
-        c.sendMessages([json.dumps({"type": "Settings", "name": I2C_interface, "scan": False})])
-        c.sendMessages([json.dumps({"type": "Settings", "name": I2C_interface, "dutyFrequency": '50 Hz'})])
-#        c.sendMessages([json.dumps({"type": "Settings", "name": I2C_interface, "Frequency": '100 Hz'})])
-        #####################################
-# configure the bluetooth serial connections 
-elif(haptic_device == BRACELETS) : 
-    with open(r'com_port.yaml') as file:
-        COM_number = yaml.load(file, Loader=yaml.FullLoader)
-    ser = [serial.Serial('COM' + str(COM_number['arm']), 9600) , serial.Serial('COM' +  str(COM_number['forearm']), 9600)]
+connect_to_feedback_system()
 
 # MAIN LOOP
 while(True):
-    if keyboard.is_pressed('q'): 
-        try: 
-            
-            ser[0].close()
-            ser[1].close()
-            print("exiting...")
-            sys.exit(0)
-            break
-        except:
-            print("Could not close port...")
     information = get_data(information_socket)
     # had to sleep otherwise hardware overwhelmed
     time.sleep(0.05)
@@ -266,43 +267,36 @@ while(True):
         
         # send only the last packet otherwise too many packets sent too fast
         packet = information[-1]
-        
         strs = ''
-        # 15 floats (5 drones and 3 information each) + 1 for dronestate
-
         for i in range(0, NB_OF_INFORMATION):
             strs += 'f'
         # unpack.
         infoUnpacked = struct.unpack(strs, packet)
         # parse the data
-        #fillinformationDict(posUnpacked)
-        #positionList = list(information_dict.values())
         fillInfoDict(infoUnpacked)
 
         print(information_dict)
   
         if information_dict["emergency_stop"] == 0:
-
             experiment_state = information_dict["experiment_state"]
-            
             if experiment_state == EXTENSION or experiment_state == CONTRACTION:
                 error = information_dict["extension_error"]
                 motor_intensity = getMotorIntensity(error, information_dict["max_extension_error"])
                 up_time = 3/10
                 if error > 0 :
-                    turnOnMotors(["up"], motor_intensity)
+                    turnOnMotors(["up"], error, information_dict["max_extension_error"])
                     time.sleep(up_time)
-                    turnOnMotors(["up"], 0)
-                    turnOnMotors(["extensionLeft", "extensionRight"], motor_intensity)
+                    turnOnMotors(["up"], 0,information_dict["max_extension_error"])
+                    turnOnMotors(["extensionLeft", "extensionRight"], error, information_dict["max_extension_error"])
                     time.sleep(up_time)
-                    turnOnMotors(["extensionLeft", "extensionRight"], 0)
+                    turnOnMotors(["extensionLeft", "extensionRight"], 0,information_dict["max_extension_error"])
                 else :
-                    turnOnMotors(["extensionLeft", "extensionRight"], motor_intensity)
+                    turnOnMotors(["extensionLeft", "extensionRight"], error, information_dict["max_extension_error"])
                     time.sleep(up_time)
-                    turnOnMotors(["extensionLeft", "extensionRight"], 0)
-                    turnOnMotors(["up"], motor_intensity)
+                    turnOnMotors(["extensionLeft", "extensionRight"], 0,information_dict["max_extension_error"])
+                    turnOnMotors(["up"], error, information_dict["max_extension_error"])
                     time.sleep(up_time)
-                    turnOnMotors(["up"], 0)
+                    turnOnMotors(["up"], 0,information_dict["max_extension_error"])
                 time.sleep(0.5)
             elif experiment_state == GO_TO_FIRST_WAYPOINT or experiment_state == WAYPOINT_NAV:
                 if abs( information_dict["height_error"]) > 0.1*information_dict["max_height_error"] : 
@@ -311,3 +305,7 @@ while(True):
                     sendDirectionalCue(information_dict["next_waypoint_direction"])
         else :
             shutDownAllMotors()
+            ser[0].close()
+            ser[1].close()
+ser[0].close()
+ser[1].close()
