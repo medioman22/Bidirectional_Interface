@@ -9,6 +9,7 @@ import os
 import serial
 import yaml
 import signal
+import keyboard
 
 DISTANCE_THRESHOLD = 0.5
 MAXIMUM_MOTOR_INPUT = 99
@@ -183,11 +184,13 @@ def fillInfoDict(current_data):
     information_dict["haptic_device"] = device
     
 def signal_handler(sig, frame):
-        print('You pressed Ctrl+C!')
+        
         try :
+            print('You pressed Ctrl+C!')
+            shutDownAllMotors()
             ser[0].close()
             ser[1].close()
-            shutDownAllMotors()
+            sys.exit(0)
         except :
             print("Connection not established")
             sys.exit(0)
@@ -246,6 +249,16 @@ elif(haptic_device == BRACELETS) :
 
 # MAIN LOOP
 while(True):
+    if keyboard.is_pressed('q'): 
+        try: 
+            
+            ser[0].close()
+            ser[1].close()
+            print("exiting...")
+            sys.exit(0)
+            break
+        except:
+            print("Could not close port...")
     information = get_data(information_socket)
     # had to sleep otherwise hardware overwhelmed
     time.sleep(0.05)
