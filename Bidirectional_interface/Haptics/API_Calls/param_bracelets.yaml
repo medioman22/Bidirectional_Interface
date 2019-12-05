@@ -1,0 +1,8 @@
+COM:
+    forearm: 5
+    arm: 8
+    
+correction_factor: 0.7
+
+highest_intensity: 255
+lowest_intensity: 50

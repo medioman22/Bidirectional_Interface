@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 170076734}
-  m_IndirectSpecularColor: {r: 0.43704656, g: 0.4847455, b: 0.56500673, a: 1}
+  m_IndirectSpecularColor: {r: 0.4370464, g: 0.48474503, b: 0.5650065, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -7490,7 +7490,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   feedback: 1
   runningExperiment: 1
-  useController: 0
+  useController: 1
   controllerSpeed: 0.025
   handTarget: {fileID: 0}
   allDrones: []

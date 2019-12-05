@@ -10,13 +10,9 @@ import matplotlib.pyplot as plt
 import os
 
 os.chdir('..\Bidirectional_interface\Assets\Logs')
-
 d = os.listdir('.')
-
-
-data = pd.read_csv('6_27_45_sub1_matteo_Glove.csv')
-
-t = data['target_extension']
+data = pd.read_csv('2_08_47__Visual.csv')
+t = data['time']
 
 plt.plot(t, data['position_x'])
 plt.plot(t, data['position_y'])

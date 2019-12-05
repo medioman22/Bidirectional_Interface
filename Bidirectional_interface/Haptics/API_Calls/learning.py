@@ -104,80 +104,93 @@ def connect():
             #####################################
     # configure the bluetooth serial connections 
     elif haptic_device == BRACELETS : 
-        with open(r'com_port.yaml') as file:
-            COM_number = yaml.load(file, Loader=yaml.FullLoader)
-        ser = [serial.Serial('COM' + str(COM_number['arm']), 9600) , serial.Serial('COM' +  str(COM_number['forearm']), 9600)] #COMx correspond to the bluetooth port that is used by the RN42 bluetooth transmitter
+        get_bracelet_param()
 
-
-
+def get_bracelet_param():
+    global HIGHEST_INTENSITY_BRACELET, LOWEST_INTENSITY_BRACELET, correction_factor, ser
+    with open(r'param_bracelets.yaml') as file:
+        param_bracelets = yaml.load(file, Loader=yaml.FullLoader)
+        correction_factor = param_bracelets['correction_factor']
+        LOWEST_INTENSITY_BRACELET = param_bracelets["lowest_intensity"]
+        HIGHEST_INTENSITY_BRACELET = param_bracelets["highest_intensity"]
+        ser = [serial.Serial('COM' + str(param_bracelets['COM']['arm']), 9600) , serial.Serial('COM' +  str(param_bracelets['COM']['forearm']), 9600)]    
+        
 def shutDownAllMotors():
-    turnOnMotors(allIndexes,0)
+    turnOnMotors(allIndexes,0,1)
     
-def turnOnMotors(list_of_motors, intensity):
-    global c, I2C_interface
-    for key in motorsIndexes:
-        if key in list_of_motors:
-            
-            if haptic_device == GLOVE: 
-                if motorsIndexes[key] == 6 :  intensity *=0.65
-                c.sendMessages([json.dumps({"dim":  motorsIndexes[key], "value": intensity, "type": "Set", "name": I2C_interface})])
+def turnOnMotors(list_of_motors, error, max_error):
+    global I2C_interface,c
+    for key in list_of_motors:
+        if haptic_device == GLOVE: 
+#                if motorsIndexes[key] == 6 :  intensity *=0.65
+            c.sendMessages([json.dumps({"dim":  motorsIndexes[key], "value": getMotorIntensity(error, max_error, ''), "type": "Set", "name": I2C_interface})])
 #                time.sleep(0.005)
-            elif haptic_device == BRACELETS: 
-                intensitiesMotorsBracelet[motorsIndexesBracelet[key][0]] [motorsIndexesBracelet[key][1]] = intensity
-    if haptic_device == BRACELETS:
-        print("sending intensity")
-        sendIntensitiesToBracelet()
+        elif haptic_device == BRACELETS:    
+            intensitiesMotorsBracelet[motorsIndexesBracelet[key][0]] [motorsIndexesBracelet[key][1]] = getMotorIntensity(error, max_error, key)
+    if haptic_device == BRACELETS: sendIntensitiesToBracelet()   
             
-def getMotorIntensity( error, max_error):
+
+def getMotorIntensity( error, max_error, key_motor):
+    global HIGHEST_INTENSITY_BRACELET, LOWEST_INTENSITY_BRACELET
     if abs(error) < 0.1*max_error : error = 0
     if haptic_device == BRACELETS : 
-        highest_intensity = HIGHEST_INTENSITY_BRACELET
-        lowest_intensity = LOWEST_INTENSITY_BRACELET
+        if key_motor == "front" or key_motor == "back" or key_motor == "up" or key_motor == "down" :
+            highest_intensity = HIGHEST_INTENSITY_BRACELET
+            lowest_intensity = HIGHEST_INTENSITY_BRACELET- (1-correction_factor)*(HIGHEST_INTENSITY_BRACELET-LOWEST_INTENSITY_BRACELET)
+        elif key_motor == "left" or key_motor == "right":
+            highest_intensity =  + correction_factor *  (HIGHEST_INTENSITY_BRACELET-LOWEST_INTENSITY_BRACELET)       
+            lowest_intensity = LOWEST_INTENSITY_BRACELET
+        else:
+            highest_intensity = HIGHEST_INTENSITY_BRACELET
+            lowest_intensity = LOWEST_INTENSITY_BRACELET
     elif haptic_device == GLOVE :
         highest_intensity = HIGHEST_INTENSITY_GLOVE
         lowest_intensity = LOWEST_INTENSITY_GLOVE
-    motor_intensity = round(abs(error*(highest_intensity - lowest_intensity)/max_error) + lowest_intensity)
+    
+    motor_intensity = abs(error*(highest_intensity - lowest_intensity)/max_error) + lowest_intensity
     if motor_intensity <= lowest_intensity: motor_intensity = 0
     if motor_intensity >= highest_intensity: motor_intensity = highest_intensity
-    return motor_intensity
+    return round(motor_intensity)    
 
 
 ##Haptic feedback with bracelet 
 def sendIntensitiesToBracelet():
-    global ser
-    correction_factor = 0.7#reduce the power of all the motors, except the one on the biceps (less sensitive)
-    intensityValues1 = bytearray([ord('S'), round(intensitiesMotorsBracelet[1][0]*correction_factor), round(intensitiesMotorsBracelet[1][1]*correction_factor), intensitiesMotorsBracelet[1][2], round(intensitiesMotorsBracelet[1][3]*correction_factor), ord('E')])
+    intensityValues1 = bytearray([ord('S'), intensitiesMotorsBracelet[1][0], intensitiesMotorsBracelet[1][1], intensitiesMotorsBracelet[1][2], intensitiesMotorsBracelet[1][3], ord('E')])
     intensityValues2 = bytearray([ord('S'), intensitiesMotorsBracelet[2][0], intensitiesMotorsBracelet[2][1], intensitiesMotorsBracelet[2][2], intensitiesMotorsBracelet[2][3], ord('E')])
     ser[0].write(intensityValues1)
     ser[1].write(intensityValues2)
 
     
-    
 def sendCueThread():
     global direction, intensity 
-    intensity = getMotorIntensity(100,150)
+    error_distance = 2
+    max_error_distance = 4
+
+    extension_error = 0.5
+    max_extension_error = 1
+    
     while(True):
         print(direction)
         shutDownAllMotors()
         if direction != "extend" and direction != "contract" and direction !="" :
-            turnOnMotors([direction], intensity)
+            turnOnMotors([direction], error_distance, max_error_distance)
             time.sleep(0.3)
-            turnOnMotors([direction], 0)
+            turnOnMotors([direction], 0, max_error_distance)
         elif direction == 'extend':
             print("Tryng to send extend cue")
-            turnOnMotors(["up"], intensity)
+            turnOnMotors(["up"], extension_error, max_extension_error)
             time.sleep(3/10)
-            turnOnMotors(["up"], 0)
-            turnOnMotors(["extensionLeft", "extensionRight"], intensity)
+            turnOnMotors(["up"], 0,max_extension_error)
+            turnOnMotors(["extensionLeft", "extensionRight"], extension_error, max_extension_error)
             time.sleep(3/10)
-            turnOnMotors(["extensionLeft", "extensionRight"], 0)
+            turnOnMotors(["extensionLeft", "extensionRight"], 0, max_extension_error)
         elif direction == 'contract':
-            turnOnMotors(["extensionLeft", "extensionRight"], intensity)
+            turnOnMotors(["extensionLeft", "extensionRight"], extension_error, max_extension_error)
             time.sleep(3/10)
-            turnOnMotors(["extensionLeft", "extensionRight"], 0)
-            turnOnMotors(["up"], intensity)
+            turnOnMotors(["extensionLeft", "extensionRight"], 0, max_extension_error)
+            turnOnMotors(["up"], extension_error, max_extension_error)
             time.sleep(3/10)
-            turnOnMotors(["up"], 0) 
+            turnOnMotors(["up"], 0, max_extension_error) 
         else :
             shutDownAllMotors()
         time.sleep(1)
@@ -211,28 +224,34 @@ def next_img():
         intensity = 0;
         return  # if there are no more images, do nothing
        
-    
-def on_closing():
-    global ser
+
+def signal_handler(sig, frame):
     try :
+        print('Shutting down motors and exiting!')
+        shutDownAllMotors()
+        time.sleep(0.5)
         ser[0].close()
         ser[1].close()
-        shutDownAllMotors()
+        sys.exit(0)
     except :
         print("Connection not established")
+        sys.exit(0)
     win.destroy()
-    
-def signal_handler(sig, frame):
-        print('You pressed Ctrl+C!')
-        try :
-            ser[0].close()
-            ser[1].close()
-            shutDownAllMotors()
-        except :
-            print("Connection not established")
-            sys.exit(0)
         
-signal.signal(signal.SIGINT, signal_handler)    
+signal.signal(signal.SIGINT, signal_handler)   
+    
+def on_closing():
+    try :
+        print('Shutting down motors and exiting!')
+        shutDownAllMotors()
+        time.sleep(0.5)
+        ser[0].close()
+        ser[1].close()
+        sys.exit(0)
+    except :
+        print("Connection not established")
+        sys.exit(0)
+    win.destroy()
 
 
 #for the training, the intensity is 2/3 of the max power

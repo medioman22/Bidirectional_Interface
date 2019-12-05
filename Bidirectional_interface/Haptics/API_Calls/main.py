@@ -20,9 +20,6 @@ DESIRED_HEIGHT = 1.0
 LOWEST_INTENSITY_GLOVE = 30
 HIGHEST_INTENSITY_GLOVE = 99
 
-LOWEST_INTENSITY_BRACELET = 40
-HIGHEST_INTENSITY_BRACELET = 220
-
 
 MARGIN = 0.1
 
@@ -97,15 +94,15 @@ def sendHeightCue(error):
         turnOnMotors(["down"], error, information_dict["max_height_error"])
         turnOnMotors(["up"], 0, information_dict["max_height_error"])
     
-#    turnOnMotors(["front","back"],0, information_dict["max_distance_error"])
-#    turnOnMotors(["left", "right"], 0, information_dict["max_distance_error"])  
+    turnOnMotors(["front","back"],0, information_dict["max_distance_error"])
+    turnOnMotors(["left", "right"], 0, information_dict["max_distance_error"])  
 
 def sendDirectionalCue(distanceToWaypoint):
     x_distance = distanceToWaypoint[0]
     y_distance = distanceToWaypoint[2]
     send1DirectionalCue(x_distance, "front", "back")
     send1DirectionalCue(y_distance, "left", "right")    
-#    turnOnMotors(["up","down"],0,information_dict["max_height_error"])
+    turnOnMotors(["up","down"],0,information_dict["max_height_error"])
 
 def send1DirectionalCue(distance, direction, negative_direction):
     if distance < 0:
@@ -132,13 +129,16 @@ def turnOnMotors(list_of_motors, error, max_error):
             
 
 def getMotorIntensity( error, max_error, key_motor):
+    global HIGHEST_INTENSITY_BRACELET, LOWEST_INTENSITY_BRACELET
     if abs(error) < 0.1*max_error : error = 0
     if haptic_device == BRACELETS : 
-        if key_motor == "front" or key_motor == "back" :
+        if key_motor == "front" or key_motor == "back" or key_motor == "up" or key_motor == "down" :
             highest_intensity = HIGHEST_INTENSITY_BRACELET
-            lowest_intensity = HIGHEST_INTENSITY_BRACELET- (1-correction_factor)*(HIGHEST_INTENSITY_BRACELET-LOWEST_INTENSITY_BRACELET)
+#            lowest_intensity = HIGHEST_INTENSITY_BRACELET- (1-correction_factor)*(HIGHEST_INTENSITY_BRACELET-LOWEST_INTENSITY_BRACELET)
+            lowest_intensity = LOWEST_INTENSITY_BRACELET
+
         elif key_motor == "left" or key_motor == "right":
-            highest_intensity = LOWEST_INTENSITY_BRACELET + correction_factor *  (HIGHEST_INTENSITY_BRACELET-LOWEST_INTENSITY_BRACELET)       
+            highest_intensity =  + correction_factor *  (HIGHEST_INTENSITY_BRACELET-LOWEST_INTENSITY_BRACELET)       
             lowest_intensity = LOWEST_INTENSITY_BRACELET
         else:
             highest_intensity = HIGHEST_INTENSITY_BRACELET
@@ -185,7 +185,7 @@ def fillInfoDict(current_data):
     information_dict["haptic_device"] = device
     
 def connect_to_feedback_system():
-    global ser, correction_factor, I2C_interface, c
+    global correction_factor, I2C_interface, c
     if (haptic_device == GLOVE) :
         if with_connection:
             print("Establishing the connection to the BBG device...")
@@ -210,11 +210,17 @@ def connect_to_feedback_system():
             #####################################
     # configure the bluetooth serial connections 
     elif(haptic_device == BRACELETS) : 
-        with open(r'com_port.yaml') as file:
-            param_bracelets = yaml.load(file, Loader=yaml.FullLoader)
-            correction_factor = param_bracelets['correction_factor']
+        get_bracelet_param()
+
+def get_bracelet_param():
+    global HIGHEST_INTENSITY_BRACELET, LOWEST_INTENSITY_BRACELET, correction_factor, ser
+    with open(r'param_bracelets.yaml') as file:
+        param_bracelets = yaml.load(file, Loader=yaml.FullLoader)
+        correction_factor = param_bracelets['correction_factor']
+        LOWEST_INTENSITY_BRACELET = param_bracelets["lowest_intensity"]
+        HIGHEST_INTENSITY_BRACELET = param_bracelets["highest_intensity"]
         ser = [serial.Serial('COM' + str(param_bracelets['COM']['arm']), 9600) , serial.Serial('COM' +  str(param_bracelets['COM']['forearm']), 9600)]    
-    
+        
 #Function to close the serial port if the application is shutdown
 def signal_handler(sig, frame):
         
@@ -232,8 +238,6 @@ def signal_handler(sig, frame):
 signal.signal(signal.SIGINT, signal_handler)     
     
 print("Start scanning for information")
-
-
 
 information = get_data(information_socket)
 while not len(information):
@@ -281,7 +285,6 @@ while(True):
             experiment_state = information_dict["experiment_state"]
             if experiment_state == EXTENSION or experiment_state == CONTRACTION:
                 error = information_dict["extension_error"]
-                motor_intensity = getMotorIntensity(error, information_dict["max_extension_error"])
                 up_time = 3/10
                 if error > 0 :
                     turnOnMotors(["up"], error, information_dict["max_extension_error"])
@@ -307,5 +310,6 @@ while(True):
             shutDownAllMotors()
             ser[0].close()
             ser[1].close()
+shutDownAllMotors()
 ser[0].close()
 ser[1].close()

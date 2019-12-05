@@ -26,6 +26,10 @@ public class LogExperiment : MonoBehaviour
     private List<float> LogHeightErrorTime = new List<float>();
     private List<string[]> LogList = new List<string[]>();
 
+    const int GAME_OVER = 9;
+    const int LANDED = 0;
+    const int FLYING = 3;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -36,25 +40,27 @@ public class LogExperiment : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
-        LogCenterOfMass.Add(updHandTrgt.CenterOfMass);
-        LogNextWaypoint.Add(updHandTrgt.nextWaypoint);
+        if (updHandTrgt.experimentState != GAME_OVER && updHandTrgt.droneState == FLYING)
+        {
+            LogCenterOfMass.Add(updHandTrgt.CenterOfMass);
+            LogNextWaypoint.Add(updHandTrgt.nextWaypoint);
+            LogTime.Add(updHandTrgt.experimentTime);
+            LogExtension.Add(updHandTrgt.extension);
+            LogTargetExtension.Add(updHandTrgt.targetExtension);
 
-        LogTime.Add(updHandTrgt.experimentTime);
-        LogExtension.Add(updHandTrgt.extension);
-        LogTargetExtension.Add(updHandTrgt.targetExtension);
-        
-        Log1stWaypointTime.Add(updHandTrgt.firstWaypointTime);
-        LogExtensionTime.Add(updHandTrgt.extensionTime);
-        Log2ndWaypointTime.Add(updHandTrgt.secondWaypointTime);
-        Log3ndWaypointTime.Add(updHandTrgt.thirdWaypointTime);
-        LogContractionTime.Add(updHandTrgt.contractionTime);
-        LogHeightError.Add(updHandTrgt.heightError);
-        Vector2 distance = new Vector2(updHandTrgt.distanceToWaypoint.x, updHandTrgt.distanceToWaypoint.z);
-        LogDistanceError.Add(distance.magnitude);
-        LogExtensionError.Add(updHandTrgt.extensionError);
-        LogHeightErrorTime.Add(updHandTrgt.reachingHeightTime);
+            Log1stWaypointTime.Add(updHandTrgt.firstWaypointTime);
+            LogExtensionTime.Add(updHandTrgt.extensionTime);
+            Log2ndWaypointTime.Add(updHandTrgt.secondWaypointTime);
+            Log3ndWaypointTime.Add(updHandTrgt.thirdWaypointTime);
+            LogContractionTime.Add(updHandTrgt.contractionTime);
+            LogHeightError.Add(updHandTrgt.heightError);
+            Vector2 distance = new Vector2(updHandTrgt.distanceToWaypoint.x, updHandTrgt.distanceToWaypoint.z);
+            LogDistanceError.Add(distance.magnitude);
+            LogExtensionError.Add(updHandTrgt.extensionError);
+            LogHeightErrorTime.Add(updHandTrgt.reachingHeightTime);
+        }
     }
 
 
@@ -67,9 +73,9 @@ public class LogExperiment : MonoBehaviour
         for (int i = 0; i < LogCenterOfMass.Count; i++)
         {
             string[] LogArray = positionInto3DArray(new List<Vector3> { LogCenterOfMass[i], LogNextWaypoint[i] });
-            LogArray[6] = LogExtension[i].ToString();
-            LogArray[7] = LogTargetExtension[i].ToString();
-            LogArray[8] = LogTime[i].ToString();
+            LogArray[6] = LogTime[i].ToString(); 
+            LogArray[7] = LogExtension[i].ToString(); 
+            LogArray[8] = LogTargetExtension[i].ToString();
             LogArray[9] = Log1stWaypointTime[i].ToString();
             LogArray[10] = LogExtensionTime[i].ToString();
             LogArray[11] = Log2ndWaypointTime[i].ToString();

@@ -22,7 +22,7 @@ public class UpdateHandTarget : MonoBehaviour
 
     public Feedback feedback;
     public bool runningExperiment = false;
-    public bool useController = true;
+    public bool useController;
 
     public float controllerSpeed = 0.0025f;
        
@@ -381,8 +381,10 @@ public class UpdateHandTarget : MonoBehaviour
                         drone.GetComponent<PositionControl>().target = droneTargets[j].transform;
                         j += 1;
                     }
+                    experimentState = GAME_OVER;
                     droneState = GAME_OVER;
                     break;
+
 
                 
            
@@ -399,7 +401,7 @@ public class UpdateHandTarget : MonoBehaviour
                 droneState = TAKING_OFF;
                 stopAllMotors = 0;
             }
-            else if ((droneState == FLYING && experimentState ==LANDING) || droneState == LANDING) droneState = LANDING;
+            //else if ((droneState == FLYING && experimentState ==LANDING) || droneState == LANDING) droneState = LANDING;
         }
 
         if (Input.GetKey(KeyCode.R))
