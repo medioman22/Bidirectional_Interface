@@ -1,6 +1,6 @@
 COM:
-    forearm: 5
-    arm: 8
+    right_arm: 16
+    left_arm: 15
     
 correction_factor: 0.7
 

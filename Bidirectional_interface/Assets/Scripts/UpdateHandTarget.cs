@@ -295,7 +295,7 @@ public class UpdateHandTarget : MonoBehaviour
                                     if (allWaypoints[i].GetComponent<CreateWaypoint>().waypointNumber == currentWaypoint) index = i;
                                 }
                                 nextWaypoint = allWaypoints[index].transform.GetChild(0).transform.position;
-                                targetHeight = nextWaypoint.y + 0.5f;
+                                targetHeight = nextWaypoint.y + 1.0f;
                                 distanceToWaypoint = (nextWaypoint - CenterOfMass);
                                 if (Mathf.Abs(distanceToWaypoint.x) < 0.1 * SimulationData.max_distance_error && Mathf.Abs(distanceToWaypoint.z) < 0.1 * SimulationData.max_distance_error)
                                 {

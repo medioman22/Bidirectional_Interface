@@ -219,7 +219,7 @@ def get_bracelet_param():
         correction_factor = param_bracelets['correction_factor']
         LOWEST_INTENSITY_BRACELET = param_bracelets["lowest_intensity"]
         HIGHEST_INTENSITY_BRACELET = param_bracelets["highest_intensity"]
-        ser = [serial.Serial('COM' + str(param_bracelets['COM']['arm']), 9600) , serial.Serial('COM' +  str(param_bracelets['COM']['forearm']), 9600)]    
+        ser = [serial.Serial('COM' + str(param_bracelets['COM']['left_arm']), 9600) , serial.Serial('COM' +  str(param_bracelets['COM']['right_arm']), 9600)]    
         
 #Function to close the serial port if the application is shutdown
 def signal_handler(sig, frame):

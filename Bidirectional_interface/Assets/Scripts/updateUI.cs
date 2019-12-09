@@ -145,6 +145,7 @@ public class updateUI : MonoBehaviour
 
             extens_arrow1.rectTransform.localScale = new Vector3(lengthExtensionArrow, lengthExtensionArrow, 1.0f);
             extens_arrow2.rectTransform.localScale = new Vector3(lengthExtensionArrow, lengthExtensionArrow, 1.0f);
+            print(lengthContractionArrow);
             contract_arrow.rectTransform.localScale = new Vector3(lengthContractionArrow, lengthContractionArrow, 1.0f);
             //information.enabled = false;
         }
@@ -203,8 +204,8 @@ public class updateUI : MonoBehaviour
     float lengthOfContractionArrow()
     {
         float length = 0.0f;
-        float minimal_scale = 0.2f;
-        length = contraction_error / SimulationData.max_contraction_error * 1;
+        float minimal_scale = 0.3f;
+        length = Mathf.Abs(contraction_error) / SimulationData.max_contraction_error * 1;
         if (length > 1) length = 1;
         length = length * (1- minimal_scale )+ minimal_scale; // tuning to have a bigger mininmal length of arrow
         if (Mathf.Abs(contraction_error) < 0.1 * SimulationData.max_contraction_error) length = 0;

@@ -27,11 +27,7 @@ with_connection = True
 NB_OF_DRONES = 5
 NB_OF_INFORMATION = 10
 DESIRED_HEIGHT = 1.0
-LOWEST_INTENSITY_GLOVE = 30
-HIGHEST_INTENSITY_GLOVE = 99
 
-LOWEST_INTENSITY_BRACELET = 40
-HIGHEST_INTENSITY_BRACELET = 250
 
 
 MARGIN = 0.1
@@ -44,6 +40,7 @@ CONTRACTION = 8;
 
 GLOVE = "Glove"
 BRACELETS = "Bracelets"
+closing = False
 
 positions_dict = {}
 
@@ -100,6 +97,8 @@ def connect():
             time.sleep(3)
             c.sendMessages([json.dumps({"type": "Settings", "name": I2C_interface, "scan": False})])
             c.sendMessages([json.dumps({"type": "Settings", "name": I2C_interface, "dutyFrequency": '50 Hz'})])
+            
+            get_glove_param()
     #        c.sendMessages([json.dumps({"type": "Settings", "name": I2C_interface, "Frequency": '100 Hz'})])
             #####################################
     # configure the bluetooth serial connections 
@@ -113,8 +112,14 @@ def get_bracelet_param():
         correction_factor = param_bracelets['correction_factor']
         LOWEST_INTENSITY_BRACELET = param_bracelets["lowest_intensity"]
         HIGHEST_INTENSITY_BRACELET = param_bracelets["highest_intensity"]
-        ser = [serial.Serial('COM' + str(param_bracelets['COM']['arm']), 9600) , serial.Serial('COM' +  str(param_bracelets['COM']['forearm']), 9600)]    
-        
+        ser = [serial.Serial('COM' + str(param_bracelets['COM']['left_arm']), 9600) , serial.Serial('COM' +  str(param_bracelets['COM']['right_arm']), 9600)]    
+
+def get_glove_param():
+    global HIGHEST_INTENSITY_GLOVE, LOWEST_INTENSITY_GLOVE
+    with open(r'param_glove.yaml') as file:
+        param_glove = yaml.load(file, Loader=yaml.FullLoader)        
+        HIGHEST_INTENSITY_GLOVE = param_glove["highest_intensity"]
+        LOWEST_INTENSITY_GLOVE = param_glove["lowest_intensity"]
 def shutDownAllMotors():
     turnOnMotors(allIndexes,0,1)
     
@@ -163,7 +168,7 @@ def sendIntensitiesToBracelet():
     
 def sendCueThread():
     global direction, intensity 
-    error_distance = 2
+    error_distance = 3
     max_error_distance = 4
 
     extension_error = 0.5
@@ -207,9 +212,10 @@ def comboCallback(event):
     t.start()
 
 def next_img():
-    global intensity
+    global intensity, closing, T
     # load the image and display it
     global direction
+    
     try:
         img = next(images)  # get the next image from the iterator
         direction = img
@@ -217,30 +223,21 @@ def next_img():
         img = ImageTk.PhotoImage(img)
         panel.img = img  
         # keep a reference so it's not garbage collected
-        panel['image'] = img   
+        panel['image'] = img
     except StopIteration:
-#        btn.destroy()
-        shutDownAllMotors()
+        closing = True
         intensity = 0;
         return  # if there are no more images, do nothing
        
 
 def signal_handler(sig, frame):
-    try :
-        print('Shutting down motors and exiting!')
-        shutDownAllMotors()
-        time.sleep(0.5)
-        ser[0].close()
-        ser[1].close()
-        sys.exit(0)
-    except :
-        print("Connection not established")
-        sys.exit(0)
-    win.destroy()
+    global closing
+    closing = True
         
 signal.signal(signal.SIGINT, signal_handler)   
     
 def on_closing():
+    global win
     try :
         print('Shutting down motors and exiting!')
         shutDownAllMotors()
@@ -255,8 +252,6 @@ def on_closing():
 
 
 #for the training, the intensity is 2/3 of the max power
-
-
 win = tk.Tk()
 win.geometry('1000x1000')  # set window size
 win.resizable(0, 0)  # fix window
@@ -265,18 +260,17 @@ panel = tk.Label(win)
 panel.pack()
 folder = "experiment_pictures/"
 images = ['up', 'down', 'left', 'right', 'front' , 'back', 'extend', 'contract']
+
 extension = '.png'
 images = iter(images)  # make an iterator
 
 direction = ""
-
+T = tk.Text(win, height=2, width=30)
+T.pack()
 comboDevice = ttk.Combobox(win, 
                             values=[
                                     GLOVE, 
                                     BRACELETS])
-    
-connect_to_device = False
-
 
 
 comboDevice.current()
@@ -291,8 +285,10 @@ mouse.on_right_click(next_img, args=())
 
 # show the first image
 #next_img()
+def closing_window():
+    global closing
+    closing=True
 
-
-win.protocol("WM_DELETE_WINDOW", on_closing)
+win.protocol("WM_DELETE_WINDOW", closing_window)
 
 win.mainloop()
