@@ -155,7 +155,6 @@ public class UpdateHandTarget : MonoBehaviour
     void FixedUpdate()
     {
         experimentTime += Time.fixedDeltaTime;
-        print("real time (in updateHandTarget)" + experimentTime);
         Vector3 desiredVelocity = new Vector3(0.0f, 0.0f, 0.0f);
         CenterOfMass = AveragePosition();
 
@@ -207,6 +206,8 @@ public class UpdateHandTarget : MonoBehaviour
             }
         }
 
+        
+
         if (drawHandTarget)
             handTarget.SetActive(true);
         else
@@ -242,7 +243,12 @@ public class UpdateHandTarget : MonoBehaviour
                     break;
 
                 case FLYING:
-
+                    if (handTarget.transform.position.y < 0.4f)
+                    {
+                        Vector3 minimalHeight = handTarget.transform.position;
+                        minimalHeight.y = 0.4f;
+                        handTarget.transform.position = minimalHeight;
+                    }
                     heightError = CenterOfMass.y - targetHeight;
                     extension = MaxRadiusOfSwarm();
                     switch (experimentState)

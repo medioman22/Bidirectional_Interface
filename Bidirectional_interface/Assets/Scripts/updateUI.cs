@@ -145,7 +145,6 @@ public class updateUI : MonoBehaviour
 
             extens_arrow1.rectTransform.localScale = new Vector3(lengthExtensionArrow, lengthExtensionArrow, 1.0f);
             extens_arrow2.rectTransform.localScale = new Vector3(lengthExtensionArrow, lengthExtensionArrow, 1.0f);
-            print(lengthContractionArrow);
             contract_arrow.rectTransform.localScale = new Vector3(lengthContractionArrow, lengthContractionArrow, 1.0f);
             //information.enabled = false;
         }
@@ -168,7 +167,6 @@ public class updateUI : MonoBehaviour
                 information.text = "Time left:\n" + timeRemaining.ToString("F2") + " s";
             }
         }
-        print(experimentState);
         if (experimentState == TAKING_OFF)
         {
             information.enabled = true;
