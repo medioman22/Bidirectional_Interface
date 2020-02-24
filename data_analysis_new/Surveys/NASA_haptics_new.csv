@@ -1,0 +1,28 @@
+Timestamp,subject number,Interface,How mentally demanding was the test?,How physically demanding was the test?,How hurried or rushed was the pace of the task?,How successful were you in accomplishing what you were asked to do?,"How insecure, discouraged, irritated, stresses, and annoyed were you?"
+2020/02/20 10:22:36 am CET,2,Remote,4,3,1,3,2
+2020/02/20 10:46:54 am CET,2,Motion - no haptics,4,3,2,2,2
+2020/02/20 11:05:11 am CET,2,Motion,3,3,1,4,1
+2020/02/20 11:23:45 am CET,3,Remote,4,1,2,3,1
+2020/02/20 11:34:39 am CET,3,Motion - no haptics,4,2,2,2,3
+2020/02/20 11:49:36 am CET,3,Motion,3,2,2,2,1
+2020/02/20 2:16:39 pm CET,4,Remote,4,3,2,3,2
+2020/02/20 2:26:50 pm CET,4,Motion - no haptics,5,3,3,4,3
+2020/02/20 2:38:31 pm CET,4,Motion,4,3,3,5,2
+2020/02/20 3:31:24 pm CET,5,Motion - no haptics,1,2,2,5,1
+2020/02/20 3:48:01 pm CET,5,Motion,1,2,1,5,1
+2020/02/20 3:59:20 pm CET,5,Remote,1,1,1,2,2
+2020/02/20 4:37:03 pm CET,6,Motion - no haptics,4,1,3,2,2
+2020/02/20 4:48:15 pm CET,6,Remote,3,2,3,3,2
+2020/02/20 4:56:16 pm CET,6,Motion,3,2,2,4,2
+2020/02/24 7:14:43 pm CET,1,Remote,3,1,1,2,2
+2020/02/24 7:15:04 pm CET,1,Motion - no haptics,2,2,1,3,1
+2020/02/24 7:15:15 pm CET,1,Motion,1,2,1,4,1
+2020/02/24 7:15:39 pm CET,7,Remote,3,1,2,2,3
+2020/02/24 7:16:01 pm CET,7,Motion - no haptics,2,2,2,4,2
+2020/02/24 7:16:21 pm CET,7,Motion,1,2,2,5,1
+2020/02/24 7:16:41 pm CET,8,Remote,3,2,2,3,1
+2020/02/24 7:17:03 pm CET,8,Motion - no haptics,3,1,1,3,1
+2020/02/24 7:17:15 pm CET,8,Motion,1,1,1,5,1
+2020/02/24 7:17:37 pm CET,9,Remote,4,1,2,2,3
+2020/02/24 7:18:07 pm CET,9,Motion - no haptics,3,2,1,3,2
+2020/02/24 7:18:25 pm CET,9,Motion,1,1,1,5,1
