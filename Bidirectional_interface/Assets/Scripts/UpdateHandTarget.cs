@@ -6,6 +6,7 @@ using UnityEngine;
 public class UpdateHandTarget : MonoBehaviour
 {
 
+    //Constant corresponding to the different state of the experiment
     const int LANDED = 0;
     const int TAKING_OFF = 1;
     const int REACHING_HEIGHT = 2;
@@ -23,14 +24,15 @@ public class UpdateHandTarget : MonoBehaviour
     public Feedback feedback;
     public bool runningExperiment = false;
     public bool useController;
-
     public float controllerSpeed = 0.0025f;
        
+    
     public GameObject handTarget;
     public List<GameObject> allDrones;
     public List<GameObject> slaves;
     public GameObject master;
 
+    //Coefficient used for the flocking algorithm
     public float K_coh = 0.3f;
     private float K_coh_lower_bound = 0.05f;
     private float K_coh_upper_bound = 0.5f;
@@ -41,14 +43,13 @@ public class UpdateHandTarget : MonoBehaviour
 
     [HideInInspector]
     public int droneState = LANDED;
-
     public int experimentState = TAKING_OFF;
 
     public float handRoomScaling = 8.0f;
-
     public int handRigidbodyID = 1;
     public bool drawHandTarget = true;
 
+    //Activated when the user presses the mouse button to move the swarm around
     public bool clutchActivated = false;
 
     [HideInInspector]
@@ -57,6 +58,7 @@ public class UpdateHandTarget : MonoBehaviour
 
     [HideInInspector]
     [Range(0.0f, 1.0f)]
+    //The swarm is only on the horizontal plane if flatness = 1
     public float Flatness =1.0f;
 
     [System.NonSerialized]
@@ -64,7 +66,7 @@ public class UpdateHandTarget : MonoBehaviour
     [HideInInspector]
     public float observationInputRotation = 0.0f;
 
-    //Value to be send to the user for feedback
+    //Values to be send to the user for feedback
     [HideInInspector]
     public float heightError = 0.0f;
     [HideInInspector]
@@ -73,12 +75,12 @@ public class UpdateHandTarget : MonoBehaviour
     public float extensionError = 0.0f;
     [HideInInspector]
     public float extension;
-
     [HideInInspector]
     public float targetExtension = 1.5f;
     [HideInInspector]
     public Vector3 nextWaypoint;
 
+    //Values to be logged for data analysis
     public float experimentTime = 0.0f;
     public float firstWaypointTime = 0.0f;
     public float extensionTime = 0.0f;
@@ -87,21 +89,26 @@ public class UpdateHandTarget : MonoBehaviour
     public float contractionTime = 0.0f;
     public float reachingHeightTime = 0.0f;
 
-    //This is the target to be reached during the experiment
+    //This is the target height of the waypoints to be reached during the experiment
     private float targetHeight = SimulationData.target_height;
     private float maxLandingRadius = 0.9f;
     private int currentWaypoint = 1;
 
+    //Position of the center of mass of the swarm 
     public Vector3 CenterOfMass;
     private float AccelerationMax = 0.5f;
     private bool masterExist = false;
+
+    //Value incremented when the user uses the scroll wheel to modify the expansion of the swarm
     private float delta_K_coh = 0.01f;
+
     private float take_off_height = 0.50f;
     private GameObject[] droneTargets = new GameObject[5];
     private GameObject[] allWaypoints;
     private static float fullTime = 3.0f;
     private float stabilizationTime = fullTime;
 
+    //Position of the hand captured by the moCap
     private Vector3 rawHandPosition = Vector3.zero;
     private Quaternion rawHandRotation = Quaternion.identity;
     private Vector3 oldRawHandPosition;
@@ -120,12 +127,14 @@ public class UpdateHandTarget : MonoBehaviour
         handTarget = new GameObject("Hand target");
 
         int i = 0;
+        //for each gameobject "Drone" founded
         foreach (Transform child in transform)
         {
             if (child.gameObject.tag == "Drone")
             {
                 allDrones.Add(child.gameObject);
                 var drone = allDrones.Last();
+                //The first drone founded is the master, controlled with position
                 if (!masterExist)
                 {
                     drone.GetComponent<VelocityControl>().isSlave = false;
@@ -133,6 +142,7 @@ public class UpdateHandTarget : MonoBehaviour
                     masterExist = true;
                     master = child.gameObject;
                 }
+                //The other drones are slaves, controlled with position
                 else drone.GetComponent<VelocityControl>().isSlave = true;
                 droneTargets[i] = new GameObject("drone" + i.ToString());
                 droneTargets[i].transform.position = drone.transform.position;
@@ -140,10 +150,12 @@ public class UpdateHandTarget : MonoBehaviour
                 i += 1;
             }
         }
+
+        //The waypoints of the experiment are game objects
         allWaypoints = GameObject.FindGameObjectsWithTag("Waypoint");
 
+        //Connection to optitrack
         streamingClient = OptitrackStreamingClient.FindDefaultClient();
-
         // If we still couldn't find one, disable this component.
         if (streamingClient == null)
         {
@@ -158,7 +170,7 @@ public class UpdateHandTarget : MonoBehaviour
         Vector3 desiredVelocity = new Vector3(0.0f, 0.0f, 0.0f);
         CenterOfMass = AveragePosition();
 
-        if (useController)
+        if (useController) //arrows input, or controller plugged in
         {
             float h = Input.GetAxis("Horizontal");
             float v = Input.GetAxis("Vertical");
@@ -202,12 +214,10 @@ public class UpdateHandTarget : MonoBehaviour
                     print("Delta hand position : " + deltaHandPosition);
                     handTarget.transform.position += Quaternion.Euler(0, observationInputRotation + mocapInputRotation, 0) * deltaHandPosition * handRoomScaling;
                 }
-                
             }
         }
 
-        
-
+        //The target of the master can be displayed if desired
         if (drawHandTarget)
             handTarget.SetActive(true);
         else
@@ -215,7 +225,6 @@ public class UpdateHandTarget : MonoBehaviour
 
         switch (droneState)
             {
-         
                 case TAKING_OFF:
                     int i = 0;
                     foreach (GameObject drone in allDrones)
@@ -230,19 +239,19 @@ public class UpdateHandTarget : MonoBehaviour
                     break;
 
                 case REACHING_HEIGHT:
-                //print("The height error is " + Mathf.Abs(CenterOfMass.y - take_off_height));
-                
-                if (Mathf.Abs(CenterOfMass.y - take_off_height) < 0.05)
-                    {
-                        droneState = FLYING;
-                        experimentState = GO_TO_FIRST_WAYPOINT;
-                        handTarget.transform.position = CenterOfMass;
-                        flying = true;
-                    }
-                    experimentTime = 0;
-                    break;
+                //wait until the swarm reaches the take off height                
+                    if (Mathf.Abs(CenterOfMass.y - take_off_height) < 0.05)
+                        {
+                            droneState = FLYING;
+                            experimentState = GO_TO_FIRST_WAYPOINT;
+                            handTarget.transform.position = CenterOfMass;
+                            flying = true;
+                        }
+                        experimentTime = 0;
+                        break;
 
                 case FLYING:
+                    //minimal height
                     if (handTarget.transform.position.y < 0.4f)
                     {
                         Vector3 minimalHeight = handTarget.transform.position;
@@ -251,8 +260,11 @@ public class UpdateHandTarget : MonoBehaviour
                     }
                     heightError = CenterOfMass.y - targetHeight;
                     extension = MaxRadiusOfSwarm();
+                    
+                    //If the drones are flying (take off is over), the experiment can start
                     switch (experimentState)
                     {
+                        //first task
                         case GO_TO_FIRST_WAYPOINT:
                             if (Mathf.Abs(heightError) > 0.1 * SimulationData.max_height_error) reachingHeightTime += Time.deltaTime;
                             int index = 0;
@@ -275,7 +287,7 @@ public class UpdateHandTarget : MonoBehaviour
                             }
                             else stabilizationTime = fullTime;
                             break;
-
+                        //second task
                         case EXTENSION:
                             extensionError = targetExtension - MaxRadiusOfSwarm();
                             if (Mathf.Abs(extensionError) < 0.1f * SimulationData.max_contraction_error)
@@ -290,7 +302,7 @@ public class UpdateHandTarget : MonoBehaviour
                             }
                             else stabilizationTime = fullTime;
                             break;
-
+                        //third task
                         case WAYPOINT_NAV:
                         if (Mathf.Abs(heightError) > 0.1 * SimulationData.max_height_error) reachingHeightTime += Time.deltaTime;
                         if (currentWaypoint <= allWaypoints.Length)
@@ -328,7 +340,7 @@ public class UpdateHandTarget : MonoBehaviour
                                 experimentState = CONTRACTION;
                             }
                             break;
-
+                        //last task
                         case CONTRACTION:
                             Vector3 preLandingPosition = nextWaypoint;
                             preLandingPosition.y = targetHeight;
@@ -390,16 +402,15 @@ public class UpdateHandTarget : MonoBehaviour
                     experimentState = GAME_OVER;
                     droneState = GAME_OVER;
                     break;
-
-
-                
-           
         }
+        
+        //Expansion modification with scrollwheel
         if (Input.GetAxis("Mouse ScrollWheel") < 0f) K_coh += delta_K_coh;// forward
         else if (Input.GetAxis("Mouse ScrollWheel") > 0f) K_coh -= delta_K_coh; // forward
         if (K_coh < K_coh_lower_bound) K_coh = K_coh_lower_bound;
         else if (K_coh > K_coh_upper_bound) K_coh = K_coh_upper_bound;
 
+        //Take off using mouse
         if (Input.GetMouseButton(1))
         {
             if (droneState == LANDED || droneState == TAKING_OFF)
@@ -410,6 +421,7 @@ public class UpdateHandTarget : MonoBehaviour
             //else if ((droneState == FLYING && experimentState ==LANDING) || droneState == LANDING) droneState = LANDING;
         }
 
+        //Emergency stop
         if (Input.GetKey(KeyCode.R))
         {
             int i = 0;
@@ -427,10 +439,6 @@ public class UpdateHandTarget : MonoBehaviour
             }
         }
     }
-
-
-
-
 
 
     Vector3 Cohesion(GameObject Drone, Vector3 centerPosition)
