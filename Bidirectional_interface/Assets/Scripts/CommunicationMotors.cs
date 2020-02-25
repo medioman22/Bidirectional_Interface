@@ -39,6 +39,7 @@ public class CommunicationMotors : MonoBehaviour
 
     private void sendDistancesToPython() //send distances
     {
+        //distance is a float :  a float is 4 bytes
         byte[] curByte = new byte[4];
         for (int j=0; j<SimulationData.nbDistanceSensors; j++)
         {
@@ -54,12 +55,13 @@ public class CommunicationMotors : MonoBehaviour
 
     private void fillArray()
     {
-        distances[0] = sensorValues.allDistances.frontObstacle;
+        
+        /*distances[0] = sensorValues.allDistances.frontObstacle;
         distances[1] = sensorValues.allDistances.backObstacle;
         distances[2] = sensorValues.allDistances.upObstacle;
         distances[3] = sensorValues.allDistances.downObstacle;
         distances[4] = sensorValues.allDistances.leftObstacle;
-        distances[5] = sensorValues.allDistances.rightObstacle;
+        distances[5] = sensorValues.allDistances.rightObstacle;*/
     }
 
 

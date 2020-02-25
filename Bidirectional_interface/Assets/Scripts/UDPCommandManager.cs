@@ -30,6 +30,9 @@ public class UDPCommandManager : MonoBehaviour
 
     private int localPortPython = 26000; //localport for receiving control commands
 
+    private byte[] bytes = new Byte[1024];
+
+
     Socket socket;
     EndPoint ipEndPoint = new IPEndPoint(IPAddress.Any, 0);
 
@@ -39,6 +42,7 @@ public class UDPCommandManager : MonoBehaviour
         socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
         socket.EnableBroadcast = true;
         socket.Bind(new IPEndPoint(IPAddress.Parse(localIP), localPortPython));
+        socket.Listen(10);
     }
 
     private void Update()
@@ -48,18 +52,7 @@ public class UDPCommandManager : MonoBehaviour
 
     private void receiveCommandsFromPython() //receive commands
     {
-        while (socket.Available > 0)
-        {
-            byte[] data = new byte[1024];
-            int received = socket.ReceiveFrom(data, ref ipEndPoint);
 
-            for (int i = 0; i < SimulationData.nbParametersMocap; i++)
-            {
-                // the data points (int, 7 floats) each take 4 bytes
-                if (System.BitConverter.ToSingle(data, (int)MocapIndices.id) != rigidbodyTargetIndex) { break; }
-                controlCommands[i] = System.BitConverter.ToSingle(data, i * 4);
-            }
-        }
     }
 
     public Vector3 GetPosition()

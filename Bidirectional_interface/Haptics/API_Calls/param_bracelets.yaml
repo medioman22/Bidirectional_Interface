@@ -1,0 +1,8 @@
+COM:
+    right_arm: 16
+    left_arm: 15
+    
+correction_factor: 0.7
+
+highest_intensity: 255
+lowest_intensity: 50

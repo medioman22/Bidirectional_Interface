@@ -144,8 +144,8 @@ public class OptitrackStreamingClient : MonoBehaviour
 
 
     public ClientConnectionType ConnectionType;
-    public string LocalAddress = "127.0.0.1";
-    public string ServerAddress = "127.0.0.1";
+    public string LocalAddress = "192.168.1.118";
+    public string ServerAddress = "192.168.1.249";
     public UInt16 ServerCommandPort = NatNetConstants.DefaultCommandPort;
     public UInt16 ServerDataPort = NatNetConstants.DefaultDataPort;
     public bool DrawMarkers = false;
@@ -256,7 +256,6 @@ public class OptitrackStreamingClient : MonoBehaviour
         {
             Debug.LogWarning( "Multiple " + typeof( OptitrackStreamingClient ).FullName + " components found in scene; defaulting to first available." );
         }
-
         return allClients[0];
     }
 
