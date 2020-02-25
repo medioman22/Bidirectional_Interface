@@ -17,7 +17,7 @@ The pose of the hand was captured using an OptiTrack system, and was then sent t
 ## Unity
 The simulation is done in the game development platform Unity.
 To select the adequate Unity version, **[Unity Hub](https://docs.unity3d.com/Manual/GettingStartedInstallingHub.html)** can be used.
-For this project, we used the version ???
+For this project, we used the version 2019.2.5f1
 ### Scripts
 The scripts used to create the swarm and the experiment environment can be found in the folder `Bidirectional_interface/Assets/Scripts`
 
