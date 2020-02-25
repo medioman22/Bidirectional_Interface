@@ -1,60 +1,69 @@
+
 <p align="center">
   <img src=https://github.com/AntoineWeber/Bidirectional_Interface/blob/master/readme_images/epfl_logo.png>
 </p>
 
-# Bidirectional Interface I & II
-Repository containing the work performed for the semester project entitle "Bidirectional wearable interface for mobile robot teleoperation" performed at the LIS (EPFL).
+# Haptic swarm information transmission in Simulation
+Repository containing the work performed for the Master project entitled "Evaluation of swarm information transmission with haptic and visual feedback systems" performed at the LIS (EPFL).
 
-## Authors 
+## Author
 
-* **Antoine Weber**
-* **Thomas Havy**
+* **Hugo Kohli**
 
 ## Structure
-The master branch contains the common work of both the authors. Indeed, the first part of this project was to implement a hand control interface to control a drone in position.
+The master branch contains the current state of this work. All the previous commits can be found in the branch `origin/flocking-creation`
 The pose of the hand was captured using an OptiTrack system, and was then sent to the Unity game engine that embedded a drone simulator.
-The master branch also includes different arenas in Unity that were tested during thist first common part.
 
-## Haptics branch
-**Antoine Weber**  
-This branch contains the work performed to add haptic feedback to the developed hand interface.
-Haptic feedback were added to the interface to try to improve and accelerate the learning procedure of the interface. For the sake of this project, the feedback was implemented on a glove and was representing the distance to obstacles in all 6 3D directions.
+## Unity
+The simulation is done in the game development platform Unity.
+To select the adequate Unity version, **[Unity Hub](https://docs.unity3d.com/Manual/GettingStartedInstallingHub.html)** can be used.
+For this project, we used the version ???
+### Scripts
+The scripts used to create the swarm and the experiment environment can be found in the folder `Bidirectional_interface/Assets/Scripts`
 
-## Use the BBG
-Hence, this branch contains a different arena tested exclusively to validate the haptic device. Moreover, it also contains different python scripts that were used to communicate the different distances of the drone to the walls to a BBG card which was connected to the motor drives used for the tactile feedback.
+In each script, a `Start()` method is executed once when the game is launched, and a `FixedUpdate()` or `Update()` is called in a loop. The [Unity documentation](https://learn.unity.com/) can be of great help at the beginning.
 
-### Setup the connection
-1) Connect the BBG to a power supply & let it start
-2) After a while, you will see a new WiFi appear being the board. Connect to it
-3) Once connected, you can ssh to it. The IP is fixed :
-```
-ssh debian@192.168.7.2
-```
-Then type the password which will actually appear on your screen.
-## twoDrones branch
-**Thomas Havy**  
-This branch contains preliminary work for controlling two drones with two hands.  
-The existing code was adapted to track two hands with the motion capture system and control two drones.  
-A cooperative task where the two hands are used together to control 2 drones carrying a beam has been implemented.
+These are the main scripts that are used:
+ - `UpdateHandTarget.cs`, to control of the swarm and the experiment statE
+ - `SocketSender.cs`, to send information to the haptic control python script
+ - `SubjectNameUI.cs`, to handle the UI at the beginning of the experiment
+ - `updateUI.cs`, to control the visual feedback system
+ - `Log.cs`, to save the desired variables at the end of a flight
 
-### Make the motors vibrate
-1) Navigate in your SSH terminal to the Firmware folder of the wearable directory and launch the main (should require super-user rights) :
-```
-cd Wearable-Software/Firmware/src/
-sudo python Main.py
-```
-3) Now there are 2 ways to make the motor vibrate : You should know that serveral libraries are required to make these scripts work. There is a .yml file in the Interface folder which can be used to directly create an environment with the right libraries.
+The drone physics are based on the simulator created in the following repo :  
+[`UAVs-at-Berkeley/UnityDroneSim`](https://github.com/UAVs-at-Berkeley/UnityDroneSim)
+The control of the drone is done using the scripts from the Brekeley simulation at the following location:
+`/Bidirectional_interface/Assets/Berkeley_simu/Scripts/Velocity_control`
+The drones can either be control with velocity control (`VelocityControl.cs`) or with position control (`PositionControl.cs`).
 
-##### In both cases, you need to define a python environment with all the required libraries. There is a [.yml file](Bidirectional_interface/Haptics/Interface/) that you can use to actually create the right environment if you're under MacOS. If under windows, there is also a text file containing the requirements to create the right environment.
+## Haptic feedback systems
+Two different haptic interfaces are used and their control is done in a python script: 
+`Bidirectional_interface/Haptics/API_calls/main.py`. . 
 
-#### Possibility 1 : Use the UI
-1) In your local clone of the repo, go to the Interface folder and launch the main.py present in the src folder 
-```
-cd Bidirectional_interface/Haptics/Interface/src/
-python main.py
-```
-It should make a UI pop up. Select the device in the list and change the PWM values to make the motor vibrate.
+### Glove
+The first one is a glove embedding 6 vibrating motors controlled with a Beagle Bone Green Wireless microcontroller. The communication with the PC is done using WIFI. The instruction on how to connect it can be found in this repo : [`medioman22/Bidirectional_Interface`](https://github.com/medioman22/Bidirectional_Interface)
 
-#### Possibility 2 : Use the python API
-1) You can use the `main.py` script in the API_Calls folder as an example. This script will read the data sent by Unity and send the vibration queries to the BBG card.
+### Bracelets
+The second one is composed of two bracelets embedding 4 vibrating motors each, and controlled with an Arduino Pro Mini with an additional Bluetooth module.
+
+To connect the bracelets, follow these steps:
+
+ - Turn on the bracelets with the red slider
+ - Connect the bluetooth device to your PC
+ - Check which COM port is used
+ - Repeat the operation for the second bracelets
+ - Replace the 2 COM port with the correct ones in the file `Bidirectional_interface/Haptics/API_calls/param_bracelets.yaml`:
+> COM:
+	>> right_arm: 16
+	left_arm: 15
+
+To control the motors, bluetooth serial communication is used with the python module [pySerial](https://pypi.org/project/pyserial/). For each bracelets, a list of character has to be sent, with the following style : 
+ `'S, intensity_motor_1, intensity_motor_2, intensity_motor_3, intensity_motor_4, E'`
+ 
+
+ - The first letter is a 'S' as 'Start'. It has to be converted into an integer representing the Unicode character, using the function `ord()` in python
+ - The intensity of each of the 4 motors is an int
+ - The last letter is an 'E' as 'End'. It has to in Unicode as the first letter
+
+The Arduino code can be found at this location: `Bidirectional_interface/Haptics/Serial_communication/motor_control/motor_control.ino`
 
