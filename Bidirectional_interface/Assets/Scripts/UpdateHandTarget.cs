@@ -33,13 +33,12 @@ public class UpdateHandTarget : MonoBehaviour
     public GameObject master;
 
     //Coefficient used for the flocking algorithm
+    private float P = 50.0f;
     public float K_coh = 0.3f;
     private float K_coh_lower_bound = 0.05f;
     private float K_coh_upper_bound = 0.5f;
     public float K_sep = 0.08f;
     public float K_align = 0.1f;
-    public float P = 0.38f;
-    public float D = 2.4f;
 
     [HideInInspector]
     public int droneState = LANDED;
@@ -375,12 +374,12 @@ public class UpdateHandTarget : MonoBehaviour
                             if (experimentState == CONTRACTION) centerPosition = master.transform.position;
                             else centerPosition = CenterOfMass;
                             float dt = Time.fixedDeltaTime;
-                            var accelerationReynolds = K_coh * Cohesion(drone, centerPosition) + K_sep * Separation(drone) + K_align * Alignement(drone);
-                            var velocityReynolds = accelerationReynolds / dt;
+                            var accelerationReynolds = K_coh *P* Cohesion(drone, centerPosition) + K_sep *P* Separation(drone) + K_align*P * Alignement(drone);
+                            var velocityReynolds = accelerationReynolds * dt;
                             desiredVelocity += velocityReynolds;
 
-                            //Velocity control for the slaves (P D controller)
-                            drone.GetComponent<VelocityControl>().desiredVelocity = P * desiredVelocity + D * accelerationReynolds;
+                        //Velocity control for the slaves (P D controller)
+                            drone.GetComponent<VelocityControl>().desiredVelocity = desiredVelocity;
                             Debug.DrawLine(drone.transform.position, (drone.transform.position + 5.0f * drone.transform.TransformDirection(accelerationReynolds)));
                         }
                     }
