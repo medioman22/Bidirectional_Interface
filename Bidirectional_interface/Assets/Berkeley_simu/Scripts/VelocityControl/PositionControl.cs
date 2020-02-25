@@ -16,8 +16,6 @@ public class PositionControl : MonoBehaviour
 
     public Vector3 initialPosition;
 
-    private VelocityControl vc;
-
     // PD controller gains
     private float positionTimeConstant = 1.0f;
     private float yawTimeConstant = 10.0f;
@@ -33,7 +31,6 @@ public class PositionControl : MonoBehaviour
         vc = GetComponent<VelocityControl>();
         //if (!this.transform.parent.GetComponent<UpdateHandTarget>().flying) target.position = transform.position + new Vector3 (0.0f, 1.0f, 0.0f);
         initialPosition = transform.position;
-        
     }
 
     void FixedUpdate ()
@@ -49,7 +46,6 @@ public class PositionControl : MonoBehaviour
             vc.desiredVx = positionError.x / positionTimeConstant + dFactor * (positionError.x - lastPositionError.x) / Time.fixedDeltaTime;
             vc.desiredVz = positionError.z / positionTimeConstant + dFactor * (positionError.z - lastPositionError.z) / Time.fixedDeltaTime;
             vc.desiredHeight = target.position.y;
-     
             lastPositionError = positionError;
         }
 

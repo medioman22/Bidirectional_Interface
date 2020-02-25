@@ -24,6 +24,7 @@ public static class SimulationData
     // This variable is incremented every time the simulation path is reloaded
     public static int runNumber = 0;
 
+
     // This variable is used to store the name of the current subject
     public static string subjectName = "";
 
@@ -36,4 +37,6 @@ public static class SimulationData
     public static float max_height_error = 3*max_distance_error/4;
     public static float max_contraction_error = 1.0f;
     public static float distance_margin = 1.0f;
+
 }
+
