@@ -1,0 +1,7 @@
+# __init__.py
+import test.test_HRI_communication_acquisition
+import test.test_HRI_communication_control
+import test.test_HRI_mapping
+import test.test_HRI_unpack_data
+import test.test_UDP_handler
+import test.context

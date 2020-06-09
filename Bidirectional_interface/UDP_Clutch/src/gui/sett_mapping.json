@@ -1,0 +1,171 @@
+[
+    {
+        "type": "bool",
+        "title": "Store Mapping",
+        "desc": "",
+        "section": "mapping",
+        "key": "store_mapping"
+    },
+    {
+        "type": "options",
+        "title": "Features Used",
+        "desc": "",
+        "section": "mapping",
+        "key": "features_used",
+        "options": ["full", "angles", "euler", "quaternions"]
+    },
+    {
+        "type": "options",
+        "title": "Used Body Parts (source)",
+        "desc": "",
+        "section": "mapping",
+        "key": "used_body_parts_setting",
+        "options": ["optitrack"]
+    },
+    {
+        "type": "bool",
+        "title": "Plot Regression Results",
+        "desc": "",
+        "section": "mapping",
+        "key": "plot_reg_score"
+    },
+    {
+        "type": "bool",
+        "title": "Plot Only Training Data",
+        "desc": "",
+        "section": "mapping",
+        "key": "plot_score_only_true"
+    },
+    {
+        "type": "bool",
+        "title": "Fit Only First Part Of Dataset",
+        "desc": "Only fit the rising half of your training dataset (improves stability)",
+        "section": "mapping",
+        "key": "fit_un_to_max"
+    },
+    {
+        "type": "numeric",
+        "title": "init_values_to_remove",
+        "desc": "",
+        "section": "mapping",
+        "key": "init_values_to_remove"
+    },
+    {
+        "type": "options",
+        "title": "Data Synchronization Mode",
+        "desc": "Select 'variance' for variance analysis on PCA, 'av delay' to an average compensation",
+        "section": "mapping",
+        "key": "pll_mode",
+        "options": ["variance", "av delay"]
+    },
+    {
+        "type": "numeric",
+        "title": "Average Synchronization Delay",
+        "desc": "Average delay to compensate if 'Data Synchronization Mode' is set to 'av delay",
+        "section": "mapping",
+        "key": "pll_av_delay"
+    },
+    {
+        "type": "bool",
+        "title": "Use Dimensionality Reduction",
+        "desc": "",
+        "section": "mapping",
+        "key": "dim_reduction"
+    },
+    {
+        "type": "bool",
+        "title": "Use Data Augmentation",
+        "desc": "",
+        "section": "mapping",
+        "key": "data_augmentation"
+    },
+    {
+        "type": "bool",
+        "title": "Add Noise to Augmented Data",
+        "desc": "Use if 'Use Data Augmentation' is ON",
+        "section": "mapping",
+        "key": "augmentation_add_noise"
+    },
+    {
+        "type": "bool",
+        "title": "Interpolate to Zero Augmented Data",
+        "desc": "Use if 'Use Data Augmentation' is ON",
+        "section": "mapping",
+        "key": "augmentation_interpolate_to_zero"
+    },
+    {
+        "type": "bool",
+        "title": "Preshuffle Training Data",
+        "desc": "",
+        "section": "mapping",
+        "key": "shuffle_data"
+    },
+    {
+        "type": "numeric",
+        "title": "Sufficient Variance for Dimensionality Reduction (in %)",
+        "desc": "",
+        "section": "mapping",
+        "key": "variance_suff"
+    },
+    {
+        "type": "bool",
+        "title": "Individual Regression for Each Command",
+        "desc": "",
+        "section": "mapping",
+        "key": "regress_each"
+    },
+    {
+        "type": "options",
+        "title": "Dimensionality Reduction Type",
+        "desc": "'bones' has been dismissed",
+        "section": "mapping",
+        "key": "dim_reduction_type",
+        "options": ["signals", "bones"]
+    },
+    {
+        "type": "options",
+        "title": "Dimensionality Reduction Variance Computation",
+        "desc": "Consider a threshold of each signal or the sum of their variances for dimensionality reduction",
+        "section": "mapping",
+        "key": "dim_reduction_var",
+        "options": ["threshold", "sum"]
+    },
+    {
+        "type": "numeric",
+        "title": "Train-Test Data Split Factor (in %)",
+        "desc": "",
+        "section": "mapping",
+        "key": "split_factor_train"
+    },
+    {
+        "type": "options",
+        "title": "Regressor List to Test",
+        "desc": "",
+        "section": "mapping",
+        "key": "regressor_settings",
+        "options": ["full", "reduced", "search", "one", "GP_one", "GP", "SVR", "LIN"]
+    },
+    {
+        "type": "bool",
+        "title": "Use Data Downsampling",
+        "desc": "",
+        "section": "mapping",
+        "key": "data_downsampling"
+    },
+    {
+        "type": "options",
+        "title": "Linear Regressor Logic",
+        "desc": "Select 'simple' for max-min mapping, 'linreg' for standard linear regression",
+        "section": "mapping",
+        "key": "maxmin_style",
+        "options": ["simple", "linreg"]
+    },
+    {
+        "type": "options",
+        "title": "Dimensionality Reduction Algorithm",
+        "desc": "",
+        "section": "mapping",
+        "key": "dimred_style",
+        "options": ["pca", "cca"]
+    }
+]

@@ -11,6 +11,7 @@ public class HandClutchPositionControl : MonoBehaviour
     private PositionControl dronePositionControl;
     private VelocityControl droneVelocityControl;
     private DroneCamera cameraPosition;
+    private UDPCommandManager udp;
 
     public float handRoomScaling = 8.0f;
     [HideInInspector]
@@ -29,6 +30,8 @@ public class HandClutchPositionControl : MonoBehaviour
 
     [Tooltip("Read inputs from a controller instead of motion capture.")]
     public bool useController = false;
+    public float IMU1Scale = 10.0f;
+    public float IMU2Scale = 10.0f;
     public float controllerSpeed = 0.025f;
     public float controllerRotationSpeed = 0.5f;
 
@@ -43,6 +46,7 @@ public class HandClutchPositionControl : MonoBehaviour
     private float referenceYaw = 0.0f;
 
     private float fixedYaw = 0.0f;
+    private Vector3 initPos;
 
     // For logger
     public Vector3 MocapHandPosition
@@ -64,6 +68,8 @@ public class HandClutchPositionControl : MonoBehaviour
 
     void Start()
     {
+        udp = GetComponent<UDPCommandManager>();
+
         dronePositionControl = GetComponent<PositionControl>();
         droneVelocityControl = GetComponent<VelocityControl>();
 
@@ -89,6 +95,8 @@ public class HandClutchPositionControl : MonoBehaviour
         handTarget = new GameObject("Hand Target");
         handTarget.transform.localScale = 2.0f * SimulationData.DroneSize * Vector3.one;
         handTarget.transform.position = dronePositionControl.transform.position;
+
+        initPos = dronePositionControl.transform.position;
 
         streamingClient = OptitrackStreamingClient.FindDefaultClient();
 
@@ -125,71 +133,38 @@ public class HandClutchPositionControl : MonoBehaviour
             else if (cameraPosition != null && !cameraPosition.FPS)
                 dronePositionControl.targetYaw = fixedYaw;
         }
-        else // Mocap inputs
+        else // IMU inputs
         {
-            OptitrackRigidBodyState rgbdOptitrack = streamingClient.GetLatestRigidBodyState(handRigidbodyID);
+            Debug.Log("imu1=" + udp.GetIMU1());
+            Debug.Log("imu2=" + udp.GetIMU2());
 
-            if (rgbdOptitrack != null)
+            var imu1 = udp.GetIMU1();
+            var imu2 = udp.GetIMU2();
+
+            float h = 0.0f;
+            float v = 0.0f;
+            float a = 0.0f;
+            float r = 0.0f;
+
+            h = imu1.y / IMU1Scale;
+            a = -imu2.y / IMU2Scale;
+
+            Vector3 direction = new Vector3(h, a, 0);
+
+            // Update observation input rotation if FPS mode
+            if (cameraPosition != null && cameraPosition.FPS)
             {
-                rawHandPosition = rgbdOptitrack.Pose.Position;
-                rawHandRotation = rgbdOptitrack.Pose.Orientation;
-
-                Vector3 deltaHandPosition = rawHandPosition - oldRawHandPosition;
-                float handYaw = rawHandRotation.eulerAngles.y;
-
-                oldRawHandPosition = rawHandPosition;
-
-                if (deltaHandPosition.magnitude > 1.0f)
-                    return;
-
-                // Update observation input rotation if FPS mode
-                if (cameraPosition != null && cameraPosition.FPS)
-                {
-                    observationInputRotation = transform.eulerAngles.y;
-                }
-
-                // Clutch triggered, set reference yaw
-                if (OVRInput.GetUp(OVRInput.RawButton.RIndexTrigger))
-                //if (Input.GetKeyDown(KeyCode.Mouse0))
-                {
-                    referenceYaw = handYaw;
-                }
-
-                // In TPV, we keep the drone yaw fixed
-                if (cameraPosition != null && !cameraPosition.FPS)
-                {
-                    dronePositionControl.targetYaw = fixedYaw;
-                }
-
-                // Clutch activated
-                //if (OVRInput.Get(OVRInput.Axis1D.PrimaryIndexTrigger) < 0.5)
-                if (!OVRInput.Get(OVRInput.RawButton.RIndexTrigger))
-                //if (!Input.GetKey(KeyCode.Mouse0))
-                    {
-                    clutchActivated = true;
-                    if (cameraPosition != null && cameraPosition.FPS)
-                        droneVelocityControl.desiredYawRate = Mathf.DeltaAngle(referenceYaw, handYaw) * rotationSpeedScaling;
-
-                    handTarget.transform.position = transform.position;
-                }
-                else
-                {
-                    // Update drone target
-                    clutchActivated = false;
-
-                    if (cameraPosition != null && cameraPosition.FPS)
-                        droneVelocityControl.desiredYawRate = 0.0f;
-
-                    handTarget.transform.position += Quaternion.Euler(0, observationInputRotation + mocapInputRotation, 0) * deltaHandPosition * handRoomScaling;
-                }
-
-                dronePositionControl.target = handTarget.transform;
+                observationInputRotation = transform.eulerAngles.y;
             }
 
-            if (drawHandTarget)
-                handTarget.SetActive(true);
-            else
-                handTarget.SetActive(false);
+            handTarget.transform.position = initPos + Quaternion.Euler(0, observationInputRotation, 0) * direction;
+
+            dronePositionControl.target = handTarget.transform;
+
+            if (cameraPosition != null && cameraPosition.FPS)
+                droneVelocityControl.desiredYawRate = r * controllerRotationSpeed;
+            else if (cameraPosition != null && !cameraPosition.FPS)
+                dronePositionControl.targetYaw = fixedYaw;
         }
     }
 }

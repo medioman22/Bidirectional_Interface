@@ -1,0 +1,107 @@
+#:kivy 1.0.9
+
+<HRIWidget>: 
+    buttonControl: buttonControl
+    BoxLayout:
+        size: root.width, root.height
+        orientation: 'vertical'
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint: 1, 9
+            BoxLayout:
+                padding: 20, 20, 10, 20
+                spacing: 20
+                orientation: 'vertical'
+                Button:
+                    size_hint: 1, 2
+                    text: 'Edit Settings'
+                    font_size: 16
+                    on_release: app.open_settings()
+                BoxLayout:
+                    orientation: 'vertical'
+                    size_hint: 1, 3
+                    Label:
+                        text: 'INFO'
+                        padding: 0, 10
+                        halign: 'center'
+                        valign: 'bottom'
+                        text_size: self.size
+                    BoxLayout:
+                        orientation: 'horizontal'
+                        size_hint: 1, 4
+                        Label:
+                            text: 'ROBOT : \n SUBJECT : \n INPUT : \n INSTANCE : '
+                            padding: 0, 10
+                            halign: 'right'
+                            valign: 'top'
+                            text_size: self.size
+                        Label:
+                            text: root.info
+                            padding: 0, 10
+                            halign: 'left'
+                            valign: 'top'
+                            text_size: self.size
+                BoxLayout:
+                    orientation: 'horizontal'
+                    size_hint: 1, 1
+                    Label:
+                        text: root.state
+                    Button:
+                        text: 'Delete Data'
+                        font_size: 16
+                        on_release: root.delete_data()
+                Button:
+                    size_hint: 1, 2
+                    text: 'Show Mapping Details'
+                    on_release: root.plot_map()
+            BoxLayout:
+                padding: 10, 20, 20, 20
+                spacing: 20
+                orientation: 'vertical'
+
+                Button:
+                    text: 'Start Data Acquisition'
+                    on_release: root.acquire()
+                Button:
+                    text: 'Implement Mapping'
+                    on_release: root.mapping()
+                Button:
+                    id: buttonControl
+                    text: 'Control Robot'
+                    on_release: root.control()
+        Label:
+            text: root.log
+            padding: 10, 10
+            halign: 'left'
+            valign: 'middle'
+            text_size: self.size
+            
+        
+<DataExist>:
+    Label: 
+        text: 'Data already present for this\nsubject/input/instance!\n\nDelete existing data or change instance.'
+
+        halign: 'center'
+        valign: 'bottom'
+        size_hint: 0.6, 0.5
+        pos_hint: {'x': 0.2, 'top':1}
+    Button: 
+        text: 'OK'
+        size_hint: 0.6, 0.3
+        pos_hint: {'x': 0.2, 'top':0.4}
+        on_release: root.dismiss_as_popup()
+        
+<PlotTest>:
+    ScrollView:
+        do_scroll_x: False
+        do_scroll_y: True
+        BoxLayout:
+            orientation: 'vertical' 
+            GridLayout: 
+                cols: 3
+                id: destination
+            Button: 
+                text: 'OK'
+                size_hint: 0.3, 0.08
+                pos_hint: {'x': 0.35, 'top':0.1}
+                on_release: root.dismiss_as_popup()

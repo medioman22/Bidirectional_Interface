@@ -1,0 +1,58 @@
+[
+    {
+        "type": "string",
+        "title": "Motive",
+        "desc": "",
+        "section": "IPs",
+        "key": "motive"
+    },
+    {
+        "type": "string",
+        "title": "IMU",
+        "desc": "",
+        "section": "IPs",
+        "key": "imu"
+    },
+    {
+        "type": "string",
+        "title": "Unity",
+        "desc": "",
+        "section": "IPs",
+        "key": "unity"
+    },
+    {
+        "type": "string",
+        "title": "Unity - Calibration Data",
+        "desc": "",
+        "section": "IPs",
+        "key": "unity_calib"
+    },
+    {
+        "type": "string",
+        "title": "Unity - Info",
+        "desc": "",
+        "section": "IPs",
+        "key": "unity_info"
+    },
+    {
+        "type": "string",
+        "title": "Unity - Write Skeleton",
+        "desc": "",
+        "section": "IPs",
+        "key": "unity_write_sk"
+    },
+    {
+        "type": "string",
+        "title": "Unity - Write Skeleton (Client)",
+        "desc": "",
+        "section": "IPs",
+        "key": "unity_write_sk_client"
+    },
+    {
+        "type": "string",
+        "title": "Unity - Skeleton (Client)",
+        "desc": "",
+        "section": "IPs",
+        "key": "unity_sk_client"
+    }
+]

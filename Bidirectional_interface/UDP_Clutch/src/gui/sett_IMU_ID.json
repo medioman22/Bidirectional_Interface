@@ -1,0 +1,58 @@
+[
+    {
+        "type": "numeric",
+        "title": "00b42218",
+        "desc": "",
+        "section": "IMU_ID",
+        "key": "00b42218"
+    },
+    {
+        "type": "numeric",
+        "title": "00b421f6",
+        "desc": "",
+        "section": "IMU_ID",
+        "key": "00b421f6"
+    },
+    {
+        "type": "numeric",
+        "title": "00b42216",
+        "desc": "",
+        "section": "IMU_ID",
+        "key": "00b42216"
+    },
+    {
+        "type": "numeric",
+        "title": "00b42217",
+        "desc": "",
+        "section": "IMU_ID",
+        "key": "00b42217"
+    },
+    {
+        "type": "numeric",
+        "title": "00b42235",
+        "desc": "",
+        "section": "IMU_ID",
+        "key": "00b42235"
+    },
+    {
+        "type": "numeric",
+        "title": "00b43c3c",
+        "desc": "",
+        "section": "IMU_ID",
+        "key": "00b43c3c"
+    },
+    {
+        "type": "numeric",
+        "title": "00b43c41",
+        "desc": "",
+        "section": "IMU_ID",
+        "key": "00b43c41"
+    },
+    {
+        "type": "numeric",
+        "title": "00b43c5d",
+        "desc": "",
+        "section": "IMU_ID",
+        "key": "00b43c5d"
+    }
+]

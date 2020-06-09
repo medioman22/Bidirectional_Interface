@@ -1,0 +1,58 @@
+[
+    {
+        "type": "numeric",
+        "title": "Motive",
+        "desc": "",
+        "section": "ports",
+        "key": "motive"
+    },
+    {
+        "type": "numeric",
+        "title": "IMU",
+        "desc": "",
+        "section": "ports",
+        "key": "imu"
+    },
+    {
+        "type": "numeric",
+        "title": "Unity",
+        "desc": "",
+        "section": "ports",
+        "key": "unity"
+    },
+    {
+        "type": "numeric",
+        "title": "Unity - Calibration Data",
+        "desc": "",
+        "section": "ports",
+        "key": "unity_calib"
+    },
+    {
+        "type": "numeric",
+        "title": "Unity - Info",
+        "desc": "",
+        "section": "ports",
+        "key": "unity_info"
+    },
+    {
+        "type": "numeric",
+        "title": "Unity - Write Skeleton",
+        "desc": "",
+        "section": "ports",
+        "key": "unity_write_sk"
+    },
+    {
+        "type": "numeric",
+        "title": "Unity - Write Skeleton (Client)",
+        "desc": "",
+        "section": "ports",
+        "key": "unity_write_sk_client"
+    },
+    {
+        "type": "numeric",
+        "title": "Unity - Skeleton (Client)",
+        "desc": "",
+        "section": "ports",
+        "key": "unity_sk_client"
+    }
+]

@@ -77,3 +77,6 @@ Bidirectional_interface/Haptics/Experiment_Tactile/results_identification/
 Bidirectional_interface/Haptics/Experiment_Tactile/results_time/
 
 Bidirectional_interface/SimulationLogs/
+*.pkl
+
+*.csv
