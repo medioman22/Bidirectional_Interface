@@ -80,3 +80,5 @@ Bidirectional_interface/SimulationLogs/
 *.pkl
 
 *.csv
+
+*.json
