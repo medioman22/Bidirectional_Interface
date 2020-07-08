@@ -48,6 +48,19 @@ public class HandClutchPositionControl : MonoBehaviour
     private float fixedYaw = 0.0f;
     private Vector3 initPos;
 
+    public enum imu_control
+    {
+        ROLL = 0,   //like turn
+        PITCH = 1, //like speed
+        YAW = 2,
+        THRUST = 3,
+    };
+
+    public bool imu90Deg = false;
+
+    public imu_control IMU_FOREARM_CONTROLS = imu_control.PITCH;
+    public imu_control IMU_HAND_CONTROLS = imu_control.THRUST;
+
     // For logger
     public Vector3 MocapHandPosition
     {
@@ -135,21 +148,59 @@ public class HandClutchPositionControl : MonoBehaviour
         }
         else // IMU inputs
         {
-            Debug.Log("imu1=" + udp.GetIMU1());
+            // Debug.Log("imu1=" + udp.GetIMU1());
             Debug.Log("imu2=" + udp.GetIMU2());
 
             var imu1 = udp.GetIMU1();
             var imu2 = udp.GetIMU2();
 
-            float h = 0.0f;
-            float v = 0.0f;
-            float a = 0.0f;
-            float r = 0.0f;
+            float pitch = 0.0f;
+            float roll = 0.0f;
+            float thrust = 0.0f;
+            float yaw = 0.0f;
 
-            h = imu1.y / IMU1Scale;
-            a = -imu2.y / IMU2Scale;
+            float imu1_val = -imu1.z / IMU1Scale;
 
-            Vector3 direction = new Vector3(h, a, 0);
+            float imu2_val = -imu2.y / IMU2Scale;
+            if (imu90Deg)
+            {
+                imu2_val = imu2.z / IMU2Scale;
+            }
+
+
+            switch (IMU_FOREARM_CONTROLS)
+            {
+                case imu_control.ROLL:
+                    roll = -imu1_val;
+                    break;
+                case imu_control.PITCH:
+                    pitch = imu1_val;
+                    break;
+                case imu_control.YAW:
+                    yaw = imu1_val;
+                    break;
+                case imu_control.THRUST:
+                    thrust = imu1_val;
+                    break;
+            }
+
+            switch (IMU_HAND_CONTROLS)
+            {
+                case imu_control.ROLL:
+                    roll = -imu2_val;
+                    break;
+                case imu_control.PITCH:
+                    pitch = imu2_val;
+                    break;
+                case imu_control.YAW:
+                    yaw = imu2_val;
+                    break;
+                case imu_control.THRUST:
+                    thrust = imu2_val;
+                    break;
+            }
+
+            Vector3 direction = new Vector3(pitch, thrust, roll);
 
             // Update observation input rotation if FPS mode
             if (cameraPosition != null && cameraPosition.FPS)
@@ -162,7 +213,7 @@ public class HandClutchPositionControl : MonoBehaviour
             dronePositionControl.target = handTarget.transform;
 
             if (cameraPosition != null && cameraPosition.FPS)
-                droneVelocityControl.desiredYawRate = r * controllerRotationSpeed;
+                droneVelocityControl.desiredYawRate = yaw * controllerRotationSpeed;
             else if (cameraPosition != null && !cameraPosition.FPS)
                 dronePositionControl.targetYaw = fixedYaw;
         }

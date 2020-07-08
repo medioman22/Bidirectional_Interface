@@ -10899,6 +10899,26 @@ PrefabInstance:
       propertyPath: observationInputRotation
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6535481729958989031, guid: c5a7642cdbba8cf4485432d4160b9bdb,
+        type: 3}
+      propertyPath: IMU_HAND_CONTROLS
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6535481729958989031, guid: c5a7642cdbba8cf4485432d4160b9bdb,
+        type: 3}
+      propertyPath: imu90Deg
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6535481729958989031, guid: c5a7642cdbba8cf4485432d4160b9bdb,
+        type: 3}
+      propertyPath: IMU1Scale
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 6535481729958989031, guid: c5a7642cdbba8cf4485432d4160b9bdb,
+        type: 3}
+      propertyPath: IMU2Scale
+      value: 20
+      objectReference: {fileID: 0}
     - target: {fileID: 3394322291506172278, guid: c5a7642cdbba8cf4485432d4160b9bdb,
         type: 3}
       propertyPath: m_LocalPosition.x
