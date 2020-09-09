@@ -46,22 +46,22 @@ distances_socket.bind((UDP_IP, UDP_PORT_DISTANCES))
 ##################################################
 
 
-distances_dict = {'frontObstacle': 0,
-                  'backObstacle': 0,
+distances_dict = {'rightObstacle': 0,
+                  'leftObstacle': 0,
                   'upObstacle': 0,
                   'downObstacle': 0,
-                  'leftObstacle': 0,
-                  'rightObstacle': 0}
+                  'backObstacle': 0,
+                  'frontObstacle': 0}
 
 
 def fillDict(current_data):
 
-    distances_dict['frontObstacle'] = current_data[0]
-    distances_dict['backObstacle'] = current_data[1]
+    distances_dict['rightObstacle'] = current_data[0]
+    distances_dict['leftObstacle'] = current_data[1]
     distances_dict['upObstacle'] = current_data[2]
     distances_dict['downObstacle'] = current_data[3]
-    distances_dict['leftObstacle'] = current_data[4]
-    distances_dict['rightObstacle'] = current_data[5]
+    distances_dict['backObstacle'] = current_data[4]
+    distances_dict['frontObstacle'] = current_data[5]
 
 
 # had to sleep otherwise hardware overwhelmed
@@ -88,14 +88,14 @@ while(True):
 
         state = 0
 
-        if distances_dict['rightObstacle'] < DISTANCE_THRESHOLD:
-            state = 1
         if distances_dict['leftObstacle'] < DISTANCE_THRESHOLD:
+            state = 1
+        if distances_dict['rightObstacle'] < DISTANCE_THRESHOLD:
             state = 2
         if distances_dict['upObstacle'] < DISTANCE_THRESHOLD:
-            state = 3
-        # if distances_dict['downObstacle'] < DISTANCE_THRESHOLD:
-        #     state = 4
+            state = 1
+        if distances_dict['downObstacle'] < DISTANCE_THRESHOLD:
+            state = 2
         if distances_dict['frontObstacle'] < DISTANCE_THRESHOLD:
             state = 3
         if distances_dict['backObstacle'] < DISTANCE_THRESHOLD:

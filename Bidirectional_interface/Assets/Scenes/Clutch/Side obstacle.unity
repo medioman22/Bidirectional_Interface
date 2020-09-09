@@ -2543,7 +2543,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &559666235
 Transform:
   m_ObjectHideFlags: 0
@@ -6230,7 +6230,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ExperimentType: 1
-  HapticType: 4
+  HapticType: 5
   Practice: 1
   haptics: {fileID: 930173002}
   learning: {fileID: 1824622763}
@@ -8927,7 +8927,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1903527952
 Transform:
   m_ObjectHideFlags: 0

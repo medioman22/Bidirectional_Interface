@@ -61,6 +61,14 @@ public class HandClutchPositionControl : MonoBehaviour
     public imu_control IMU_FOREARM_CONTROLS = imu_control.PITCH;
     public imu_control IMU_HAND_CONTROLS = imu_control.THRUST;
 
+    public bool lock_roll = false;
+
+    public Vector3 imu1_init;
+    public Vector3 imu2_init;
+
+    public Vector3 imu1;
+    public Vector3 imu2;
+
     // For logger
     public Vector3 MocapHandPosition
     {
@@ -81,6 +89,7 @@ public class HandClutchPositionControl : MonoBehaviour
 
     void Start()
     {
+
         udp = GetComponent<UDPCommandManager>();
 
         dronePositionControl = GetComponent<PositionControl>();
@@ -118,14 +127,18 @@ public class HandClutchPositionControl : MonoBehaviour
         {
             Debug.LogError("Streaming client not found, place a streaming client in the scene.");
         }
+
+
+        imu1_init = udp.GetIMU1();
+        imu2_init = udp.GetIMU2();
     }
 
     void Update()
     {
         if (useController)
         {
-            float h = Input.GetAxis("Horizontal");
-            float v = Input.GetAxis("Vertical");
+            float v = -Input.GetAxis("Horizontal");
+            float h = Input.GetAxis("Vertical");
             float a = Input.GetAxis("Altitude");
             float r = Input.GetAxis("Rotation");
 
@@ -151,8 +164,8 @@ public class HandClutchPositionControl : MonoBehaviour
             // Debug.Log("imu1=" + udp.GetIMU1());
             Debug.Log("imu2=" + udp.GetIMU2());
 
-            var imu1 = udp.GetIMU1();
-            var imu2 = udp.GetIMU2();
+            imu1 = udp.GetIMU1() - imu1_init;
+            imu2 = udp.GetIMU2() - imu2_init;
 
             float pitch = 0.0f;
             float roll = 0.0f;
@@ -198,6 +211,11 @@ public class HandClutchPositionControl : MonoBehaviour
                 case imu_control.THRUST:
                     thrust = imu2_val;
                     break;
+            }
+
+            if (lock_roll)
+            {
+                roll = 0;
             }
 
             Vector3 direction = new Vector3(pitch, thrust, roll);
