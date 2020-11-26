@@ -84,11 +84,7 @@ public class UDPCommandManager : MonoBehaviour
     private void Update()
     {
         receiveCommandsFromPython();
-        
-        if (LeapControl)
-            receiveCommandsFromLeap();
-        else
-            receiveCommandsFromIMUs();
+        receiveCommandsFromIMUs();
     }
 
     private void receiveCommandsFromPython() //receive commands

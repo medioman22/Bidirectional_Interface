@@ -6,6 +6,8 @@ using System.Text;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
+using System.Globalization;
+using System.IO;
 
 public class LeapInputUDP : MonoBehaviour
 {
@@ -78,20 +80,15 @@ public class LeapInputUDP : MonoBehaviour
         {
             try
             {
-                // Bytes empfangen.
+                // Receive data
                 IPEndPoint anyIP = new IPEndPoint(IPAddress.Any, 0);
                 byte[] data = client.Receive(ref anyIP);
 
-                // Bytes mit der UTF8-Kodierung in das Textformat kodieren.
                 string msg = Encoding.UTF8.GetString(data);
-
-                // Den abgerufenen Text anzeigen.
-                print(">> " + msg);
-
-                // latest UDPpacket
                 lastReceivedUDPPacket = msg;
 
-                spread = Decode(msg);
+                if (msg != "t")
+                    spread = float.Parse(msg, CultureInfo.InvariantCulture.NumberFormat);
             }
             catch (Exception err)
             {
@@ -100,10 +97,4 @@ public class LeapInputUDP : MonoBehaviour
         }
     }
 
-    private float Decode(String msg)
-    {
-
-
-        return 0.0f;
-    }
 }

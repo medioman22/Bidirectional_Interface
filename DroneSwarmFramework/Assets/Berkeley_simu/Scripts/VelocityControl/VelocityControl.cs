@@ -5,10 +5,10 @@ using UnityEngine;
 [RequireComponent(typeof(StateFinder))]
 public class VelocityControl : MonoBehaviour
 {
-
     private StateFinder state;
     private StateFinder refState;
     private Rigidbody rb;
+    private LeapInputUDP leap;
 
     private float gravity = Physics.gravity.magnitude;
     private float time_constant_y_velocity = 1.0f; // Normal-person coordinates
@@ -28,7 +28,7 @@ public class VelocityControl : MonoBehaviour
     // For flocking behavior
     [Header("Flocking Behavior")]
     [SerializeField] private float K_coh;
-    public float K_sep;
+    private float K_sep;
     public float K_align;
     public bool is_Slave;
 
@@ -59,7 +59,7 @@ public class VelocityControl : MonoBehaviour
     {
         state = GetComponent<StateFinder>();
         rb = GetComponent<Rigidbody>();
-
+        leap = GetComponent<LeapInputUDP>();
         offset = rb.transform.position;
     }
 
@@ -72,6 +72,9 @@ public class VelocityControl : MonoBehaviour
 
         if (is_Slave)
         {
+            // Get spread from Leap input
+            K_sep = leap.spread;
+
             // Get Master reference
             refState = masterDrone.GetComponent<StateFinder>();
             refState.GetState();

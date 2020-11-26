@@ -4851,7 +4851,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rigidbodyTargetIndex: 0
-  LeapControl: 1
+  LeapControl: 0
 --- !u!4 &5445160707720369434 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3394322291506172278, guid: c5a7642cdbba8cf4485432d4160b9bdb,
