@@ -44,8 +44,8 @@ public class LaserSensors : MonoBehaviour
         float tempFront;
         float tempBack;
 
-        Debug.DrawRay(transform.position, transform.forward, Color.red);
-        Debug.DrawRay(transform.position, transform.forward * -1, Color.red);
+        Debug.DrawRay(transform.position, transform.forward * 0.5f, Color.red);
+        Debug.DrawRay(transform.position, transform.forward * -0.5f, Color.red);
         Debug.DrawRay(transform.position, transform.up, Color.red);
         Debug.DrawRay(transform.position, transform.up * -1, Color.red);
         Debug.DrawRay(transform.position, transform.right * -1, Color.red);

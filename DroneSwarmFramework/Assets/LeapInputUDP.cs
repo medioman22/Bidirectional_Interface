@@ -23,7 +23,7 @@ public class LeapInputUDP : MonoBehaviour
 
     // infos
     public string lastReceivedUDPPacket = "";
-    public float spread = 0.0f;
+    public float spread = 0.85f;
 
     // start from shell
     private static void Main()
@@ -61,11 +61,7 @@ public class LeapInputUDP : MonoBehaviour
         // define port
         port = 5005;
 
-        // status
-        print("Test-Sending to this Port: nc -u 127.0.0.1  " + port + "");
-
-        // Lokalen Endpunkt definieren (wo Nachrichten empfangen werden).
-        // Einen neuen Thread für den Empfang eingehender Nachrichten erstellen.
+        // Define local endpoint and create thread
         receiveThread = new Thread(
             new ThreadStart(ReceiveData));
         receiveThread.IsBackground = true;
@@ -87,6 +83,7 @@ public class LeapInputUDP : MonoBehaviour
                 string msg = Encoding.UTF8.GetString(data);
                 lastReceivedUDPPacket = msg;
 
+                // 't' if timeout
                 if (msg != "t")
                     spread = float.Parse(msg, CultureInfo.InvariantCulture.NumberFormat);
             }

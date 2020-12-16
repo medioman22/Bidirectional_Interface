@@ -84,8 +84,7 @@ class Control_Listener(Leap.Listener):  #The Listener that we attach to the cont
                 #while (len(self.data_temp) < MESSAGE_SIZE_PER_HAND):
                 #    self.data_temp.append('f')
 
-            self.data[0:MESSAGE_SIZE_PER_HAND*2] = self.data_temp
-            #print(type(self.data[0]))
+            self.data[0:MESSAGE_SIZE_PER_HAND] = self.data_temp
 
     ###################################################
     # Send the message
@@ -93,8 +92,9 @@ class Control_Listener(Leap.Listener):  #The Listener that we attach to the cont
         MESSAGE = str(self.data)
         MESSAGE = MESSAGE.replace('[', '')
         MESSAGE = MESSAGE.replace(']', '')
-        print(len(MESSAGE))
+
         print(MESSAGE)
+        
         self.sock.sendto(MESSAGE, (self.UDP_IP, self.UDP_PORT))
 
     ###################################################

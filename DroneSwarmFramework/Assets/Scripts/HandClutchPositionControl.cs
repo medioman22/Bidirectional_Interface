@@ -123,6 +123,8 @@ public class HandClutchPositionControl : MonoBehaviour
             cameraViewRotation = cameraPosition.transform.eulerAngles.y;
             oldCameraViewRotation = cameraViewRotation;
 
+            // used with fps
+            /*
             if (cameraPosition.FPS)
                 dronePositionControl.controlYaw = false;
             else
@@ -130,7 +132,11 @@ public class HandClutchPositionControl : MonoBehaviour
                 dronePositionControl.controlYaw = true;
                 fixedYaw = transform.eulerAngles.y;
                 dronePositionControl.targetYaw = fixedYaw;
-            }
+            }*/
+
+            dronePositionControl.controlYaw = true;
+            fixedYaw = transform.eulerAngles.y;
+            dronePositionControl.targetYaw = fixedYaw;
         }
 
         // Instantiate hand target
@@ -166,7 +172,7 @@ public class HandClutchPositionControl : MonoBehaviour
             Vector3 direction = new Vector3(h, a, v);
 
             // Update observation input rotation if FPS mode
-            if (cameraPosition != null && cameraPosition.FPS)
+            if (cameraPosition != null)
             {
                 observationInputRotation = transform.eulerAngles.y;
             }
@@ -175,14 +181,14 @@ public class HandClutchPositionControl : MonoBehaviour
 
             dronePositionControl.target = handTarget.transform;
 
-            if (cameraPosition != null && cameraPosition.FPS)
-                droneVelocityControl.desiredYawRate = r * controllerRotationSpeed;
-            else if (cameraPosition != null && !cameraPosition.FPS)
+            if (cameraPosition != null)
+                // used in fps
+                //droneVelocityControl.desiredYawRate = r * controllerRotationSpeed;
                 dronePositionControl.targetYaw = fixedYaw;
         }
         else // IMU / Leap inputs, 
         {
-            Debug.Log("imu1=" + udp.GetIMU1());
+            //Debug.Log("imu1=" + udp.GetIMU1());
             //Debug.Log("leap = " + udp.GetLEAP());
 
             imu1 = udp.GetIMU1() - imu1_init;
@@ -294,7 +300,7 @@ public class HandClutchPositionControl : MonoBehaviour
             Vector3 direction = new Vector3(pitch, thrust, roll);
 
             // Update observation input rotation if FPS mode
-            if (cameraPosition != null && cameraPosition.FPS)
+            if (cameraPosition != null)
             {
                 observationInputRotation = transform.eulerAngles.y;
             }
@@ -303,9 +309,9 @@ public class HandClutchPositionControl : MonoBehaviour
 
             dronePositionControl.target = handTarget.transform;
 
-            if (cameraPosition != null && cameraPosition.FPS)
-                droneVelocityControl.desiredYawRate = yaw * controllerRotationSpeed;
-            else if (cameraPosition != null && !cameraPosition.FPS)
+            if (cameraPosition != null)
+                // used in fps
+                //droneVelocityControl.desiredYawRate = yaw * controllerRotationSpeed;
                 dronePositionControl.targetYaw = fixedYaw;
         }
     }

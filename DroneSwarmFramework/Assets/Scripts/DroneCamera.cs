@@ -1,31 +1,32 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class DroneCamera : MonoBehaviour
 {
-    public Camera fixedCamera;
-    public Camera firstPersonCamera;
-    public bool FPS = true;
+    // camera will follow this object
+    public Transform Target;
+    //camera transform
+    public Transform camTransform;
+    // offset between camera and target
+    private Vector3 Offset;
+    // change this value to get desired smoothness
+    public float SmoothTime = 0.3f;
 
-    public void LateUpdate()
+    // This value will change at the runtime depending on target movement. Initialize with zero vector.
+    private Vector3 velocity = Vector3.zero;
+
+    private void Start()
     {
-        if (FPS)
-        {
-            fixedCamera.enabled = false;
-            firstPersonCamera.enabled = true;
-
-            // Camera position
-            firstPersonCamera.transform.position = transform.position;
-
-            // Camera angles
-            firstPersonCamera.transform.rotation = Quaternion.Euler(0, transform.eulerAngles.y, 0);
-        }
-        else
-        {
-            fixedCamera.enabled = true;
-            firstPersonCamera.enabled = false;
-        }
+        Offset = camTransform.position - Target.position;
     }
 
+    private void LateUpdate()
+    {
+        // update position
+        Vector3 targetPosition = Target.position + Offset;
+        
+        camTransform.position = Vector3.Lerp(camTransform.position, targetPosition, SmoothTime);
+
+        // update rotation
+        //transform.LookAt(Target);
+    }
 }

@@ -27,10 +27,12 @@ public class VelocityControl : MonoBehaviour
 
     // For flocking behavior
     [Header("Flocking Behavior")]
-    [SerializeField] private float K_coh;
-    private float K_sep;
+    public float leap_scale_factor = 1;
+    [SerializeField] private float K_sep; 
+    public float K_coh;
     public float K_align;
     public bool is_Slave;
+    private float min_inter_distance = 0.1f;
 
     public GameObject masterDrone;
     public Transform swarm;
@@ -59,7 +61,7 @@ public class VelocityControl : MonoBehaviour
     {
         state = GetComponent<StateFinder>();
         rb = GetComponent<Rigidbody>();
-        leap = GetComponent<LeapInputUDP>();
+        leap = masterDrone.GetComponent<LeapInputUDP>();
         offset = rb.transform.position;
     }
 
@@ -68,12 +70,13 @@ public class VelocityControl : MonoBehaviour
     {
         state.GetState();
 
-        Debug.Log(this.gameObject.name + "at position: " + rb.transform.position);
+        //Debug.Log(this.gameObject.name + "at position: " + rb.transform.position);
 
         if (is_Slave)
         {
             // Get spread from Leap input
-            K_sep = leap.spread;
+            float closeness = 1 - leap.spread; // 0: far apart, 1: close together
+            K_sep = Mathf.Max(closeness, min_inter_distance)*leap_scale_factor; 
 
             // Get Master reference
             refState = masterDrone.GetComponent<StateFinder>();
