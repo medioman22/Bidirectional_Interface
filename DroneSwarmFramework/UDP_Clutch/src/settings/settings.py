@@ -136,7 +136,7 @@ def get_settings():
     # working folder depends on pc
     if settings['location'] == 'windows':
         # Windows folder
-        settings['data_folder'] = 'G:\\My Drive\\Matteo\\EPFL\\LIS\\PhD\\Natural_Mapping\\DATA\\acquired_data\\Experimental'
+        settings['data_folder'] = 'C:\\Users\\m-wue\\Desktop\\MA 3\\Project\\DroneSwarmFramework\\DroneSwarmFramework\\UDP_Clutch\\src'
     if settings['location'] == 'dronedome':
         # DroneDome folder
         settings['data_folder'] = 'D:\\LIS\\Matteo\\DATA\\acquired_data'

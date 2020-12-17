@@ -188,8 +188,8 @@ public class HandClutchPositionControl : MonoBehaviour
         }
         else // IMU / Leap inputs, 
         {
-            //Debug.Log("imu1=" + udp.GetIMU1());
-            //Debug.Log("leap = " + udp.GetLEAP());
+            Debug.Log("imu1=" + udp.GetIMU1());
+            Debug.Log("imu2 = " + udp.GetIMU2());
 
             imu1 = udp.GetIMU1() - imu1_init;
             imu2 = udp.GetIMU2() - imu2_init;

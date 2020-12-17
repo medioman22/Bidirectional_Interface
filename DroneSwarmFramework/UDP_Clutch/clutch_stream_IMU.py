@@ -16,6 +16,7 @@ import socket as soc
 import struct
 
 settings = get_settings()
+localPortIMUs = 29002 # local port to send IMU data
 
 
 # Datagram (udp) socket
@@ -191,7 +192,7 @@ def animate(i, xvec, yvec):
         # packs array into binary string
         msg_parsed = struct.pack('%sf' % len(msg), *msg)
         
-        unity_socket.sendto(msg_parsed, ('127.0.0.1', 29002))
+        unity_socket.sendto(msg_parsed, ('127.0.0.1', localPortIMUs))
 
 # setup sockets
 comm.setup_sockets()
