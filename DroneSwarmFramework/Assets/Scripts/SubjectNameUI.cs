@@ -12,7 +12,7 @@ public class SubjectNameUI : MonoBehaviour
     public Text invalidNameText;
     public Text goLabel;
 
-    public HandClutchPositionControl drone;
+    public InputManager drone;
     public DataLogger logger;
 
     // Start is called before the first frame update

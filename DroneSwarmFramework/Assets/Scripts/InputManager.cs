@@ -4,7 +4,7 @@ using UnityEngine;
 
 [RequireComponent(typeof(PositionControl))]
 [RequireComponent(typeof(VelocityControl))]
-public class HandClutchPositionControl : MonoBehaviour
+public class InputManager : MonoBehaviour
 {
     public int handRigidbodyID = 1;
     private OptitrackStreamingClient streamingClient;
@@ -129,7 +129,7 @@ public class HandClutchPositionControl : MonoBehaviour
             float v = -Input.GetAxis("Horizontal");
             float h = Input.GetAxis("Vertical");
             float a = Input.GetAxis("Altitude");
-            float spread = Input.GetAxis("Spread");
+            
 
             Vector3 direction = new Vector3(h, a, v);
             

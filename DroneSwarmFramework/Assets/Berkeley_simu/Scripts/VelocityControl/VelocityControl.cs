@@ -9,7 +9,7 @@ public class VelocityControl : MonoBehaviour
     private StateFinder refState;
     private Rigidbody rb;
     private LeapInputUDP leap;
-    private HandClutchPositionControl pos_ctrl;
+    private InputManager input;
 
     private float gravity = Physics.gravity.magnitude;
     private float time_constant_y_velocity = 1.0f; // Normal-person coordinates
@@ -34,6 +34,7 @@ public class VelocityControl : MonoBehaviour
     public float K_align;
     public bool is_Slave;
     private float min_inter_distance = 0.1f;
+    private float closeness = 0f;
 
     public GameObject masterDrone;
     public Transform swarm;
@@ -63,7 +64,7 @@ public class VelocityControl : MonoBehaviour
         state = GetComponent<StateFinder>();
         rb = GetComponent<Rigidbody>();
         leap = masterDrone.GetComponent<LeapInputUDP>();
-        pos_ctrl = masterDrone.GetComponent<HandClutchPositionControl>();
+        input = masterDrone.GetComponent<InputManager>();
         offset = rb.transform.position;
     }
 
@@ -77,16 +78,17 @@ public class VelocityControl : MonoBehaviour
 
         if (is_Slave)
         {
-            if (false)
+            if (input.useController)
             {
-
+                closeness += Input.GetAxis("Spread");
+                closeness = Mathf.Clamp(closeness, 0, 1); // 0: far apart, 1: close together
             }
             else // Get spread from Leap input
             {
-                float closeness = 1 - leap.spread; // 0: far apart, 1: close together
-                K_sep = Mathf.Max(closeness, min_inter_distance) * leap_scale_factor;
+                closeness = 1 - leap.spread; // 0: far apart, 1: close together
             }
-            
+
+            K_sep = Mathf.Max(closeness, min_inter_distance) * leap_scale_factor;
 
             // Get Master reference
             refState = masterDrone.GetComponent<StateFinder>();

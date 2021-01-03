@@ -14,7 +14,7 @@ public class DataLogger : MonoBehaviour
     private DroneCamera cameraPos;
     private CollisionChecker collision;
     private Rigidbody droneRgbd;
-    private HandClutchPositionControl handControl;
+    private InputManager handControl;
     private LaserSensors sensors;
     private ExperimentSetup expSetup;
 
@@ -78,7 +78,7 @@ public class DataLogger : MonoBehaviour
         cameraPos = drone.GetComponent<DroneCamera>();
         collision = drone.GetComponent<CollisionChecker>();
         droneRgbd = drone.GetComponent<Rigidbody>();
-        handControl = drone.GetComponent<HandClutchPositionControl>();
+        handControl = drone.GetComponent<InputManager>();
         sensors = drone.GetComponent<LaserSensors>();
         expSetup = this.GetComponent<ExperimentSetup>();
 

@@ -51,7 +51,7 @@ public class LogCheckPoint : MonoBehaviour
         {
             logger.recording = false;
             restartPathPanel.SetActive(true);
-            HandClutchPositionControl drone = Drone.GetComponent<HandClutchPositionControl>();
+            InputManager drone = Drone.GetComponent<InputManager>();
             restartPathButton.Select();
             StartCoroutine(WaitAndStopDrone(drone, SimulationData.startUpControlDelay / 3.0f));
         }
@@ -67,7 +67,7 @@ public class LogCheckPoint : MonoBehaviour
         }
     }
 
-    IEnumerator WaitAndStopDrone(HandClutchPositionControl drone, float time)
+    IEnumerator WaitAndStopDrone(InputManager drone, float time)
     {
         yield return new WaitForSeconds(time);
         drone.enabled = false;

@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class SimulationLoading : MonoBehaviour
 {
-    public HandClutchPositionControl drone;
+    public InputManager drone;
     public GameObject subjectNamePanel;
     public GameObject restartPathPanel;
     public Text goLabel;

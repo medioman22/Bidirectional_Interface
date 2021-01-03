@@ -5,7 +5,7 @@ using UnityEngine;
 public class LaserSensors : MonoBehaviour
 {
     private DroneCamera cameraPosition;
-    private HandClutchPositionControl posControl;
+    private InputManager posControl;
 
     [System.Serializable]
     public class ObstacleDistances
@@ -23,7 +23,7 @@ public class LaserSensors : MonoBehaviour
     void Start()
     {
         cameraPosition = GetComponent<DroneCamera>();
-        posControl = GetComponent<HandClutchPositionControl>();
+        posControl = GetComponent<InputManager>();
         allDistances = new ObstacleDistances();
     }
 
