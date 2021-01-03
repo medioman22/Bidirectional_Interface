@@ -9,6 +9,7 @@ public class VelocityControl : MonoBehaviour
     private StateFinder refState;
     private Rigidbody rb;
     private LeapInputUDP leap;
+    private HandClutchPositionControl pos_ctrl;
 
     private float gravity = Physics.gravity.magnitude;
     private float time_constant_y_velocity = 1.0f; // Normal-person coordinates
@@ -38,7 +39,7 @@ public class VelocityControl : MonoBehaviour
     public Transform swarm;
 
     private float flatness = 1.0f;
-    private float P = 6.0f;
+    private float P = 60.0f;
     private float D = 0.0f;
 
     // Velocity and other state attributes
@@ -62,21 +63,30 @@ public class VelocityControl : MonoBehaviour
         state = GetComponent<StateFinder>();
         rb = GetComponent<Rigidbody>();
         leap = masterDrone.GetComponent<LeapInputUDP>();
+        pos_ctrl = masterDrone.GetComponent<HandClutchPositionControl>();
         offset = rb.transform.position;
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
+        float dt = Time.fixedDeltaTime;
         state.GetState();
 
         //Debug.Log(this.gameObject.name + "at position: " + rb.transform.position);
 
         if (is_Slave)
         {
-            // Get spread from Leap input
-            float closeness = 1 - leap.spread; // 0: far apart, 1: close together
-            K_sep = Mathf.Max(closeness, min_inter_distance)*leap_scale_factor; 
+            if (false)
+            {
+
+            }
+            else // Get spread from Leap input
+            {
+                float closeness = 1 - leap.spread; // 0: far apart, 1: close together
+                K_sep = Mathf.Max(closeness, min_inter_distance) * leap_scale_factor;
+            }
+            
 
             // Get Master reference
             refState = masterDrone.GetComponent<StateFinder>();
@@ -84,13 +94,12 @@ public class VelocityControl : MonoBehaviour
 
             Vector3 masterVelocity = refState.VelocityVector;
             Vector3 masterPosition = masterDrone.transform.position;
-
-            Vector3 centerOfMass = masterPosition;
-            float dt = Time.fixedDeltaTime;
+            
             var drone = state.gameObject;
             var accelerationReynolds = K_coh * Cohesion(drone, masterPosition) + K_sep * Separation(drone) + K_align * Alignement(state, masterVelocity);
 
             Vector3 velocityReynolds = P * accelerationReynolds * dt + D * accelerationReynolds;
+
             desiredVx += velocityReynolds[0];
             desiredVz += velocityReynolds[2];
             desiredVy += velocityReynolds[1];
@@ -152,8 +161,8 @@ public class VelocityControl : MonoBehaviour
     Vector3 Cohesion(GameObject Drone, Vector3 centerPosition)
     {
         //In global coordinates
-        Vector3 _CohesionVector = centerPosition - Drone.transform.position;
-        return Drone.transform.InverseTransformDirection(_CohesionVector);
+        Vector3 CohesionVector = centerPosition - Drone.transform.position;
+        return Drone.transform.InverseTransformDirection(CohesionVector);
     }
 
     Vector3 Separation(GameObject Drone)

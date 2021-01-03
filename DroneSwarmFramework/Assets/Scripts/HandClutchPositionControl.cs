@@ -9,8 +9,6 @@ public class HandClutchPositionControl : MonoBehaviour
     public int handRigidbodyID = 1;
     private OptitrackStreamingClient streamingClient;
     private PositionControl dronePositionControl;
-    private VelocityControl droneVelocityControl;
-    private DroneCamera cameraPosition;
     private UDPCommandManager udp;
 
     public float handRoomScaling = 8.0f;
@@ -33,20 +31,14 @@ public class HandClutchPositionControl : MonoBehaviour
     public float IMU1Scale = 10.0f;
     public float IMU2Scale = 10.0f;
     public float LeapScale = 10.0f;
-    public float controllerSpeed = 0.025f;
+    public float controllerSpeed = 0.1f;
     public float controllerRotationSpeed = 0.5f;
 
     private GameObject handTarget;
 
-    private float cameraViewRotation = 0.0f;
-    private float oldCameraViewRotation = 0.0f;
-
     private Vector3 rawHandPosition = Vector3.zero;
     private Quaternion rawHandRotation = Quaternion.identity;
-    private Vector3 oldRawHandPosition;
-    private float referenceYaw = 0.0f;
 
-    private float fixedYaw = 0.0f;
     private Vector3 initPos;
 
     public enum imu_control
@@ -97,8 +89,6 @@ public class HandClutchPositionControl : MonoBehaviour
             return rawHandPosition;
         }
     }
-
-    // For logger
     public Quaternion MocapHandRotation
     {
         get
@@ -109,37 +99,11 @@ public class HandClutchPositionControl : MonoBehaviour
 
     void Start()
     {
-
         udp = GetComponent<UDPCommandManager>();
 
         dronePositionControl = GetComponent<PositionControl>();
-        droneVelocityControl = GetComponent<VelocityControl>();
 
-        // This one is optional, thus cameraPosition can be null
-        cameraPosition = GetComponent<DroneCamera>();
-        cameraViewRotation = 0.0f;
-        if (cameraPosition != null)
-        {
-            cameraViewRotation = cameraPosition.transform.eulerAngles.y;
-            oldCameraViewRotation = cameraViewRotation;
-
-            // used with fps
-            /*
-            if (cameraPosition.FPS)
-                dronePositionControl.controlYaw = false;
-            else
-            {
-                dronePositionControl.controlYaw = true;
-                fixedYaw = transform.eulerAngles.y;
-                dronePositionControl.targetYaw = fixedYaw;
-            }*/
-
-            dronePositionControl.controlYaw = true;
-            fixedYaw = transform.eulerAngles.y;
-            dronePositionControl.targetYaw = fixedYaw;
-        }
-
-        // Instantiate hand target
+        // Instantiate hand target (for optitrack)
         handTarget = new GameObject("Hand Target");
         handTarget.transform.localScale = 2.0f * SimulationData.DroneSize * Vector3.one;
         handTarget.transform.position = dronePositionControl.transform.position;
@@ -154,10 +118,8 @@ public class HandClutchPositionControl : MonoBehaviour
             Debug.LogError("Streaming client not found, place a streaming client in the scene.");
         }
 
-
         imu1_init = udp.GetIMU1();
         imu2_init = udp.GetIMU2();
-        //leap_init = udp.GetLEAP();
     }
 
     void Update()
@@ -167,30 +129,17 @@ public class HandClutchPositionControl : MonoBehaviour
             float v = -Input.GetAxis("Horizontal");
             float h = Input.GetAxis("Vertical");
             float a = Input.GetAxis("Altitude");
-            float r = Input.GetAxis("Rotation");
+            float spread = Input.GetAxis("Spread");
 
             Vector3 direction = new Vector3(h, a, v);
-
-            // Update observation input rotation if FPS mode
-            if (cameraPosition != null)
-            {
-                observationInputRotation = transform.eulerAngles.y;
-            }
-
+            
             handTarget.transform.position += Quaternion.Euler(0, observationInputRotation, 0) * direction * controllerSpeed;
 
             dronePositionControl.target = handTarget.transform;
-
-            if (cameraPosition != null)
-                // used in fps
-                //droneVelocityControl.desiredYawRate = r * controllerRotationSpeed;
-                dronePositionControl.targetYaw = fixedYaw;
         }
+
         else // IMU / Leap inputs, 
         {
-            Debug.Log("imu1=" + udp.GetIMU1());
-            Debug.Log("imu2 = " + udp.GetIMU2());
-
             imu1 = udp.GetIMU1() - imu1_init;
             imu2 = udp.GetIMU2() - imu2_init;
 
@@ -205,36 +154,6 @@ public class HandClutchPositionControl : MonoBehaviour
             {
                 imu1_val = -imu1.y / IMU2Scale;
             }
-
-            //float leap_val = -leap.z / LeapScale;
-
-            //switch (LEAP_CONTROLS)
-            //{
-            //    case leap_control.ROLL:
-            //        roll = leap_val;
-            //        break;
-            //    case leap_control.PITCH:
-            //        pitch = leap_val;
-            //        break;
-            //    case leap_control.YAW:
-            //        yaw = leap_val;
-            //        break;
-            //    case leap_control.THRUST:
-            //        thrust = leap_val;
-            //        break;
-            //    case leap_control.MINUS_ROLL:
-            //        roll = -leap_val;
-            //        break;
-            //    case leap_control.MINUS_PITCH:
-            //        pitch = -leap_val;
-            //        break;
-            //    case leap_control.MINUS_YAW:
-            //        yaw = -leap_val;
-            //        break;
-            //    case leap_control.MINUS_THRUST:
-            //        thrust = -leap_val;
-            //        break;
-            //}
 
             switch (IMU_FOREARM_CONTROLS)
             {
@@ -299,20 +218,10 @@ public class HandClutchPositionControl : MonoBehaviour
 
             Vector3 direction = new Vector3(pitch, thrust, roll);
 
-            // Update observation input rotation if FPS mode
-            if (cameraPosition != null)
-            {
-                observationInputRotation = transform.eulerAngles.y;
-            }
-
             handTarget.transform.position = initPos + Quaternion.Euler(0, observationInputRotation, 0) * direction;
 
             dronePositionControl.target = handTarget.transform;
 
-            if (cameraPosition != null)
-                // used in fps
-                //droneVelocityControl.desiredYawRate = yaw * controllerRotationSpeed;
-                dronePositionControl.targetYaw = fixedYaw;
         }
     }
 }
