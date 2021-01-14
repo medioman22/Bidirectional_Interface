@@ -12,8 +12,6 @@ public class LaserSensors : MonoBehaviour
     {
         public float frontObstacle;
         public float backObstacle;
-        public float upObstacle;
-        public float downObstacle;
         public float leftObstacle;
         public float rightObstacle;
     }
@@ -30,43 +28,26 @@ public class LaserSensors : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        float theta;
-
         RaycastHit frontHit;
         RaycastHit backHit;
-        RaycastHit upHit;
-        RaycastHit downHit;
         RaycastHit leftHit;
         RaycastHit rightHit;
 
-        float tempRight;
-        float tempLeft;
-        float tempFront;
-        float tempBack;
-
-        Debug.DrawRay(transform.position, transform.forward * 0.5f, Color.red);
-        Debug.DrawRay(transform.position, transform.forward * -0.5f, Color.red);
-        Debug.DrawRay(transform.position, transform.up, Color.red);
-        Debug.DrawRay(transform.position, transform.up * -1, Color.red);
+        Debug.DrawRay(transform.position, transform.forward * 1f, Color.red);
+        Debug.DrawRay(transform.position, transform.forward * -1f, Color.red);
         Debug.DrawRay(transform.position, transform.right * -1, Color.red);
         Debug.DrawRay(transform.position, transform.right, Color.red);
 
-        if (Physics.Raycast(transform.position, transform.forward, out frontHit)) {
+        if (Physics.Raycast(transform.position, transform.right, out frontHit)) {
             allDistances.frontObstacle = frontHit.distance;
         }
-        if (Physics.Raycast(transform.position, transform.forward * -1, out backHit)) {
+        if (Physics.Raycast(transform.position, transform.right * -1, out backHit)) {
             allDistances.backObstacle = backHit.distance;
         }
-        if (Physics.Raycast(transform.position, transform.up, out upHit)) {
-            allDistances.upObstacle = upHit.distance;
-        }
-        if (Physics.Raycast(transform.position, transform.up * -1, out downHit)) {
-            allDistances.downObstacle = downHit.distance;
-        }
-        if (Physics.Raycast(transform.position, transform.right * -1, out leftHit)) {
+        if (Physics.Raycast(transform.position, transform.forward, out leftHit)) {
             allDistances.leftObstacle = leftHit.distance;
         }
-        if (Physics.Raycast(transform.position, transform.right, out rightHit)) {
+        if (Physics.Raycast(transform.position, transform.forward * -1, out rightHit)) {
             allDistances.rightObstacle = rightHit.distance;
         }
 

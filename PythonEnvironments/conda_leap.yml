@@ -1,0 +1,30 @@
+name: leap
+channels:
+  - defaults
+dependencies:
+  - blas=1.0=mkl
+  - ca-certificates=2020.1.1=0
+  - certifi=2019.11.28=py27_0
+  - icc_rt=2019.0.0=h0cc432a_1
+  - intel-openmp=2020.0=166
+  - mkl=2020.0=166
+  - mkl-service=2.3.0=py27h0b88c2a_0
+  - mkl_fft=1.0.15=py27h44c1dab_0
+  - numpy=1.16.6=py27hcd21bde_0
+  - numpy-base=1.16.6=py27hb1d0314_0
+  - openssl=1.1.1e=h0c8e037_0
+  - pip=19.3.1=py27_0
+  - python=2.7.17=h930f6bb_0
+  - setuptools=44.0.0=py27_0
+  - six=1.13.0=py27_0
+  - sqlite=3.30.1=h0c8e037_0
+  - vc=9=h7299396_1
+  - vs2008_runtime=9.00.30729.1=hfaea7d5_1
+  - wheel=0.33.6=py27_0
+  - wincertstore=0.2=py27h87a2792_0
+  - pip:
+    - pyquaternion==0.9.5
+    - quaternion==0.3.1
+    - quaternions==0.4
+prefix: C:\Users\defoo\anaconda3\envs\leap
+

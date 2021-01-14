@@ -12,6 +12,7 @@ public class SubjectNameUI : MonoBehaviour
     public Text invalidNameText;
     public Text goLabel;
 
+    public UDPCommandManager udp;
     public InputManager drone;
     public DataLogger logger;
 
@@ -19,6 +20,7 @@ public class SubjectNameUI : MonoBehaviour
     void Start()
     {
         validateButton.onClick.AddListener(OnValidateButtonPressed);
+        udp = GetComponent<UDPCommandManager>();
     }
 
     void Update()
@@ -41,13 +43,10 @@ public class SubjectNameUI : MonoBehaviour
             SimulationData.subjectName = name;
             logger.subjectName = name;
 
-            drone.useController = useControllerToggle.isOn;
-            SimulationData.useController = useControllerToggle.isOn;
+            drone.motionControl = useControllerToggle.isOn;
+            SimulationData.motionControl = useControllerToggle.isOn;
             StartCoroutine(WaitAndActivateDrone(SimulationData.startUpControlDelay));
             subjectNamePanel.SetActive(false);
-            // // Reload Scene
-            // Scene scene = SceneManager.GetActiveScene(); 
-            // SceneManager.LoadScene(scene.name);
         }
         else
         {
@@ -72,6 +71,7 @@ public class SubjectNameUI : MonoBehaviour
         yield return new WaitForSeconds(time);
 
         drone.enabled = true;
+        //udp.disable_input = false;
         StartCoroutine(AnimateGoLabel(1.0f));
     }
 

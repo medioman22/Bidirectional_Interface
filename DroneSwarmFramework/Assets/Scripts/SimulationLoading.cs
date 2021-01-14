@@ -28,7 +28,7 @@ public class SimulationLoading : MonoBehaviour
             logger.subjectName = SimulationData.subjectName;
             
             // Allow control of drone after 3 seconds
-            drone.useController = SimulationData.useController;
+            drone.motionControl= SimulationData.motionControl;
             StartCoroutine(WaitAndActivateDrone(SimulationData.startUpControlDelay));
         }
     }

@@ -14,7 +14,7 @@ public class TestOculusTrigger : MonoBehaviour
 
     // Update is called once per frame
     void Update()
-    {
-        Pressed = OVRInput.Get(OVRInput.RawButton.RIndexTrigger);
+    { 
+
     }
 }

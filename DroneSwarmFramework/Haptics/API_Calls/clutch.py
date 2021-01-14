@@ -12,7 +12,7 @@ import os
 
 fourcl = FourClutches()
 
-DISTANCE_THRESHOLD = 0.5
+DISTANCE_THRESHOLD = 1
 MAXIMUM_MOTOR_INPUT = 99
 
 ############# setup UDP communication #############
@@ -28,7 +28,7 @@ def get_data(my_socket):
 
     while data_ready:
     
-        t, _ = my_socket.recvfrom(1024)  # buffer size is 1024 bytes
+        t, _ = my_socket.recvfrom(1024)  # buffer size is 1048 bytes
         data.append(t)
         data_ready = False
         data_ready = select.select([my_socket], [], [], 0)[0]
@@ -46,22 +46,20 @@ distances_socket.bind((UDP_IP, UDP_PORT_DISTANCES))
 ##################################################
 
 
-distances_dict = {'rightObstacle': 0,
-                  'leftObstacle': 0,
-                  'upObstacle': 0,
-                  'downObstacle': 0,
+distances_dict = {
+                  'frontObstacle': 0,
                   'backObstacle': 0,
-                  'frontObstacle': 0}
+                  'leftObstacle': 0,
+                  'rightObstacle': 0
+                  }
 
 
 def fillDict(current_data):
 
-    distances_dict['rightObstacle'] = current_data[0]
-    distances_dict['leftObstacle'] = current_data[1]
-    distances_dict['upObstacle'] = current_data[2]
-    distances_dict['downObstacle'] = current_data[3]
-    distances_dict['backObstacle'] = current_data[4]
-    distances_dict['frontObstacle'] = current_data[5]
+    distances_dict['frontObstacle'] = current_data[0]
+    distances_dict['backObstacle'] = current_data[1]
+    distances_dict['leftObstacle'] = current_data[2]
+    distances_dict['rightObstacle'] = current_data[3]
 
 
 # had to sleep otherwise hardware overwhelmed
@@ -78,8 +76,8 @@ while(True):
 
         # send only the last packet otherwise too many packets sent too fast
         packet = distances[-1]
-        # 6 floats
-        strs = 'ffffff'
+        # 4 floats
+        strs = 'ffff'
         # unpack.
         unpacked = struct.unpack(strs, packet)
         # parse the data
@@ -88,18 +86,14 @@ while(True):
 
         state = 0
 
-        if distances_dict['leftObstacle'] < DISTANCE_THRESHOLD:
-            state = 1
-        if distances_dict['rightObstacle'] < DISTANCE_THRESHOLD:
-            state = 2
-        if distances_dict['upObstacle'] < DISTANCE_THRESHOLD:
-            state = 1
-        if distances_dict['downObstacle'] < DISTANCE_THRESHOLD:
-            state = 2
         if distances_dict['frontObstacle'] < DISTANCE_THRESHOLD:
-            state = 3
+            state += 1
         if distances_dict['backObstacle'] < DISTANCE_THRESHOLD:
-            state = 4
+            state += 2
+        if distances_dict['leftObstacle'] < DISTANCE_THRESHOLD:
+            state += 4
+        if distances_dict['rightObstacle'] < DISTANCE_THRESHOLD:
+            state += 8
             
         print('state = {}'.format(state))
 

@@ -7,13 +7,14 @@ using System.IO;
 public class DataLogger : MonoBehaviour
 {
     public GameObject drone;
+    public GameObject masterDrone;
 
     // all the classes to get informations
     private PositionControl positionCtrl;
     private VelocityControl velocityCtrl;
-    private DroneCamera cameraPos;
     private CollisionChecker collision;
     private Rigidbody droneRgbd;
+    private Rigidbody slaveDroneRgbd;
     private InputManager handControl;
     private LaserSensors sensors;
     private ExperimentSetup expSetup;
@@ -45,7 +46,10 @@ public class DataLogger : MonoBehaviour
         public Quaternion mocapQuaternion;
         // Output
         public Vector3 dronePosition;
+        public Vector3 slaveDronePosition;
         public Vector3 droneSpeed;
+        public Vector3 slaveDroneSpeed;
+        public float spread;
 
         public float frontObstacle;
         public float backObstacle;
@@ -72,13 +76,15 @@ public class DataLogger : MonoBehaviour
 
     private void Start()
     {
-        // all the classes to get informations
-        positionCtrl = drone.GetComponent<PositionControl>();
+        // Master drone properties: position (target, actual) and velocity
+        positionCtrl = masterDrone.GetComponent<PositionControl>();
+        droneRgbd = masterDrone.GetComponent<Rigidbody>();
+        handControl = masterDrone.GetComponent<InputManager>();
+
+        // Slave drone: positon, speed, spread, sensor distances, collision detection
         velocityCtrl = drone.GetComponent<VelocityControl>();
-        cameraPos = drone.GetComponent<DroneCamera>();
+        slaveDroneRgbd = drone.GetComponent<Rigidbody>();
         collision = drone.GetComponent<CollisionChecker>();
-        droneRgbd = drone.GetComponent<Rigidbody>();
-        handControl = drone.GetComponent<InputManager>();
         sensors = drone.GetComponent<LaserSensors>();
         expSetup = this.GetComponent<ExperimentSetup>();
 
@@ -97,27 +103,26 @@ public class DataLogger : MonoBehaviour
             // Input
             currentLog.absoluteTime = Time.time;
             currentLog.differentialTime = Time.deltaTime;
-            currentLog.controlPosition = positionCtrl.target.position;
-            currentLog.controlSpeed = new Vector3(velocityCtrl.desiredVx, 0.0f, velocityCtrl.desiredVz);
-            currentLog.desiredYawRate = velocityCtrl.desiredYawRate;
-            if (!handControl.useController)
-            {
+            if (handControl.motionControl)
                 currentLog.clutch = handControl.clutchActivated;
-                currentLog.mocapPosition = handControl.MocapHandPosition;
-                currentLog.mocapQuaternion = handControl.MocapHandRotation;
-            }
 
-            // Output
+            // Master Output
+            currentLog.controlPosition = positionCtrl.target.position;
             currentLog.dronePosition = droneRgbd.position;
             currentLog.droneSpeed = droneRgbd.velocity;
+
+            // Slave drone
+            currentLog.slaveDronePosition = slaveDroneRgbd.position;
+            currentLog.slaveDroneSpeed = slaveDroneRgbd.velocity;
+            currentLog.controlSpeed = new Vector3(velocityCtrl.desiredVx, 0.0f, velocityCtrl.desiredVz);
+            currentLog.spread = velocityCtrl.closeness;
             currentLog.collision = collision.IsColliding;
-            // sensors
+
+            //sensors
             currentLog.frontObstacle = sensors.allDistances.frontObstacle;
             currentLog.backObstacle = sensors.allDistances.backObstacle;
             currentLog.leftObstacle = sensors.allDistances.leftObstacle;
             currentLog.rightObstacle = sensors.allDistances.rightObstacle;
-            currentLog.upObstacle = sensors.allDistances.upObstacle;
-            currentLog.downObstacle = sensors.allDistances.downObstacle;
 
             cumulatedLogs.allLogs.Add(currentLog);
         }
@@ -137,7 +142,7 @@ public class DataLogger : MonoBehaviour
 
         // Create filename
         string experimentType;
-        if (handControl.useController)
+        if (!handControl.motionControl)
         {
             experimentType = "Controller";
         }

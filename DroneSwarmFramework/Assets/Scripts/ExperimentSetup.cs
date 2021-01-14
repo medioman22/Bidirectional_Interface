@@ -10,12 +10,14 @@ public enum expType
 
 public enum hapticType
 {
-    ApproachX = 0,
-    ApproachY = 1,
-    ApproachZ = 2,
-    GoThroughX = 3,
-    GoThroughY = 4,
-    GoThroughZ = 5,
+    Maze1 = 0,
+    Maze2 = 1,
+    Maze3 = 2,
+    Maze4 = 3,
+    Maze5 = 4,
+    Maze6 = 5,
+    Maze7 = 6,
+    Maze8 = 7,
 }
 
 
@@ -29,19 +31,23 @@ public class ExperimentSetup : MonoBehaviour
     public GameObject haptics;
     public GameObject learning;
     public GameObject drone;
-    public GameObject light;
+    //public GameObject light;
 
-    GameObject panelX;
-    GameObject panelY;
-    GameObject panelZ;
-    GameObject gateX;
-    GameObject gateY;
-    GameObject gateZ;
+    GameObject Maze1;
+    GameObject Maze2;
+    GameObject Maze3;
+    GameObject Maze4;
+    GameObject Maze5;
+    GameObject Maze6;
+    GameObject Maze7;
+    GameObject Maze8;
+    //GameObject Playground;
 
 
     // Start is called before the first frame update
     void Start()
     {
+
     }
 
     // Update is called once per frame
@@ -69,12 +75,15 @@ public class ExperimentSetup : MonoBehaviour
 
     public void SetupExperiment()
     {
-        panelX = haptics.transform.Find("Obstacles").gameObject.transform.Find("PanelX").gameObject;
-        panelY = haptics.transform.Find("Obstacles").gameObject.transform.Find("PanelY").gameObject;
-        panelZ = haptics.transform.Find("Obstacles").gameObject.transform.Find("PanelZ").gameObject;
-        gateX = haptics.transform.Find("Obstacles").gameObject.transform.Find("GateX").gameObject;
-        gateY = haptics.transform.Find("Obstacles").gameObject.transform.Find("GateY").gameObject;
-        gateZ = haptics.transform.Find("Obstacles").gameObject.transform.Find("GateZ").gameObject;
+        Maze1 = haptics.transform.Find("Mazes").gameObject.transform.Find("Maze1").gameObject; ; //.gameObject.transform.Find("PanelX").gameObject;
+        Maze2 = haptics.transform.Find("Mazes").gameObject.transform.Find("Maze2").gameObject;
+        Maze3 = haptics.transform.Find("Mazes").gameObject.transform.Find("Maze3").gameObject;
+        Maze4 = haptics.transform.Find("Mazes").gameObject.transform.Find("Maze4").gameObject;
+        Maze5 = haptics.transform.Find("Mazes").gameObject.transform.Find("Maze5").gameObject;
+        Maze6 = haptics.transform.Find("Mazes").gameObject.transform.Find("Maze6").gameObject;
+        Maze7 = haptics.transform.Find("Mazes").gameObject.transform.Find("Maze7").gameObject;
+        Maze8 = haptics.transform.Find("Mazes").gameObject.transform.Find("Maze8").gameObject;
+        //Playground = learning.transform.Find("Playground").gameObject;
 
         Light lightObject = light.GetComponent<Light>();
 
@@ -84,8 +93,6 @@ public class ExperimentSetup : MonoBehaviour
 
             haptics.SetActive(false);
             learning.SetActive(true);
-            drone.transform.position = new Vector3(-3f, 0.4f, -3f);
-            drone.transform.rotation = Quaternion.Euler(0, 90, 0);
         }
         else if (ExperimentType == expType.Haptics)
         {
@@ -93,66 +100,70 @@ public class ExperimentSetup : MonoBehaviour
 
             haptics.SetActive(true);
             learning.SetActive(false);
-            drone.transform.position = new Vector3(0.0f, 0.4f, 0.0f);
-            drone.transform.rotation = Quaternion.Euler(0, 90, 0);
             DeactivateAllHapticObstacles();
 
             GameObject is_active;
 
-            if (HapticType == hapticType.ApproachX)
+            if (HapticType == hapticType.Maze1)
             {
-                is_active = panelX;
+                is_active = Maze1;
             }
-            else if (HapticType == hapticType.ApproachY)
+            else if (HapticType == hapticType.Maze2)
             {
-                is_active = panelY;
+                is_active = Maze2;
             }
-            else if (HapticType == hapticType.ApproachZ)
+            else if (HapticType == hapticType.Maze3)
             {
-                is_active = panelZ;
+                is_active = Maze3;
             }
-            else if (HapticType == hapticType.GoThroughX)
+            else if (HapticType == hapticType.Maze4)
             {
-                is_active = gateX;
+                is_active = Maze4;
             }
-            else if (HapticType == hapticType.GoThroughY)
+            else if (HapticType == hapticType.Maze5)
             {
-                is_active = gateY;
+                is_active = Maze5;
             }
-            else if (HapticType == hapticType.GoThroughZ)
+            else if (HapticType == hapticType.Maze6)
             {
-                is_active = gateZ;
+                is_active = Maze6;
+            }
+            else if (HapticType == hapticType.Maze7)
+            {
+                is_active = Maze7;
+            }
+            else if (HapticType == hapticType.Maze8)
+            {
+                is_active = Maze8;
             }
             else
-            {
-                is_active = panelX;
-            }
+                is_active = Maze1;
 
             is_active.SetActive(true);
 
-
-            if (HapticType == hapticType.GoThroughX || HapticType == hapticType.GoThroughY || HapticType == hapticType.GoThroughZ)
+            // Turn off color change if practising
+            ColorCollisionChildren col = is_active.GetComponent<ColorCollisionChildren>();
+            if (Practice)
             {
-                ColorCollisionChildren col = is_active.GetComponent<ColorCollisionChildren>();
-                if (Practice)
-                {
-                    col.KeepColor = false;
-                }
-                else
-                {
-                    col.KeepColor = true;
-                }
+                col.KeepColor = false;
             }
+            else
+            {
+                col.KeepColor = true;
+            }
+            
         }
     }
 
     void DeactivateAllHapticObstacles()
     {
-        panelX.SetActive(false);
-        panelY.SetActive(false);
-        panelZ.SetActive(false);
-        gateX.SetActive(false);
-        gateY.SetActive(false);
-        gateZ.SetActive(false);
+        Maze1.SetActive(false);
+        Maze2.SetActive(false);
+        Maze3.SetActive(false);
+        Maze4.SetActive(false);
+        Maze5.SetActive(false);
+        Maze6.SetActive(false);
+        Maze7.SetActive(false);
+        Maze8.SetActive(false);
     }
 }

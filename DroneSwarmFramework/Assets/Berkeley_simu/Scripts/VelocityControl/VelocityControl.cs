@@ -28,13 +28,13 @@ public class VelocityControl : MonoBehaviour
 
     // For flocking behavior
     [Header("Flocking Behavior")]
-    public float leap_scale_factor = 1;
-    [SerializeField] private float K_sep; 
+    public float spread_scale_factor = 8.0f;
+    public float K_sep; 
     public float K_coh;
     public float K_align;
     public bool is_Slave;
-    private float min_inter_distance = 0.1f;
-    private float closeness = 0f;
+    public float closeness = 0.0f;
+    private float min_inter_distance = 0.05f;
 
     public GameObject masterDrone;
     public Transform swarm;
@@ -74,11 +74,11 @@ public class VelocityControl : MonoBehaviour
         float dt = Time.fixedDeltaTime;
         state.GetState();
 
-        //Debug.Log(this.gameObject.name + "at position: " + rb.transform.position);
+        //Debug.Log(this.gameObject.name + " at position: " + rb.transform.position);
 
         if (is_Slave)
         {
-            if (input.useController)
+            if (!input.motionControl)
             {
                 closeness += Input.GetAxis("Spread");
                 closeness = Mathf.Clamp(closeness, 0, 1); // 0: far apart, 1: close together
@@ -88,7 +88,7 @@ public class VelocityControl : MonoBehaviour
                 closeness = 1 - leap.spread; // 0: far apart, 1: close together
             }
 
-            K_sep = Mathf.Max(closeness, min_inter_distance) * leap_scale_factor;
+            K_sep = Mathf.Max(closeness, min_inter_distance) * spread_scale_factor;
 
             // Get Master reference
             refState = masterDrone.GetComponent<StateFinder>();
@@ -104,7 +104,7 @@ public class VelocityControl : MonoBehaviour
 
             desiredVx += velocityReynolds[0];
             desiredVz += velocityReynolds[2];
-            desiredVy += velocityReynolds[1];
+            //desiredVy += velocityReynolds[1];
         }
 
         CalculateForces();
@@ -159,7 +159,7 @@ public class VelocityControl : MonoBehaviour
         propRL.transform.Rotate(Vector3.forward * Time.deltaTime * desiredThrust * speedScale);
     }
 
-    // Reynold's Flocking algorithm
+    // Reynolds Flocking algorithm
     Vector3 Cohesion(GameObject Drone, Vector3 centerPosition)
     {
         //In global coordinates

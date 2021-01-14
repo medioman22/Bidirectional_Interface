@@ -6,10 +6,15 @@ using System.Text;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
+using System.Linq;
 
 public class CommunicationMotors : MonoBehaviour
 {
-    private LaserSensors sensorValues;
+    private LaserSensors sensorFR;
+    private LaserSensors sensorBR;
+    private LaserSensors sensorBL;
+    private LaserSensors sensorFL;
+
     private float[] distances = new float[SimulationData.nbDistanceSensors];
     byte[] data;
 
@@ -19,9 +24,18 @@ public class CommunicationMotors : MonoBehaviour
     IPEndPoint ipEndPoint;
     UdpClient client;
 
+    // Drones in swarm
+    public GameObject droneFR;
+    public GameObject droneBR;
+    public GameObject droneBL;
+    public GameObject droneFL;
+
     void Start()
     {
-        sensorValues = GetComponent<LaserSensors>();
+        sensorFR = droneFR.GetComponent<LaserSensors>();
+        sensorBR = droneBR.GetComponent<LaserSensors>();
+        sensorBL = droneBL.GetComponent<LaserSensors>();
+        sensorFL = droneFL.GetComponent<LaserSensors>();
 
         data = new byte[SimulationData.nbDistanceSensors * 4];
 
@@ -31,7 +45,7 @@ public class CommunicationMotors : MonoBehaviour
         client = new UdpClient();
     }
 
-    private void Update()
+    private void LateUpdate()
     {
         fillArray();
         sendDistancesToPython();
@@ -43,10 +57,10 @@ public class CommunicationMotors : MonoBehaviour
         for (int j=0; j<SimulationData.nbDistanceSensors; j++)
         {
             curByte = System.BitConverter.GetBytes(distances[j]);
-            data[(j*4)] = curByte[0];
-            data[(j*4)+1] = curByte[1];
-            data[(j*4)+2] = curByte[2];
-            data[(j*4)+3] = curByte[3];
+            data[j * 4] = curByte[0];
+            data[j * 4 + 1] = curByte[1];
+            data[j * 4 + 2] = curByte[2];
+            data[j * 4 + 3] = curByte[3];
         }
 
         client.Send(data, data.Length, ipEndPoint);
@@ -54,12 +68,22 @@ public class CommunicationMotors : MonoBehaviour
 
     private void fillArray()
     {
-        distances[0] = sensorValues.allDistances.frontObstacle;
-        distances[1] = sensorValues.allDistances.backObstacle;
-        distances[2] = sensorValues.allDistances.upObstacle;
-        distances[3] = sensorValues.allDistances.downObstacle;
-        distances[4] = sensorValues.allDistances.leftObstacle;
-        distances[5] = sensorValues.allDistances.rightObstacle;
+        // Find minimum for all drones in every direction
+        float[] front_distances = {sensorFR.allDistances.frontObstacle, sensorBR.allDistances.frontObstacle,
+                                   sensorBL.allDistances.frontObstacle, sensorFL.allDistances.frontObstacle};
+        distances[0] = front_distances.Min();
+
+        float[] back_distances = {sensorFR.allDistances.backObstacle, sensorBR.allDistances.backObstacle,
+                                  sensorBL.allDistances.backObstacle, sensorFL.allDistances.backObstacle};
+        distances[1] = back_distances.Min();
+
+        float[] left_distances = {sensorFR.allDistances.leftObstacle, sensorBR.allDistances.leftObstacle,
+                                  sensorBL.allDistances.leftObstacle, sensorFL.allDistances.leftObstacle};
+        distances[2] = left_distances.Min();
+
+        float[] right_distances = {sensorFR.allDistances.rightObstacle, sensorBR.allDistances.rightObstacle,
+                                   sensorBL.allDistances.rightObstacle, sensorFL.allDistances.rightObstacle};
+        distances[3] = right_distances.Min();
     }
 
 
@@ -69,6 +93,7 @@ public class CommunicationMotors : MonoBehaviour
         {
             distances[i] = float.PositiveInfinity;
         }
+
 
         sendDistancesToPython();
         System.Threading.Thread.Sleep(100);

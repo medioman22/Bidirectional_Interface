@@ -16,7 +16,7 @@ class Control_Listener(Leap.Listener):  #The Listener that we attach to the cont
     def __init__(self, verbose):
         super(Control_Listener, self).__init__()  #Initialize like a normal listener
         self.verbose = False
-        self.data = [None] * MESSAGE_SIZE_PER_HAND * 2  # Empty Message for 2 hands.
+        self.data = [None] * MESSAGE_SIZE_PER_HAND # Empty Message for 1 hand.
         self.data_temp = []
         self.UDP_IP = "127.0.0.1"
         self.UDP_PORT = 5005
@@ -75,14 +75,14 @@ class Control_Listener(Leap.Listener):  #The Listener that we attach to the cont
             hand = frame.hands[0]
             self.data_temp.append(hand.grab_strength)
 
-                # Other values that might be interesting
-                #self.data_temp.append(hand.is_right)
-                #self.data_temp.append(toVector3(hand.palm_position))
-                #self.data_temp.append(toVector3(hand.rotation_matrix(first_frame).x_basis))
+            # Other values that might be interesting
+            #self.data_temp.append(hand.is_right)
+            #self.data_temp.append(toVector3(hand.palm_position))
+            #self.data_temp.append(toVector3(hand.rotation_matrix(first_frame).x_basis))
 
-                # Padding if ever necessary
-                #while (len(self.data_temp) < MESSAGE_SIZE_PER_HAND):
-                #    self.data_temp.append('f')
+            # Padding if ever necessary
+            #while (len(self.data_temp) < MESSAGE_SIZE_PER_HAND):
+            #    self.data_temp.append('f')
 
             self.data[0:MESSAGE_SIZE_PER_HAND] = self.data_temp
 

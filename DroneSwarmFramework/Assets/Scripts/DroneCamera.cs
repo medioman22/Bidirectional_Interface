@@ -23,7 +23,7 @@ public class DroneCamera : MonoBehaviour
 
     private void Start()
     {
-        // ALl i need
+        // Keeping the same offset
         Offset = camTransform.position - Target.position;
 
         // For camera rotation

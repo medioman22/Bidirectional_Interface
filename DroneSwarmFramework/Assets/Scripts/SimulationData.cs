@@ -19,7 +19,7 @@ public static class SimulationData
 
     public static readonly Vector3 RoomDimensions = new Vector3(8, 6, 8); // [m^3]
 
-    public const int nbDistanceSensors = 6;
+    public const int nbDistanceSensors = 4;
 
     public const float startUpControlDelay = 1.5f; // s
 
@@ -29,7 +29,7 @@ public static class SimulationData
     // This variable is used to store the name of the current subject
     public static string subjectName = "";
 
-    // This variable is used to store if the drone is controlled via controller or mocap
-    public static bool useController = false;
+    // This variable is used to store if the drone is controlled via keyboard (default) or motion trackers
+    public static bool motionControl = false;
 }
 

@@ -31,6 +31,9 @@ public class UDPCommandManager : MonoBehaviour
         yaw2 = 5
     }
 
+    private GameObject canvas;
+    public bool disable_input = false;
+
     //[HideInInspector]
     private float[] controlCommands = new float[SimulationData.nbParametersMocap];
     private float[] IMUvalues = new float[SimulationData.nbIMUValues];
@@ -47,6 +50,10 @@ public class UDPCommandManager : MonoBehaviour
 
     void Start()
     {
+        canvas = GameObject.Find("SetSubjectNameUI");
+        if(canvas!=null)
+            disable_input = canvas.activeSelf;
+
         socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
         socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
         socket.EnableBroadcast = true;
@@ -60,8 +67,13 @@ public class UDPCommandManager : MonoBehaviour
 
     private void Update()
     {
-        receiveCommandsFromPython();
-        receiveCommandsFromIMUs();
+        disable_input = canvas.activeSelf;
+
+        if (!disable_input)
+        {
+            receiveCommandsFromPython();
+            receiveCommandsFromIMUs();
+        }
     }
 
     private void receiveCommandsFromPython() //receive commands

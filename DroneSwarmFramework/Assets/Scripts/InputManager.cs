@@ -6,35 +6,25 @@ using UnityEngine;
 [RequireComponent(typeof(VelocityControl))]
 public class InputManager : MonoBehaviour
 {
-    public int handRigidbodyID = 1;
-    private OptitrackStreamingClient streamingClient;
     private PositionControl dronePositionControl;
     private UDPCommandManager udp;
 
-    public float handRoomScaling = 8.0f;
     [HideInInspector]
     public bool clutchActivated = false;
 
-    // mocapInputRotation = 90 --> you are facing the wall, and have the computers to your left and the entrance door to your right.
-    // mocapInputRotation = -90 --> you are facing the wall, and have the computers to your right.
-    // mocapInputRotation = 180 --> you are facing the computers
-    // mocapInputRotation = 0 --> you have the computers behind you
-    [Tooltip("Change forward direction (z-axis) for mocap")]
-    public float mocapInputRotation = 90.0f;
-    public float observationInputRotation = 0.0f;
+    public float observationInputRotation = 10.0f;
 
     public float rotationSpeedScaling = 0.02f;
     public bool drawHandTarget = true;
 
     [Tooltip("Read inputs from a controller instead of motion capture.")]
-    public bool useController = false;
+    public bool motionControl = true;
     public float IMU1Scale = 10.0f;
     public float IMU2Scale = 10.0f;
-    public float LeapScale = 10.0f;
     public float controllerSpeed = 0.1f;
     public float controllerRotationSpeed = 0.5f;
 
-    private GameObject handTarget;
+    private GameObject target;
 
     private Vector3 rawHandPosition = Vector3.zero;
     private Quaternion rawHandRotation = Quaternion.identity;
@@ -53,33 +43,18 @@ public class InputManager : MonoBehaviour
         MINUS_THRUST = 7,
     };
 
-    public enum leap_control
-    {
-        ROLL = 0,   //like turn
-        PITCH = 1, //like speed
-        YAW = 2,
-        THRUST = 3,
-        MINUS_ROLL = 4,   //like turn
-        MINUS_PITCH = 5, //like speed
-        MINUS_YAW = 6,
-        MINUS_THRUST = 7,
-    };
-
     public bool verticalTask = false;
 
     public imu_control IMU_FOREARM_CONTROLS = imu_control.PITCH;
     public imu_control IMU_HAND_CONTROLS = imu_control.THRUST;
-    //public leap_control LEAP_CONTROLS = leap_control.PITCH;
 
     public bool lock_roll = false;
 
     public Vector3 imu1_init;
     public Vector3 imu2_init;
-    public Vector3 leap_init;
 
     public Vector3 imu1;
     public Vector3 imu2;
-    public Vector3 leap;
 
     // For logger
     public Vector3 MocapHandPosition
@@ -104,19 +79,11 @@ public class InputManager : MonoBehaviour
         dronePositionControl = GetComponent<PositionControl>();
 
         // Instantiate hand target (for optitrack)
-        handTarget = new GameObject("Hand Target");
-        handTarget.transform.localScale = 2.0f * SimulationData.DroneSize * Vector3.one;
-        handTarget.transform.position = dronePositionControl.transform.position;
+        target = new GameObject("Target");
+        target.transform.localScale = 2.0f * SimulationData.DroneSize * Vector3.one;
+        target.transform.position = dronePositionControl.transform.position;
 
         initPos = dronePositionControl.transform.position;
-
-        streamingClient = OptitrackStreamingClient.FindDefaultClient();
-
-        // If we still couldn't find one, disable this component.
-        if (streamingClient == null)
-        {
-            Debug.LogError("Streaming client not found, place a streaming client in the scene.");
-        }
 
         imu1_init = udp.GetIMU1();
         imu2_init = udp.GetIMU2();
@@ -124,22 +91,22 @@ public class InputManager : MonoBehaviour
 
     void Update()
     {
-        if (useController)
+        if (!motionControl)
         {
             float v = -Input.GetAxis("Horizontal");
             float h = Input.GetAxis("Vertical");
             float a = Input.GetAxis("Altitude");
-            
 
             Vector3 direction = new Vector3(h, a, v);
-            
-            handTarget.transform.position += Quaternion.Euler(0, observationInputRotation, 0) * direction * controllerSpeed;
 
-            dronePositionControl.target = handTarget.transform;
+            target.transform.position += Quaternion.Euler(0, observationInputRotation, 0) * direction * controllerSpeed;
+
+            dronePositionControl.target = target.transform;
         }
 
-        else // IMU / Leap inputs, 
+        else // IMU
         {
+            //Debug.Log("IMU control received");
             imu1 = udp.GetIMU1() - imu1_init;
             imu2 = udp.GetIMU2() - imu2_init;
 
@@ -218,9 +185,9 @@ public class InputManager : MonoBehaviour
 
             Vector3 direction = new Vector3(pitch, thrust, roll);
 
-            handTarget.transform.position = initPos + Quaternion.Euler(0, observationInputRotation, 0) * direction;
+            target.transform.position = initPos + Quaternion.Euler(0, observationInputRotation, 0) * direction;
 
-            dronePositionControl.target = handTarget.transform;
+            dronePositionControl.target = target.transform;
 
         }
     }
