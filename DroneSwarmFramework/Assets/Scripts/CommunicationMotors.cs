@@ -94,7 +94,6 @@ public class CommunicationMotors : MonoBehaviour
             distances[i] = float.PositiveInfinity;
         }
 
-
         sendDistancesToPython();
         System.Threading.Thread.Sleep(100);
         sendDistancesToPython();

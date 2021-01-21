@@ -31,7 +31,6 @@ public class ExperimentSetup : MonoBehaviour
     public GameObject haptics;
     public GameObject learning;
     public GameObject drone;
-    //public GameObject light;
 
     GameObject Maze1;
     GameObject Maze2;
@@ -85,19 +84,14 @@ public class ExperimentSetup : MonoBehaviour
         Maze8 = haptics.transform.Find("Mazes").gameObject.transform.Find("Maze8").gameObject;
         //Playground = learning.transform.Find("Playground").gameObject;
 
-        Light lightObject = light.GetComponent<Light>();
 
         if (ExperimentType==expType.Learning)
         {
-            lightObject.shadows = LightShadows.Soft;
-
             haptics.SetActive(false);
             learning.SetActive(true);
         }
         else if (ExperimentType == expType.Haptics)
         {
-            lightObject.shadows = LightShadows.None;
-
             haptics.SetActive(true);
             learning.SetActive(false);
             DeactivateAllHapticObstacles();
@@ -142,16 +136,15 @@ public class ExperimentSetup : MonoBehaviour
             is_active.SetActive(true);
 
             // Turn off color change if practising
-            ColorCollisionChildren col = is_active.GetComponent<ColorCollisionChildren>();
-            if (Practice)
-            {
-                col.KeepColor = false;
-            }
-            else
-            {
-                col.KeepColor = true;
-            }
-            
+            //ColorCollisionChildren col = is_active.GetComponent<ColorCollisionChildren>();
+            //if (Practice)
+            //{
+            //    col.KeepColor = false;
+            //}
+            //else
+            //{
+            //    col.KeepColor = true;
+            //}   
         }
     }
 

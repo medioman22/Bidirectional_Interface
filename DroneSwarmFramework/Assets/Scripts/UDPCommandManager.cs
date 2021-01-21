@@ -67,7 +67,8 @@ public class UDPCommandManager : MonoBehaviour
 
     private void Update()
     {
-        disable_input = canvas.activeSelf;
+        if (canvas != null)
+            disable_input = canvas.activeSelf;
 
         if (!disable_input)
         {

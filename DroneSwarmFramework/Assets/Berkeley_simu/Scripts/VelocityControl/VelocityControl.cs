@@ -35,6 +35,7 @@ public class VelocityControl : MonoBehaviour
     public bool is_Slave;
     public float closeness = 0.0f;
     private float min_inter_distance = 0.05f;
+    public static float spreadScore = 0.0f;
 
     public GameObject masterDrone;
     public Transform swarm;
@@ -66,6 +67,7 @@ public class VelocityControl : MonoBehaviour
         leap = masterDrone.GetComponent<LeapInputUDP>();
         input = masterDrone.GetComponent<InputManager>();
         offset = rb.transform.position;
+        spreadScore = 0.0f;
     }
 
     // Update is called once per frame
@@ -88,6 +90,7 @@ public class VelocityControl : MonoBehaviour
                 closeness = 1 - leap.spread; // 0: far apart, 1: close together
             }
 
+            spreadScore += closeness;
             K_sep = Mathf.Max(closeness, min_inter_distance) * spread_scale_factor;
 
             // Get Master reference
@@ -104,7 +107,7 @@ public class VelocityControl : MonoBehaviour
 
             desiredVx += velocityReynolds[0];
             desiredVz += velocityReynolds[2];
-            //desiredVy += velocityReynolds[1];
+            desiredVy += velocityReynolds[1];
         }
 
         CalculateForces();
