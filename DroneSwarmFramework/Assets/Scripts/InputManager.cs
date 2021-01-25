@@ -12,11 +12,6 @@ public class InputManager : MonoBehaviour
     [HideInInspector]
     public bool clutchActivated = false;
 
-    public float observationInputRotation = 10.0f;
-
-    public float rotationSpeedScaling = 0.02f;
-    public bool drawHandTarget = true;
-
     [Tooltip("Read inputs from a controller instead of motion capture.")]
     public bool motionControl = true;
     public float IMU1Scale = 10.0f;
@@ -56,22 +51,6 @@ public class InputManager : MonoBehaviour
     public Vector3 imu1;
     public Vector3 imu2;
 
-    // For logger
-    public Vector3 MocapHandPosition
-    {
-        get
-        {
-            return rawHandPosition;
-        }
-    }
-    public Quaternion MocapHandRotation
-    {
-        get
-        {
-            return rawHandRotation;
-        }
-    }
-
     void Start()
     {
         udp = GetComponent<UDPCommandManager>();
@@ -93,15 +72,19 @@ public class InputManager : MonoBehaviour
     {
         if (!motionControl)
         {
-            float v = -Input.GetAxis("Horizontal");
-            float h = Input.GetAxis("Vertical");
-            float a = Input.GetAxis("Altitude");
+            float h = Input.GetAxis("Horizontal");
+            float v = -Input.GetAxis("Vertical");
 
-            Vector3 direction = new Vector3(h, a, v);
+            Vector3 direction = new Vector3(h, 0.0f, v);
 
-            target.transform.position += Quaternion.Euler(0, observationInputRotation, 0) * direction * controllerSpeed;
+            target.transform.position += direction * Time.deltaTime * controllerSpeed;
+            //target.transform.position = initPos + Quaternion.Euler(0, 0, 0) * direction * controllerSpeed;
+            Debug.DrawRay(target.transform.position, target.transform.forward, Color.green);
+            Debug.DrawRay(target.transform.position, target.transform.right, Color.green);
 
             dronePositionControl.target = target.transform;
+            Vector3 orientation = dronePositionControl.target.eulerAngles;
+            dronePositionControl.target.eulerAngles = new Vector3(orientation.x, 0.0f, orientation.z);
         }
 
         else // IMU
@@ -117,6 +100,7 @@ public class InputManager : MonoBehaviour
 
             float imu1_val = -imu1.z / IMU1Scale;
             float imu2_val = -imu2.y / IMU2Scale;
+
             if (verticalTask)
             {
                 imu1_val = -imu1.y / IMU2Scale;
@@ -185,7 +169,7 @@ public class InputManager : MonoBehaviour
 
             Vector3 direction = new Vector3(pitch, thrust, roll);
 
-            target.transform.position = initPos + Quaternion.Euler(0, observationInputRotation, 0) * direction;
+            target.transform.position = initPos + Quaternion.Euler(0, 0, 0) * direction;
 
             dronePositionControl.target = target.transform;
 

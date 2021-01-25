@@ -11,9 +11,9 @@ public class VelocityControl : MonoBehaviour
     private LeapInputUDP leap;
     private InputManager input;
 
-    private float gravity = Physics.gravity.magnitude;
+    private float gravity = Physics.gravity.magnitude / 0.1f;
     private float time_constant_y_velocity = 1.0f; // Normal-person coordinates
-    private float time_constant_acceleration = 0.5f;
+    private float time_constant_acceleration = 0.8f;
     private float time_constant_omega_xz_rate = 0.1f; // Normal-person coordinates (roll/pitch)
     private float time_constant_alpha_xz_rate = 0.05f; // Normal-person coordinates (roll/pitch)
     private float time_constant_alpha_y_rate = 0.05f; // Normal-person coordinates (yaw)
@@ -22,16 +22,16 @@ public class VelocityControl : MonoBehaviour
     private float max_roll = 0.175f; // 10 Degrees in radians, otherwise small-angle approximation dies
     private float max_alpha = 10.0f;
 
-    private float max_thrust = 2.0f * Physics.gravity.magnitude;
+    private float max_thrust = 10.0f * Physics.gravity.magnitude;
 
-    private Vector3 offset = new Vector3();
+    //private Vector3 offset = new Vector3();
 
     // For flocking behavior
     [Header("Flocking Behavior")]
-    public float spread_scale_factor = 8.0f;
-    public float K_sep; 
-    public float K_coh;
-    public float K_align;
+    public float spread_scale_factor = 3.0f;
+    public float K_sep = 1.0f;
+    public float K_coh = 2.0f;
+    public float K_align = 4.0f;
     public bool is_Slave;
     public float closeness = 0.0f;
     private float min_inter_distance = 0.05f;
@@ -39,10 +39,11 @@ public class VelocityControl : MonoBehaviour
 
     public GameObject masterDrone;
     public Transform swarm;
+    private Transform transform_master;
 
     private float flatness = 1.0f;
-    private float P = 60.0f;
-    private float D = 0.0f;
+    private float P = 80.0f;
+    private float D = 10.0f;
 
     // Velocity and other state attributes
     [Header("State")]
@@ -66,7 +67,7 @@ public class VelocityControl : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         leap = masterDrone.GetComponent<LeapInputUDP>();
         input = masterDrone.GetComponent<InputManager>();
-        offset = rb.transform.position;
+        transform_master = masterDrone.transform;
         spreadScore = 0.0f;
     }
 
@@ -75,8 +76,6 @@ public class VelocityControl : MonoBehaviour
     {
         float dt = Time.fixedDeltaTime;
         state.GetState();
-
-        //Debug.Log(this.gameObject.name + " at position: " + rb.transform.position);
 
         if (is_Slave)
         {
@@ -153,6 +152,8 @@ public class VelocityControl : MonoBehaviour
         Vector3 desiredForce = new Vector3(0.0f, desiredThrust, 0.0f);
 
         rb.AddRelativeTorque(desiredTorque, ForceMode.Force);
+        if (desiredTorque.y != 0.0f)
+            Debug.Log("Torque in y!");
         rb.AddRelativeForce(desiredForce, ForceMode.Force);
 
         //prop transforms

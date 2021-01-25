@@ -17,12 +17,14 @@ public class PositionControl : MonoBehaviour
     private VelocityControl vc;
 
     // PD controller gains
-    private float positionTimeConstant = 1.0f;
+    private float positionTimeConstant = 10f;
     private float yawTimeConstant = 10.0f;
-    private float dFactor = 0.1f;
-    private float dFactorYaw = 0.01f;
+    private float dFactor = 10f;
+    private float dFactorYaw = 0.0f;
 
     private Vector3 lastPositionError = Vector3.zero;
+    private float tolerance = 0.1f;
+    private Vector3 pos_tolerance = new Vector3(0.1f, 0.1f, 0.1f);   
     private float lastYawError = 0.0f;
 
     // Use this for initialization
@@ -36,16 +38,27 @@ public class PositionControl : MonoBehaviour
         if (target != null)
         {
             Vector3 positionError = target.position - transform.position;
+            Debug.DrawRay(transform.position, positionError, Color.cyan);
 
-            // Since the speed control is done in the reference frame of the drone,
-            // we need to convert the global error vector to drone-local coordinates
-            positionError = transform.InverseTransformDirection(positionError);
+            if(!(positionError.magnitude < tolerance))
+            {
+                // Since the speed control is done in the reference frame of the drone,
+                // we need to convert the global error vector to drone-local coordinates
+                positionError = transform.InverseTransformDirection(positionError);
 
-            vc.desiredVx = positionError.x / positionTimeConstant + dFactor * (positionError.x - lastPositionError.x) / Time.fixedDeltaTime;
-            vc.desiredVz = positionError.z / positionTimeConstant + dFactor * (positionError.z - lastPositionError.z) / Time.fixedDeltaTime;
-            vc.desiredHeight = target.position.y;
+                vc.desiredVx = positionError.x / positionTimeConstant + dFactor * (positionError.x - lastPositionError.x) / Time.fixedDeltaTime;
+                vc.desiredVz = positionError.z / positionTimeConstant + dFactor * (positionError.z - lastPositionError.z) / Time.fixedDeltaTime;
+                vc.desiredHeight = target.position.y;
 
-            lastPositionError = positionError;
+                lastPositionError = positionError;
+            }
+            else
+            {
+                Debug.Log("Within tolerance");
+                vc.desiredVx = 0.0f;
+                vc.desiredVz = 0.0f;
+                vc.desiredHeight = target.position.y;
+            }
         }
         else
             Debug.Log("No new target found");

@@ -27,28 +27,14 @@ public class StateFinder : MonoBehaviour {
 
     public void GetState()
     {
-		Vector3 worldDown = vc.transform.InverseTransformDirection (Vector3.down);
-		float Pitch = worldDown.z; // Small angle approximation
-		float Roll = -worldDown.x; // Small angle approximation
-		float Yaw = vc.transform.eulerAngles.y;
+        Vector3 worldDown = vc.transform.InverseTransformDirection(Vector3.down);
+        float Pitch = worldDown.z; // Small angle approximation
+        float Roll = -worldDown.x; // Small angle approximation
+        float Yaw = Mathf.Rad2Deg * vc.transform.rotation.y;
+        Angles = new Vector3(Pitch, Yaw, Roll);
+        //Debug.Log("Angles: " + Angles);
 
-//		float Pitch = cc.transform.eulerAngles.x;
-//		Pitch = (Pitch > 180) ? Pitch - 360 : Pitch;
-//		Pitch = Pitch / 180.0f * 3.1416f; // Convert to radians
-//
-//		float Roll = cc.transform.eulerAngles.z;
-//		Roll = (Roll > 180.0f) ? Roll - 360.0f : Roll;
-//		Roll = Roll / 180.0f * 3.1416f; // Convert to radians
-//
-//		float Yaw = cc.transform.eulerAngles.y;
-//		Yaw = (Yaw > 180.0f) ? Yaw - 360.0f : Yaw;
-//		Yaw = Yaw / 180.0f * 3.1416f; // Convert to radians
-
-//		Altitude = cc.transform.position.y;
-//
-		Angles = new Vector3 (Pitch, Yaw, Roll);
-
-		Altitude = vc.transform.position.y;
+        Altitude = vc.transform.position.y;
 
 		VelocityVector = vcRigidbody.velocity;
 		VelocityVector = vcTranform.InverseTransformDirection(VelocityVector);
@@ -57,7 +43,7 @@ public class StateFinder : MonoBehaviour {
 		AngularVelocityVector = vcTranform.InverseTransformDirection(AngularVelocityVector);
 
 		Inertia = vcRigidbody.inertiaTensor;
-		Mass = vcRigidbody.mass;
+        Mass = vcRigidbody.mass;
 	}
 
 }
