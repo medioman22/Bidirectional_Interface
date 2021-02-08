@@ -1,7 +1,3 @@
-<p align="center">
-  <img src=https://github.com/medioman22/Bidirectional_Interface/tree/Matthias/ReadMe/epfl.png>
-</p>
-
 # Bidirectional Interface for Drone Swarm
 Repository containing the work performed for the semester project titled "Framework development to control drone
 swarms using wearable interfaces" performed at the LIS (EPFL) in autumn 2020.
@@ -11,7 +7,7 @@ swarms using wearable interfaces" performed at the LIS (EPFL) in autumn 2020.
 **Matthias Wüst**
 
 ## Framework Setup
-Read the report "SemesterProject_MatthiasWüst.pdf" under ./ReadMe for more information about general functionalities and communication pipelines.
+Read the report "SemesterProject_MatthiasWüst.pdf" for more information about general functionalities and communication pipelines.
 
 ### Leap
 Install the latest Leap Motion Controller Software: https://developer.leapmotion.com/sdk-leap-motion-controller/ (tested with Orion 4.1.0+52211)
