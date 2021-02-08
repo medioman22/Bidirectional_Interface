@@ -1,5 +1,5 @@
 <p align="center">
-  <img src=https://github.com/medioman22/Bidirectional_Interface/tree/Matthias/ReadMe>
+  <img src=https://github.com/medioman22/Bidirectional_Interface/tree/Matthias/ReadMe/epfl.png>
 </p>
 
 # Bidirectional Interface for Drone Swarm
