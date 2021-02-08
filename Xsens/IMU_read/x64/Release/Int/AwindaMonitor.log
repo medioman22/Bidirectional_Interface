@@ -1,0 +1,13 @@
+﻿  connectedmtwdata.cpp
+c:\users\symbioticdrone\documents\github\awindamonitor_cpp\connectedmtwdata.h(32): fatal error C1083: Cannot open include file: 'xsensdeviceapi.h': No such file or directory
+  main.cpp
+main.cpp(29): fatal error C1083: Cannot open include file: 'QApplication': No such file or directory
+  mainwindow.cpp
+c:\users\symbioticdrone\documents\github\awindamonitor_cpp\mainwindow.h(39): fatal error C1083: Cannot open include file: 'QMainWindow': No such file or directory
+  myxda.cpp
+c:\users\symbioticdrone\documents\github\awindamonitor_cpp\myxda.h(32): fatal error C1083: Cannot open include file: 'xsensdeviceapi.h': No such file or directory
+  moc_mainwindow.cpp
+c:\users\symbioticdrone\documents\github\awindamonitor_cpp\generatedfiles\release\../../mainwindow.h(39): fatal error C1083: Cannot open include file: 'QMainWindow': No such file or directory
+  moc_myxda.cpp
+c:\users\symbioticdrone\documents\github\awindamonitor_cpp\generatedfiles\release\../../myxda.h(32): fatal error C1083: Cannot open include file: 'xsensdeviceapi.h': No such file or directory
+  Generating Code...
