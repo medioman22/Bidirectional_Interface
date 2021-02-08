@@ -16194,7 +16194,7 @@ PrefabInstance:
     - target: {fileID: 2811121945766659011, guid: 9e5ea08e01c60844398aa50e7af49eb7,
         type: 3}
       propertyPath: recording
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2811121945766659011, guid: 9e5ea08e01c60844398aa50e7af49eb7,
         type: 3}

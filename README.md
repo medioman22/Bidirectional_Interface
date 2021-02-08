@@ -1,5 +1,5 @@
 <p align="center">
-  <img src=>
+  <img src=https://github.com/medioman22/Bidirectional_Interface/tree/Matthias/ReadMe>
 </p>
 
 # Bidirectional Interface for Drone Swarm
@@ -8,10 +8,10 @@ swarms using wearable interfaces" performed at the LIS (EPFL) in autumn 2020.
 
 ## Author
 
-* **Matthias Wüst**
+**Matthias Wüst**
 
 ## Framework Setup
-Read the report "SemesterProject_MatthiasWüst.pdf" for more information about general functionalities and communication pipelines.
+Read the report "SemesterProject_MatthiasWüst.pdf" under ./ReadMe for more information about general functionalities and communication pipelines.
 
 ### Leap
 Install the latest Leap Motion Controller Software: https://developer.leapmotion.com/sdk-leap-motion-controller/ (tested with Orion 4.1.0+52211)
@@ -39,3 +39,6 @@ Under SimulationManager you can activate logging and easily change the maze envi
 ### Clutches
 The Arduino control board with 16 clutch states was programmed and tested with "clutch_control.ino" in the folder ./ArduinoClutchControl. The file "clutch_control_shortened.py" is the basis for a different control board.
 Under ./DroneSwarmFramework/Haptics/API_Calls run "UDP_client_clutch.py" during the simulation. The minimal distances in all directions (4 values) should be printed.
+
+### Other
+The ./Evaluation folder contains a script to plot the log files stored in ./DroneSwarmFramework/ClutchSimulationLogs.
